@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+
+<html lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Profil Alumni | Alexander Montgomery</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed": "#001849",
+                    "on-primary": "#ffffff",
+                    "primary-container": "#0066ff",
+                    "outline-variant": "#c2c6d8",
+                    "on-tertiary-fixed-variant": "#004c6e",
+                    "primary-fixed-dim": "#b3c5ff",
+                    "surface": "#f7f9fb",
+                    "on-tertiary-container": "#f3f8ff",
+                    "tertiary": "#005f89",
+                    "inverse-primary": "#b3c5ff",
+                    "surface-tint": "#0054d6",
+                    "primary": "#0050cb",
+                    "background": "#f7f9fb",
+                    "error": "#ba1a1a",
+                    "surface-container-low": "#f2f4f6",
+                    "on-secondary-fixed": "#0c1e26",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#b7c9d5",
+                    "on-error-container": "#93000a",
+                    "surface-container": "#eceef0",
+                    "on-surface-variant": "#424656",
+                    "on-surface": "#191c1e",
+                    "secondary-fixed": "#d3e5f1",
+                    "secondary-container": "#d3e5f1",
+                    "surface-dim": "#d8dadc",
+                    "on-tertiary": "#ffffff",
+                    "inverse-on-surface": "#eff1f3",
+                    "on-primary-fixed-variant": "#003fa4",
+                    "primary-fixed": "#dae1ff",
+                    "secondary": "#50616b",
+                    "tertiary-fixed": "#c9e6ff",
+                    "inverse-surface": "#2d3133",
+                    "on-primary-container": "#f8f7ff",
+                    "tertiary-fixed-dim": "#89ceff",
+                    "surface-container-lowest": "#ffffff",
+                    "outline": "#727687",
+                    "surface-bright": "#f7f9fb",
+                    "on-secondary-container": "#566771",
+                    "surface-container-highest": "#e0e3e5",
+                    "on-secondary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "tertiary-container": "#0079ad",
+                    "surface-variant": "#e0e3e5",
+                    "on-background": "#191c1e",
+                    "on-tertiary-fixed": "#001e2f",
+                    "surface-container-high": "#e6e8ea",
+                    "on-secondary-fixed-variant": "#384953"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "margin-desktop": "64px",
+                    "container-max": "1280px",
+                    "unit": "4px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-xl": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-lg-mobile": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f7f9fb;
+      }
+      .soft-gradient-bg {
+        background: linear-gradient(135deg, #e0f2fe 0%, #ffffff 100%);
+      }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(226, 232, 240, 0.5);
+      }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- TopNavBar -->
+<nav class="w-full top-0 sticky z-50 bg-surface-container-lowest shadow-sm">
+<div class="flex justify-between items-center h-16 px-gutter max-w-container-max mx-auto">
+<div class="flex items-center gap-8">
+<span class="font-headline-md text-headline-md font-bold text-primary">AlumniLink</span>
+<div class="hidden md:flex gap-6 items-center">
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md" href="#">Directory</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#">Events</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#">Mentorship</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#">Jobs</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#">Giving</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="px-4 py-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-all font-label-md text-label-md">Sign In</button>
+<button class="px-4 py-2 bg-primary text-on-primary rounded-lg hover:shadow-md transition-all font-label-md text-label-md">Register</button>
+</div>
+</div>
+</nav>
+<main class="min-h-screen">
+<!-- Hero Header with Soft Gradient -->
+<header class="relative soft-gradient-bg pt-12 pb-24 px-gutter border-b border-outline-variant/20 overflow-hidden">
+<!-- Animated decorative elements (simulating soft atmosphere) -->
+<div class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[100px]"></div>
+<div class="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-64 h-64 bg-tertiary/10 rounded-full blur-[80px]"></div>
+<div class="max-w-container-max mx-auto relative z-10">
+<div class="flex flex-col md:flex-row items-center md:items-end gap-8">
+<!-- Profile Picture -->
+<div class="relative group">
+<div class="absolute -inset-1 bg-gradient-to-tr from-primary to-tertiary-fixed rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
+<img alt="Professional Headshot" class="relative w-48 h-48 md:w-56 md:h-56 rounded-2xl object-cover shadow-xl border-4 border-white" src="https://lh3.googleusercontent.com/aida/AP1WRLv5B_7kveKBRpcCA3g2v0mg61xM9p1rHSWj26CUlgkWLp7ZukFU80X4vm57Vc8KZ6YuambR7YvrPpxtpZeprqUvTN5zQLn-PNQkiLsQ6mpTmohFb-iSaeGqeOB1Tc87u49Zs8deosDRRIYx9rFwXxP2vEEZE1LQiHmiLkz-OQGHSbJPbzpuwBS3iX4eskLZv0wQPU4Ickkln3EYvql84uz9ZkTwnyIVM6pRHsnIr_W8MuJd8vJAbThzkA"/>
+<div class="absolute -bottom-2 -right-2 bg-green-500 w-6 h-6 rounded-full border-4 border-white shadow-sm" title="Online Sekarang"></div>
+</div>
+<!-- Identity Info -->
+<div class="flex-1 text-center md:text-left">
+<div class="flex flex-col md:flex-row md:items-center gap-3 mb-2 justify-center md:justify-start">
+<h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight">Alexander Montgomery</h1>
+<span class="inline-flex items-center px-3 py-1 bg-primary-container text-on-primary-container rounded-full font-label-sm text-label-sm">Premium Alumni</span>
+</div>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-4 font-medium">Senior Director of Engineering di GlobalTech Solutions</p>
+<div class="flex flex-wrap items-center justify-center md:justify-start gap-4 text-on-surface-variant/80">
+<span class="flex items-center gap-1 font-label-md text-label-md">
+<span class="material-symbols-outlined text-[20px]">location_on</span>
+                                Jakarta, Indonesia
+                            </span>
+<span class="flex items-center gap-1 font-label-md text-label-md">
+<span class="material-symbols-outlined text-[20px]">school</span>
+                                Angkatan 2008
+                            </span>
+<span class="flex items-center gap-1 font-label-md text-label-md">
+<span class="material-symbols-outlined text-[20px]">mail</span>
+                                a.montgomery@example.com
+                            </span>
+</div>
+</div>
+<!-- Primary Actions -->
+<div class="flex gap-3 pb-2">
+<button class="flex items-center gap-2 px-6 py-3 bg-primary text-on-primary rounded-xl font-label-md text-label-md hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+                            Hubungkan
+                        </button>
+<button class="flex items-center gap-2 px-6 py-3 bg-surface-container-lowest text-primary border border-primary/20 rounded-xl font-label-md text-label-md hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-[20px]">chat_bubble</span>
+                            Pesan
+                        </button>
+</div>
+</div>
+</div>
+</header>
+<!-- Profile Content Grid -->
+<div class="max-w-container-max mx-auto px-gutter -mt-10 pb-20">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Main Column -->
+<div class="lg:col-span-8 space-y-8">
+<!-- Ringkasan Profesional -->
+<section class="glass-card rounded-2xl p-8 shadow-sm">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded-lg bg-primary-fixed-dim flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">description</span>
+</div>
+<h2 class="font-headline-md text-headline-md">Ringkasan Profesional</h2>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                            Pemimpin teknologi yang berorientasi pada hasil dengan pengalaman lebih dari 15 tahun dalam membangun tim teknik berkinerja tinggi dan skala infrastruktur global. Memiliki rekam jejak yang terbukti dalam transformasi digital, pengembangan produk SaaS, dan integrasi kecerdasan buatan dalam alur kerja perusahaan. Sangat antusias dalam membimbing talenta muda alumni dan berkontribusi kembali pada ekosistem almamater.
+                        </p>
+</section>
+<!-- Riwayat Karir -->
+<section class="glass-card rounded-2xl p-8 shadow-sm">
+<div class="flex items-center gap-3 mb-8">
+<div class="w-10 h-10 rounded-lg bg-primary-fixed-dim flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">work</span>
+</div>
+<h2 class="font-headline-md text-headline-md">Riwayat Karir</h2>
+</div>
+<div class="space-y-10 relative before:absolute before:left-5 before:top-2 before:bottom-2 before:w-[2px] before:bg-surface-container">
+<!-- Experience 1 -->
+<div class="relative pl-12">
+<div class="absolute left-0 top-1 w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center z-10">
+<div class="w-3 h-3 rounded-full bg-primary"></div>
+</div>
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-body-lg text-body-lg font-bold">Senior Director of Engineering</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container px-3 py-1 rounded-full">2020 - Sekarang</span>
+</div>
+<p class="text-primary font-medium mb-3">GlobalTech Solutions</p>
+<ul class="list-disc list-inside font-body-md text-body-md text-on-surface-variant space-y-2 marker:text-primary">
+<li>Memimpin departemen teknik yang terdiri dari 150+ insinyur di 3 benua.</li>
+<li>Berhasil meluncurkan platform Cloud v2 yang meningkatkan pendapatan tahunan sebesar 40%.</li>
+<li>Mengimplementasikan strategi penghematan biaya infrastruktur sebesar $2M per tahun.</li>
+</ul>
+</div>
+<!-- Experience 2 -->
+<div class="relative pl-12">
+<div class="absolute left-0 top-1 w-10 h-10 rounded-full bg-white border-2 border-outline-variant flex items-center justify-center z-10">
+<div class="w-3 h-3 rounded-full bg-outline-variant"></div>
+</div>
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-body-lg text-body-lg font-bold">VP of Technology</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container px-3 py-1 rounded-full">2015 - 2020</span>
+</div>
+<p class="text-primary font-medium mb-3">NextGen FinTech</p>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                                    Bertanggung jawab atas peta jalan teknologi perusahaan dan keamanan siber. Mengawasi transisi sukses dari arsitektur monolitik ke layanan mikro (microservices).
+                                </p>
+</div>
+</div>
+</section>
+<!-- Pendidikan -->
+<section class="glass-card rounded-2xl p-8 shadow-sm">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded-lg bg-primary-fixed-dim flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">school</span>
+</div>
+<h2 class="font-headline-md text-headline-md">Pendidikan</h2>
+</div>
+<div class="space-y-6">
+<div class="flex gap-4">
+<div class="w-12 h-12 bg-surface-container rounded-lg flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-on-surface-variant">account_balance</span>
+</div>
+<div>
+<h4 class="font-body-lg text-body-lg font-bold">Magister Manajemen Bisnis</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">Universitas Teknologi Nasional • 2010 - 2012</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="w-12 h-12 bg-surface-container rounded-lg flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-on-surface-variant">terminal</span>
+</div>
+<div>
+<h4 class="font-body-lg text-body-lg font-bold">Sarjana Teknik Informatika</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">Universitas Global Mandiri • 2004 - 2008</p>
+<p class="font-label-sm text-label-sm text-primary mt-1">Cum Laude - IPK 3.92/4.00</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Sidebar Column -->
+<div class="lg:col-span-4 space-y-8">
+<!-- Keahlian & Minat -->
+<section class="glass-card rounded-2xl p-8 shadow-sm">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded-lg bg-primary-fixed-dim flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">psychology</span>
+</div>
+<h2 class="font-headline-md text-headline-md">Keahlian</h2>
+</div>
+<div class="space-y-6">
+<div>
+<h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-3">Teknis</h4>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1.5 bg-secondary-container text-on-secondary-container rounded-full font-label-md text-label-md">Cloud Architecture</span>
+<span class="px-3 py-1.5 bg-secondary-container text-on-secondary-container rounded-full font-label-md text-label-md">Kubernetes</span>
+<span class="px-3 py-1.5 bg-secondary-container text-on-secondary-container rounded-full font-label-md text-label-md">AI/ML Strategy</span>
+<span class="px-3 py-1.5 bg-secondary-container text-on-secondary-container rounded-full font-label-md text-label-md">Cybersecurity</span>
+<span class="px-3 py-1.5 bg-secondary-container text-on-secondary-container rounded-full font-label-md text-label-md">Golang</span>
+</div>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-3">Kepemimpinan</h4>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1.5 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-full font-label-md text-label-md">Strategic Planning</span>
+<span class="px-3 py-1.5 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-full font-label-md text-label-md">Public Speaking</span>
+<span class="px-3 py-1.5 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-full font-label-md text-label-md">Mentorship</span>
+</div>
+</div>
+<hr class="border-outline-variant/30"/>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-3">Minat</h4>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1.5 bg-surface-container-high text-on-surface rounded-full font-label-md text-label-md">Sailing</span>
+<span class="px-3 py-1.5 bg-surface-container-high text-on-surface rounded-full font-label-md text-label-md">Astronomy</span>
+<span class="px-3 py-1.5 bg-surface-container-high text-on-surface rounded-full font-label-md text-label-md">Venture Capital</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Networking & Social -->
+<section class="glass-card rounded-2xl p-8 shadow-sm">
+<h3 class="font-body-lg text-body-lg font-bold mb-4">Kontak &amp; Sosial</h3>
+<div class="space-y-4">
+<a class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container transition-colors group" href="#">
+<div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"></path></svg>
+</div>
+<div class="flex-1">
+<p class="font-label-md text-label-md text-on-surface-variant">LinkedIn</p>
+<p class="font-body-md text-body-md font-medium text-on-surface">alex-montgomery</p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:translate-x-1 transition-transform">chevron_right</span>
+</a>
+<a class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container transition-colors group" href="#">
+<div class="w-10 h-10 rounded-lg bg-slate-800 text-white flex items-center justify-center">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
+</div>
+<div class="flex-1">
+<p class="font-label-md text-label-md text-on-surface-variant">GitHub</p>
+<p class="font-body-md text-body-md font-medium text-on-surface">amontgomery-dev</p>
+</div>
+<span class="material-symbols-outlined text-outline group-hover:translate-x-1 transition-transform">chevron_right</span>
+</a>
+</div>
+</section>
+<!-- Mentorship Status -->
+<section class="bg-primary p-8 rounded-2xl text-on-primary shadow-xl shadow-primary/20 relative overflow-hidden">
+<div class="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+<h3 class="font-headline-md text-headline-md mb-2">Siap Membimbing</h3>
+<p class="font-body-md text-body-md mb-6 opacity-90">Alexander tersedia untuk sesi bimbingan karir dan teknis bagi mahasiswa tingkat akhir.</p>
+<button class="w-full py-3 bg-white text-primary rounded-xl font-bold font-label-md text-label-md hover:bg-opacity-90 transition-all">Ajukan Mentorship</button>
+</section>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full mt-auto bg-surface-container-high">
+<div class="flex flex-col md:flex-row justify-between items-center py-8 px-gutter max-w-container-max mx-auto">
+<div class="mb-6 md:mb-0">
+<span class="font-headline-md text-headline-md font-bold text-on-surface">AlumniLink</span>
+<p class="mt-2 text-secondary font-label-md text-label-md">© 2024 Global Alumni Network. All rights reserved.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-6">
+<a class="text-secondary hover:text-primary transition-colors font-label-md text-label-md" href="#">Privacy Policy</a>
+<a class="text-secondary hover:text-primary transition-colors font-label-md text-label-md" href="#">Terms of Service</a>
+<a class="text-secondary hover:text-primary transition-colors font-label-md text-label-md" href="#">Contact Support</a>
+<a class="text-secondary hover:text-primary transition-colors font-label-md text-label-md" href="#">Alumni Relations</a>
+<a class="text-secondary hover:text-primary transition-colors font-label-md text-label-md" href="#">Donate</a>
+</div>
+</div>
+</footer>
+<script>
+        // Simple scroll effect for navbar
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 20) {
+                nav.classList.add('shadow-md');
+                nav.classList.replace('bg-surface-container-lowest', 'bg-white/90');
+                nav.style.backdropFilter = 'blur(10px)';
+            } else {
+                nav.classList.remove('shadow-md');
+                nav.classList.replace('bg-white/90', 'bg-surface-container-lowest');
+                nav.style.backdropFilter = 'none';
+            }
+        });
+    </script>
+</body></html>
