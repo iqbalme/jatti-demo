@@ -168,7 +168,7 @@
 <main class="flex-grow max-w-container-max mx-auto px-gutter py-12 w-full">
 <div class="flex justify-between items-end mb-8">
 <div>
-<h2 class="font-headline-md text-headline-md text-on-surface">Menampilkan 2,480 Alumni</h2>
+<h2 class="font-headline-md text-headline-md text-on-surface">Menampilkan <span id="alumniCount">10</span> Alumni</h2>
 <div class="flex gap-2 mt-2">
 <span class="inline-flex items-center gap-1 px-3 py-1 bg-secondary-container text-on-secondary-container rounded-full font-label-sm text-label-sm">
                         Class of 2020 <span class="material-symbols-outlined text-[14px] cursor-pointer">close</span>
@@ -192,34 +192,60 @@
 <!-- Alumni Card Template -->
 <script>
                 const alumniData = [
-                    { name: "Aditya Pratama", title: "Senior Software Engineer", company: "Google Indonesia", year: "2018" },
-                    { name: "Budi Santoso", title: "Product Manager", company: "Traveloka", year: "2015" },
-                    { name: "Chandra Wijaya", title: "Data Scientist", company: "Gojek", year: "2019" },
-                    { name: "Dimas Anggara", title: "UX Director", company: "Tokopedia", year: "2014" },
-                    { name: "Eko Ramadhan", title: "CTO & Co-founder", company: "Startup.id", year: "2012" },
-                    { name: "Fajar Nugraha", title: "Marketing Lead", company: "Shopee", year: "2017" },
-                    { name: "Gilang Dirga", title: "Operations Manager", company: "Grab", year: "2016" },
-                    { name: "Heri Kusuma", title: "Financial Analyst", company: "Bank Mandiri", year: "2013" }
+                    { id: 1, name: "Aditya Pratama", dateOfBirth: "15 Maret 1996", gender: "Laki-laki", country: "Indonesia", university: "Universitas Indonesia", major: "Teknik Informatika", graduationYear: "2018", address: "Jl. Merpati No. 42, Jakarta Selatan", phone: "+62 812-3456-7890", email: "aditya.pratama@email.com", title: "Senior Software Engineer", company: "Google Indonesia", skills: ["Cloud Architecture", "Kubernetes", "Golang"], status: "Terverifikasi" },
+                    { id: 2, name: "Budi Santoso", dateOfBirth: "22 Agustus 1993", gender: "Laki-laki", country: "Indonesia", university: "Institut Teknologi Bandung", major: "Manajemen Bisnis", graduationYear: "2015", address: "Jl. Diponegoro No. 17, Bandung", phone: "+62 821-2345-6789", email: "budi.santoso@email.com", title: "Product Manager", company: "Traveloka", skills: ["Product Strategy", "Agile", "Data Analytics"], status: "Anggota Aktif" },
+                    { id: 3, name: "Chandra Wijaya", dateOfBirth: "10 November 1997", gender: "Laki-laki", country: "Australia", university: "University of Melbourne", major: "Data Science", graduationYear: "2019", address: "25 Flinders Lane, Melbourne VIC 3000", phone: "+61 412-345-678", email: "chandra.wijaya@email.com", title: "Data Scientist", company: "Gojek", skills: ["Machine Learning", "Python", "TensorFlow"], status: "Premium Alumni" },
+                    { id: 4, name: "Dimas Anggara", dateOfBirth: "5 April 1992", gender: "Laki-laki", country: "Indonesia", university: "Universitas Gadjah Mada", major: "Desain Komunikasi Visual", graduationYear: "2014", address: "Jl. Kaliurang KM. 5, Sleman, Yogyakarta", phone: "+62 877-3456-7890", email: "dimas.anggara@email.com", title: "UX Director", company: "Tokopedia", skills: ["UX Design", "Design Thinking", "Figma"], status: "Mentor Premium" },
+                    { id: 5, name: "Eko Ramadhan", dateOfBirth: "18 Juli 1989", gender: "Laki-laki", country: "Singapura", university: "National University of Singapore", major: "Ilmu Komputer", graduationYear: "2012", address: "12 Kent Ridge Crescent, Singapore", phone: "+65 9123-4567", email: "eko.ramadhan@email.com", title: "CTO & Co-founder", company: "Startup.id", skills: ["Tech Leadership", "AI Strategy", "System Architecture"], status: "Mentor Premium" },
+                    { id: 6, name: "Fajar Nugraha", dateOfBirth: "30 Januari 1995", gender: "Laki-laki", country: "Indonesia", university: "Universitas Brawijaya", major: "Ilmu Komunikasi", graduationYear: "2017", address: "Jl. Veteran No. 10, Malang", phone: "+62 813-4567-8901", email: "fajar.nugraha@email.com", title: "Marketing Lead", company: "Shopee", skills: ["Digital Marketing", "Brand Strategy", "Growth Hacking"], status: "Terverifikasi" },
+                    { id: 7, name: "Gilang Dirga", dateOfBirth: "8 September 1994", gender: "Laki-laki", country: "Indonesia", university: "Universitas Airlangga", major: "Manajemen Operasi", graduationYear: "2016", address: "Jl. Dharmawangsa No. 25, Surabaya", phone: "+62 856-7890-1234", email: "gilang.dirga@email.com", title: "Operations Manager", company: "Grab", skills: ["Supply Chain", "Logistics", "Process Optimization"], status: "Anggota Aktif" },
+                    { id: 8, name: "Heri Kusuma", dateOfBirth: "12 Desember 1991", gender: "Laki-laki", country: "Jepang", university: "University of Tokyo", major: "Akuntansi & Keuangan", graduationYear: "2013", address: "7-3-1 Hongo, Bunkyo-ku, Tokyo", phone: "+81 90-1234-5678", email: "heri.kusuma@email.com", title: "Financial Analyst", company: "Bank Mandiri", skills: ["Financial Modeling", "Risk Management", "Investment Analysis"], status: "Terverifikasi" },
+                    { id: 9, name: "Sari Dewi Lestari", dateOfBirth: "3 Juni 1998", gender: "Perempuan", country: "Indonesia", university: "Universitas Diponegoro", major: "Teknik Elektro", graduationYear: "2020", address: "Jl. Prof. Soedarto No. 13, Semarang", phone: "+62 896-7890-1234", email: "sari.dewi@email.com", title: "AI Engineer", company: "Bukalapak", skills: ["Deep Learning", "NLP", "Computer Vision"], status: "Terverifikasi" },
+                    { id: 10, name: "Rina Amalia Putri", dateOfBirth: "28 Februari 1996", gender: "Perempuan", country: "Malaysia", university: "Universiti Malaya", major: "Hubungan Internasional", graduationYear: "2018", address: "Jalan Prof. Diraja Ungku Aziz, Kuala Lumpur", phone: "+60 12-345-6789", email: "rina.amalia@email.com", title: "Corporate Relations Manager", company: "Petronas", skills: ["Public Relations", "Negotiation", "Strategic Partnership"], status: "Premium Alumni" }
                 ];
 
+                localStorage.setItem('alumniData', JSON.stringify(alumniData));
+
                 document.write(alumniData.map(alumni => `
-                    <div class="glass-card card-hover p-6 rounded-2xl transition-all duration-300 flex flex-col items-center text-center">
-                        <div class="relative mb-4">
-                            <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-primary-fixed p-1">
-                                <img src="https://lh3.googleusercontent.com/aida/AP1WRLv5B_7kveKBRpcCA3g2v0mg61xM9p1rHSWj26CUlgkWLp7ZukFU80X4vm57Vc8KZ6YuambR7YvrPpxtpZeprqUvTN5zQLn-PNQkiLsQ6mpTmohFb-iSaeGqeOB1Tc87u49Zs8deosDRRIYx9rFwXxP2vEEZE1LQiHmiLkz-OQGHSbJPbzpuwBS3iX4eskLZv0wQPU4Ickkln3EYvql84uz9ZkTwnyIVM6pRHsnIr_W8MuJd8vJAbThzkA" alt="Avatar" class="w-full h-full object-cover rounded-full">
+                    <div class="glass-card card-hover p-5 rounded-2xl transition-all duration-300 flex flex-col">
+                        <div class="flex items-start gap-4 mb-4">
+                            <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-primary-fixed flex-shrink-0">
+                                <div class="w-full h-full bg-gradient-to-br from-primary to-tertiary flex items-center justify-center text-white font-bold text-xl">${alumni.name.charAt(0)}</div>
                             </div>
-                            <div class="absolute bottom-0 right-0 w-6 h-6 bg-green-500 border-2 border-white rounded-full" title="Online Sekarang"></div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="font-headline-md text-headline-md text-on-surface truncate">${alumni.name}</h3>
+                                <p class="font-label-md text-label-md text-primary font-semibold">${alumni.title}</p>
+                                <p class="font-label-sm text-label-sm text-secondary">${alumni.company}</p>
+                            </div>
                         </div>
-                        <h3 class="font-headline-md text-on-surface mb-1">${alumni.name}</h3>
-                        <p class="font-label-md text-label-md text-primary font-semibold mb-3">Angkatan ${alumni.year}</p>
-                        <div class="space-y-1 mb-6">
-                            <p class="font-body-md text-body-md text-on-surface-variant font-medium">${alumni.title}</p>
-                            <p class="font-label-md text-label-md text-secondary">${alumni.company}</p>
+                        <div class="space-y-2 mb-4 flex-1">
+                            <div class="flex items-center gap-2 text-on-surface-variant">
+                                <span class="material-symbols-outlined text-[16px]">cake</span>
+                                <span class="font-label-md text-label-md">${alumni.dateOfBirth}</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-on-surface-variant">
+                                <span class="material-symbols-outlined text-[16px]">public</span>
+                                <span class="font-label-md text-label-md">${alumni.country}</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-on-surface-variant">
+                                <span class="material-symbols-outlined text-[16px]">school</span>
+                                <span class="font-label-md text-label-md truncate">${alumni.university} • ${alumni.graduationYear}</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-on-surface-variant">
+                                <span class="material-symbols-outlined text-[16px]">email</span>
+                                <span class="font-label-md text-label-md truncate">${alumni.email}</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-on-surface-variant">
+                                <span class="material-symbols-outlined text-[16px]">phone</span>
+                                <span class="font-label-md text-label-md">${alumni.phone}</span>
+                            </div>
                         </div>
-                        <button class="w-full py-3 px-4 rounded-xl border border-primary-fixed-dim text-primary font-label-md text-label-md hover:bg-primary-container hover:text-white transition-all flex items-center justify-center gap-2">
-                            Lihat Profil
-                            <a href="detail.html"><span class="material-symbols-outlined text-[18px]">arrow_forward</span></a>
-                        </button>
+                        <div class="flex flex-wrap gap-1.5 mb-4">
+                            ${alumni.skills.slice(0, 3).map(s => `<span class="px-2 py-0.5 bg-secondary-container text-on-secondary-container rounded-full font-label-sm text-label-sm">${s}</span>`).join('')}
+                        </div>
+                        <a href="detail.html?id=${alumni.id}" class="w-full py-2.5 px-4 rounded-xl bg-primary text-white font-label-md text-label-md hover:bg-primary-container transition-all text-center">
+                            Lihat Detail Profil
+                        </a>
                     </div>
                 `).join(''));
             </script>

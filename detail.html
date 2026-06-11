@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-
 <html lang="id"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Profil Alumni | Alexander Montgomery</title>
+<title>Profil Alumni | AlumniLink</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
       tailwind.config = {
@@ -118,13 +116,12 @@
     </style>
 </head>
 <body class="text-on-surface">
-<!-- TopNavBar -->
 <nav class="w-full top-0 sticky z-50 bg-surface-container-lowest shadow-sm">
 <div class="flex justify-between items-center h-16 px-gutter max-w-container-max mx-auto">
 <div class="flex items-center gap-8">
-<span class="font-headline-md text-headline-md font-bold text-primary">AlumniLink</span>
+<a href="index.html" class="font-headline-md text-headline-md font-bold text-primary">AlumniLink</a>
 <div class="hidden md:flex gap-6 items-center">
-<a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md" href="#">Directory</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md" href="index.html">Directory</a>
 <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#">Events</a>
 <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#">Mentorship</a>
 <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#">Jobs</a>
@@ -137,223 +134,12 @@
 </div>
 </div>
 </nav>
-<main class="min-h-screen">
-<!-- Hero Header with Soft Gradient -->
-<header class="relative soft-gradient-bg pt-12 pb-24 px-gutter border-b border-outline-variant/20 overflow-hidden">
-<!-- Animated decorative elements (simulating soft atmosphere) -->
-<div class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[100px]"></div>
-<div class="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-64 h-64 bg-tertiary/10 rounded-full blur-[80px]"></div>
-<div class="max-w-container-max mx-auto relative z-10">
-<div class="flex flex-col md:flex-row items-center md:items-end gap-8">
-<!-- Profile Picture -->
-<div class="relative group">
-<div class="absolute -inset-1 bg-gradient-to-tr from-primary to-tertiary-fixed rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
-<img alt="Professional Headshot" class="relative w-48 h-48 md:w-56 md:h-56 rounded-2xl object-cover shadow-xl border-4 border-white" src="https://lh3.googleusercontent.com/aida/AP1WRLv5B_7kveKBRpcCA3g2v0mg61xM9p1rHSWj26CUlgkWLp7ZukFU80X4vm57Vc8KZ6YuambR7YvrPpxtpZeprqUvTN5zQLn-PNQkiLsQ6mpTmohFb-iSaeGqeOB1Tc87u49Zs8deosDRRIYx9rFwXxP2vEEZE1LQiHmiLkz-OQGHSbJPbzpuwBS3iX4eskLZv0wQPU4Ickkln3EYvql84uz9ZkTwnyIVM6pRHsnIr_W8MuJd8vJAbThzkA"/>
-<div class="absolute -bottom-2 -right-2 bg-green-500 w-6 h-6 rounded-full border-4 border-white shadow-sm" title="Online Sekarang"></div>
-</div>
-<!-- Identity Info -->
-<div class="flex-1 text-center md:text-left">
-<div class="flex flex-col md:flex-row md:items-center gap-3 mb-2 justify-center md:justify-start">
-<h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight">Alexander Montgomery</h1>
-<span class="inline-flex items-center px-3 py-1 bg-primary-container text-on-primary-container rounded-full font-label-sm text-label-sm">Premium Alumni</span>
-</div>
-<p class="font-body-lg text-body-lg text-on-surface-variant mb-4 font-medium">Senior Director of Engineering di GlobalTech Solutions</p>
-<div class="flex flex-wrap items-center justify-center md:justify-start gap-4 text-on-surface-variant/80">
-<span class="flex items-center gap-1 font-label-md text-label-md">
-<span class="material-symbols-outlined text-[20px]">location_on</span>
-                                Jakarta, Indonesia
-                            </span>
-<span class="flex items-center gap-1 font-label-md text-label-md">
-<span class="material-symbols-outlined text-[20px]">school</span>
-                                Angkatan 2008
-                            </span>
-<span class="flex items-center gap-1 font-label-md text-label-md">
-<span class="material-symbols-outlined text-[20px]">mail</span>
-                                a.montgomery@example.com
-                            </span>
-</div>
-</div>
-<!-- Primary Actions -->
-<div class="flex gap-3 pb-2">
-<button class="flex items-center gap-2 px-6 py-3 bg-primary text-on-primary rounded-xl font-label-md text-label-md hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
-<span class="material-symbols-outlined text-[20px]">person_add</span>
-                            Hubungkan
-                        </button>
-<button class="flex items-center gap-2 px-6 py-3 bg-surface-container-lowest text-primary border border-primary/20 rounded-xl font-label-md text-label-md hover:bg-surface-container-low transition-all">
-<span class="material-symbols-outlined text-[20px]">chat_bubble</span>
-                            Pesan
-                        </button>
-</div>
-</div>
-</div>
-</header>
-<!-- Profile Content Grid -->
-<div class="max-w-container-max mx-auto px-gutter -mt-10 pb-20">
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-<!-- Main Column -->
-<div class="lg:col-span-8 space-y-8">
-<!-- Ringkasan Profesional -->
-<section class="glass-card rounded-2xl p-8 shadow-sm">
-<div class="flex items-center gap-3 mb-6">
-<div class="w-10 h-10 rounded-lg bg-primary-fixed-dim flex items-center justify-center">
-<span class="material-symbols-outlined text-primary">description</span>
-</div>
-<h2 class="font-headline-md text-headline-md">Ringkasan Profesional</h2>
-</div>
-<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
-                            Pemimpin teknologi yang berorientasi pada hasil dengan pengalaman lebih dari 15 tahun dalam membangun tim teknik berkinerja tinggi dan skala infrastruktur global. Memiliki rekam jejak yang terbukti dalam transformasi digital, pengembangan produk SaaS, dan integrasi kecerdasan buatan dalam alur kerja perusahaan. Sangat antusias dalam membimbing talenta muda alumni dan berkontribusi kembali pada ekosistem almamater.
-                        </p>
-</section>
-<!-- Riwayat Karir -->
-<section class="glass-card rounded-2xl p-8 shadow-sm">
-<div class="flex items-center gap-3 mb-8">
-<div class="w-10 h-10 rounded-lg bg-primary-fixed-dim flex items-center justify-center">
-<span class="material-symbols-outlined text-primary">work</span>
-</div>
-<h2 class="font-headline-md text-headline-md">Riwayat Karir</h2>
-</div>
-<div class="space-y-10 relative before:absolute before:left-5 before:top-2 before:bottom-2 before:w-[2px] before:bg-surface-container">
-<!-- Experience 1 -->
-<div class="relative pl-12">
-<div class="absolute left-0 top-1 w-10 h-10 rounded-full bg-white border-2 border-primary flex items-center justify-center z-10">
-<div class="w-3 h-3 rounded-full bg-primary"></div>
-</div>
-<div class="flex justify-between items-start mb-1">
-<h3 class="font-body-lg text-body-lg font-bold">Senior Director of Engineering</h3>
-<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container px-3 py-1 rounded-full">2020 - Sekarang</span>
-</div>
-<p class="text-primary font-medium mb-3">GlobalTech Solutions</p>
-<ul class="list-disc list-inside font-body-md text-body-md text-on-surface-variant space-y-2 marker:text-primary">
-<li>Memimpin departemen teknik yang terdiri dari 150+ insinyur di 3 benua.</li>
-<li>Berhasil meluncurkan platform Cloud v2 yang meningkatkan pendapatan tahunan sebesar 40%.</li>
-<li>Mengimplementasikan strategi penghematan biaya infrastruktur sebesar $2M per tahun.</li>
-</ul>
-</div>
-<!-- Experience 2 -->
-<div class="relative pl-12">
-<div class="absolute left-0 top-1 w-10 h-10 rounded-full bg-white border-2 border-outline-variant flex items-center justify-center z-10">
-<div class="w-3 h-3 rounded-full bg-outline-variant"></div>
-</div>
-<div class="flex justify-between items-start mb-1">
-<h3 class="font-body-lg text-body-lg font-bold">VP of Technology</h3>
-<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container px-3 py-1 rounded-full">2015 - 2020</span>
-</div>
-<p class="text-primary font-medium mb-3">NextGen FinTech</p>
-<p class="font-body-md text-body-md text-on-surface-variant">
-                                    Bertanggung jawab atas peta jalan teknologi perusahaan dan keamanan siber. Mengawasi transisi sukses dari arsitektur monolitik ke layanan mikro (microservices).
-                                </p>
-</div>
-</div>
-</section>
-<!-- Pendidikan -->
-<section class="glass-card rounded-2xl p-8 shadow-sm">
-<div class="flex items-center gap-3 mb-6">
-<div class="w-10 h-10 rounded-lg bg-primary-fixed-dim flex items-center justify-center">
-<span class="material-symbols-outlined text-primary">school</span>
-</div>
-<h2 class="font-headline-md text-headline-md">Pendidikan</h2>
-</div>
-<div class="space-y-6">
-<div class="flex gap-4">
-<div class="w-12 h-12 bg-surface-container rounded-lg flex items-center justify-center flex-shrink-0">
-<span class="material-symbols-outlined text-on-surface-variant">account_balance</span>
-</div>
-<div>
-<h4 class="font-body-lg text-body-lg font-bold">Magister Manajemen Bisnis</h4>
-<p class="font-body-md text-body-md text-on-surface-variant">Universitas Teknologi Nasional • 2010 - 2012</p>
-</div>
-</div>
-<div class="flex gap-4">
-<div class="w-12 h-12 bg-surface-container rounded-lg flex items-center justify-center flex-shrink-0">
-<span class="material-symbols-outlined text-on-surface-variant">terminal</span>
-</div>
-<div>
-<h4 class="font-body-lg text-body-lg font-bold">Sarjana Teknik Informatika</h4>
-<p class="font-body-md text-body-md text-on-surface-variant">Universitas Global Mandiri • 2004 - 2008</p>
-<p class="font-label-sm text-label-sm text-primary mt-1">Cum Laude - IPK 3.92/4.00</p>
-</div>
-</div>
-</div>
-</section>
-</div>
-<!-- Sidebar Column -->
-<div class="lg:col-span-4 space-y-8">
-<!-- Keahlian & Minat -->
-<section class="glass-card rounded-2xl p-8 shadow-sm">
-<div class="flex items-center gap-3 mb-6">
-<div class="w-10 h-10 rounded-lg bg-primary-fixed-dim flex items-center justify-center">
-<span class="material-symbols-outlined text-primary">psychology</span>
-</div>
-<h2 class="font-headline-md text-headline-md">Keahlian</h2>
-</div>
-<div class="space-y-6">
-<div>
-<h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-3">Teknis</h4>
-<div class="flex flex-wrap gap-2">
-<span class="px-3 py-1.5 bg-secondary-container text-on-secondary-container rounded-full font-label-md text-label-md">Cloud Architecture</span>
-<span class="px-3 py-1.5 bg-secondary-container text-on-secondary-container rounded-full font-label-md text-label-md">Kubernetes</span>
-<span class="px-3 py-1.5 bg-secondary-container text-on-secondary-container rounded-full font-label-md text-label-md">AI/ML Strategy</span>
-<span class="px-3 py-1.5 bg-secondary-container text-on-secondary-container rounded-full font-label-md text-label-md">Cybersecurity</span>
-<span class="px-3 py-1.5 bg-secondary-container text-on-secondary-container rounded-full font-label-md text-label-md">Golang</span>
-</div>
-</div>
-<div>
-<h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-3">Kepemimpinan</h4>
-<div class="flex flex-wrap gap-2">
-<span class="px-3 py-1.5 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-full font-label-md text-label-md">Strategic Planning</span>
-<span class="px-3 py-1.5 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-full font-label-md text-label-md">Public Speaking</span>
-<span class="px-3 py-1.5 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-full font-label-md text-label-md">Mentorship</span>
-</div>
-</div>
-<hr class="border-outline-variant/30"/>
-<div>
-<h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-3">Minat</h4>
-<div class="flex flex-wrap gap-2">
-<span class="px-3 py-1.5 bg-surface-container-high text-on-surface rounded-full font-label-md text-label-md">Sailing</span>
-<span class="px-3 py-1.5 bg-surface-container-high text-on-surface rounded-full font-label-md text-label-md">Astronomy</span>
-<span class="px-3 py-1.5 bg-surface-container-high text-on-surface rounded-full font-label-md text-label-md">Venture Capital</span>
-</div>
-</div>
-</div>
-</section>
-<!-- Networking & Social -->
-<section class="glass-card rounded-2xl p-8 shadow-sm">
-<h3 class="font-body-lg text-body-lg font-bold mb-4">Kontak &amp; Sosial</h3>
-<div class="space-y-4">
-<a class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container transition-colors group" href="#">
-<div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
-<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"></path></svg>
-</div>
-<div class="flex-1">
-<p class="font-label-md text-label-md text-on-surface-variant">LinkedIn</p>
-<p class="font-body-md text-body-md font-medium text-on-surface">alex-montgomery</p>
-</div>
-<span class="material-symbols-outlined text-outline group-hover:translate-x-1 transition-transform">chevron_right</span>
-</a>
-<a class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container transition-colors group" href="#">
-<div class="w-10 h-10 rounded-lg bg-slate-800 text-white flex items-center justify-center">
-<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
-</div>
-<div class="flex-1">
-<p class="font-label-md text-label-md text-on-surface-variant">GitHub</p>
-<p class="font-body-md text-body-md font-medium text-on-surface">amontgomery-dev</p>
-</div>
-<span class="material-symbols-outlined text-outline group-hover:translate-x-1 transition-transform">chevron_right</span>
-</a>
-</div>
-</section>
-<!-- Mentorship Status -->
-<section class="bg-primary p-8 rounded-2xl text-on-primary shadow-xl shadow-primary/20 relative overflow-hidden">
-<div class="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
-<h3 class="font-headline-md text-headline-md mb-2">Siap Membimbing</h3>
-<p class="font-body-md text-body-md mb-6 opacity-90">Alexander tersedia untuk sesi bimbingan karir dan teknis bagi mahasiswa tingkat akhir.</p>
-<button class="w-full py-3 bg-white text-primary rounded-xl font-bold font-label-md text-label-md hover:bg-opacity-90 transition-all">Ajukan Mentorship</button>
-</section>
-</div>
-</div>
+<main class="min-h-screen" id="mainContent">
+<div class="text-center py-20 text-on-surface-variant">
+<span class="material-symbols-outlined text-4xl mb-4 block">hourglass_empty</span>
+<p class="font-body-lg text-body-lg">Memuat data alumni...</p>
 </div>
 </main>
-<!-- Footer -->
 <footer class="w-full mt-auto bg-surface-container-high">
 <div class="flex flex-col md:flex-row justify-between items-center py-8 px-gutter max-w-container-max mx-auto">
 <div class="mb-6 md:mb-0">
@@ -370,18 +156,257 @@
 </div>
 </footer>
 <script>
-        // Simple scroll effect for navbar
-        window.addEventListener('scroll', () => {
-            const nav = document.querySelector('nav');
-            if (window.scrollY > 20) {
-                nav.classList.add('shadow-md');
-                nav.classList.replace('bg-surface-container-lowest', 'bg-white/90');
-                nav.style.backdropFilter = 'blur(10px)';
-            } else {
-                nav.classList.remove('shadow-md');
-                nav.classList.replace('bg-white/90', 'bg-surface-container-lowest');
-                nav.style.backdropFilter = 'none';
-            }
-        });
-    </script>
+const alumniData = [
+    { id: 1, name: "Aditya Pratama", dateOfBirth: "15 Maret 1996", gender: "Laki-laki", country: "Indonesia", university: "Universitas Indonesia", major: "Teknik Informatika", graduationYear: "2018", address: "Jl. Merpati No. 42, RT.05/RW.03, Kel. Kebayoran Baru, Jakarta Selatan 12110", phone: "+62 812-3456-7890", email: "aditya.pratama@email.com", title: "Senior Software Engineer", company: "Google Indonesia", skills: ["Cloud Architecture", "Kubernetes", "Golang", "Microservices"], status: "Terverifikasi", bio: "Insinyur perangkat lunak berpengalaman dengan fokus pada arsitektur cloud dan sistem terdistribusi. Lebih dari 6 tahun pengalaman dalam mengembangkan dan menskalakan aplikasi berbasis cloud di lingkungan startup hingga perusahaan multinasional." },
+    { id: 2, name: "Budi Santoso", dateOfBirth: "22 Agustus 1993", gender: "Laki-laki", country: "Indonesia", university: "Institut Teknologi Bandung", major: "Manajemen Bisnis", graduationYear: "2015", address: "Jl. Diponegoro No. 17, Bandung, Jawa Barat 40115", phone: "+62 821-2345-6789", email: "budi.santoso@email.com", title: "Product Manager", company: "Traveloka", skills: ["Product Strategy", "Agile", "Data Analytics", "UX Research"], status: "Anggota Aktif", bio: "Manajer produk dengan pengalaman dalam mengembangkan produk digital dari nol hingga skala nasional. Berkomitmen untuk menciptakan solusi yang berpusat pada pengguna dan mendorong pertumbuhan bisnis." },
+    { id: 3, name: "Chandra Wijaya", dateOfBirth: "10 November 1997", gender: "Laki-laki", country: "Australia", university: "University of Melbourne", major: "Data Science", graduationYear: "2019", address: "25 Flinders Lane, Melbourne VIC 3000, Australia", phone: "+61 412-345-678", email: "chandra.wijaya@email.com", title: "Data Scientist", company: "Gojek", skills: ["Machine Learning", "Python", "TensorFlow", "Big Data"], status: "Premium Alumni", bio: "Data scientist dengan keahlian dalam machine learning dan analisis data skala besar. Berpengalaman dalam membangun model prediktif yang memberikan dampak bisnis signifikan." },
+    { id: 4, name: "Dimas Anggara", dateOfBirth: "5 April 1992", gender: "Laki-laki", country: "Indonesia", university: "Universitas Gadjah Mada", major: "Desain Komunikasi Visual", graduationYear: "2014", address: "Jl. Kaliurang KM. 5, Sleman, Yogyakarta 55281", phone: "+62 877-3456-7890", email: "dimas.anggara@email.com", title: "UX Director", company: "Tokopedia", skills: ["UX Design", "Design Thinking", "User Research", "Figma"], status: "Mentor Premium", bio: "Direktur UX dengan pengalaman memimpin tim desain dalam menciptakan pengalaman pengguna yang intuitif dan berdampak. Percaya bahwa desain yang baik adalah perpaduan antara estetika dan fungsionalitas." },
+    { id: 5, name: "Eko Ramadhan", dateOfBirth: "18 Juli 1989", gender: "Laki-laki", country: "Singapura", university: "National University of Singapore", major: "Ilmu Komputer", graduationYear: "2012", address: "12 Kent Ridge Crescent, Singapore 119275", phone: "+65 9123-4567", email: "eko.ramadhan@email.com", title: "CTO & Co-founder", company: "Startup.id", skills: ["Tech Leadership", "System Architecture", "Venture Building", "AI Strategy"], status: "Mentor Premium", bio: "CTO dan co-founder dengan pengalaman membangun startup teknologi dari awal hingga pendanaan Seri A. Memiliki visi yang kuat dalam memanfaatkan teknologi untuk memecahkan masalah dunia nyata." },
+    { id: 6, name: "Fajar Nugraha", dateOfBirth: "30 Januari 1995", gender: "Laki-laki", country: "Indonesia", university: "Universitas Brawijaya", major: "Ilmu Komunikasi", graduationYear: "2017", address: "Jl. Veteran No. 10, Malang, Jawa Timur 65145", phone: "+62 813-4567-8901", email: "fajar.nugraha@email.com", title: "Marketing Lead", company: "Shopee", skills: ["Digital Marketing", "Brand Strategy", "Growth Hacking", "Content Marketing"], status: "Terverifikasi", bio: "Pemasar digital dengan rekam jejak dalam mengelola kampanye pemasaran berskala nasional. Ahli dalam strategi pertumbuhan dan optimalisasi konversi." },
+    { id: 7, name: "Gilang Dirga", dateOfBirth: "8 September 1994", gender: "Laki-laki", country: "Indonesia", university: "Universitas Airlangga", major: "Manajemen Operasi", graduationYear: "2016", address: "Jl. Dharmawangsa No. 25, Surabaya, Jawa Timur 60286", phone: "+62 856-7890-1234", email: "gilang.dirga@email.com", title: "Operations Manager", company: "Grab", skills: ["Supply Chain", "Logistics", "Process Optimization", "Team Management"], status: "Anggota Aktif", bio: "Manajer operasi dengan keahlian dalam optimasi rantai pasok dan logistik untuk perusahaan teknologi. Berfokus pada efisiensi dan skalabilitas proses operasional." },
+    { id: 8, name: "Heri Kusuma", dateOfBirth: "12 Desember 1991", gender: "Laki-laki", country: "Jepang", university: "University of Tokyo", major: "Akuntansi & Keuangan", graduationYear: "2013", address: "7-3-1 Hongo, Bunkyo-ku, Tokyo 113-8654, Jepang", phone: "+81 90-1234-5678", email: "heri.kusuma@email.com", title: "Financial Analyst", company: "Bank Mandiri", skills: ["Financial Modeling", "Risk Management", "Investment Analysis", "Corporate Finance"], status: "Terverifikasi", bio: "Analis keuangan dengan pengalaman internasional dalam manajemen risiko dan analisis investasi. Memiliki pemahaman mendalam tentang pasar keuangan global." },
+    { id: 9, name: "Sari Dewi Lestari", dateOfBirth: "3 Juni 1998", gender: "Perempuan", country: "Indonesia", university: "Universitas Diponegoro", major: "Teknik Elektro", graduationYear: "2020", address: "Jl. Prof. Soedarto No. 13, Semarang, Jawa Tengah 50275", phone: "+62 896-7890-1234", email: "sari.dewi@email.com", title: "AI Engineer", company: "Bukalapak", skills: ["Deep Learning", "NLP", "Computer Vision", "Python"], status: "Terverifikasi", bio: "Insinyur AI yang berfokus pada pengembangan solusi natural language processing dan computer vision. Berambisi untuk menciptakan teknologi AI yang inklusif dan bermanfaat." },
+    { id: 10, name: "Rina Amalia Putri", dateOfBirth: "28 Februari 1996", gender: "Perempuan", country: "Malaysia", university: "Universiti Malaya", major: "Hubungan Internasional", graduationYear: "2018", address: "Jalan Prof. Diraja Ungku Aziz, 50603 Kuala Lumpur, Malaysia", phone: "+60 12-345-6789", email: "rina.amalia@email.com", title: "Corporate Relations Manager", company: "Petronas", skills: ["Public Relations", "Negotiation", "Cross-cultural Communication", "Strategic Partnership"], status: "Premium Alumni", bio: "Manajer hubungan korporat dengan pengalaman dalam membangun kemitraan strategis lintas negara. Fasih dalam tiga bahasa dan memiliki jaringan global yang luas." }
+];
+
+function getAlumni() {
+    const params = new URLSearchParams(window.location.search);
+    const id = parseInt(params.get('id')) || 1;
+    return alumniData.find(a => a.id === id) || alumniData[0];
+}
+
+function renderProfile(alumni) {
+    const statusColors = {
+        "Terverifikasi": "bg-green-100 text-green-700",
+        "Premium Alumni": "bg-[#0066ff] text-white",
+        "Mentor Premium": "bg-purple-100 text-purple-700",
+        "Anggota Aktif": "bg-blue-100 text-blue-700"
+    };
+
+    document.title = `Profil Alumni | ${alumni.name}`;
+    document.getElementById('mainContent').innerHTML = `
+        <header class="relative soft-gradient-bg pt-12 pb-24 px-gutter border-b border-outline-variant/20 overflow-hidden">
+            <div class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[100px]"></div>
+            <div class="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-64 h-64 bg-tertiary/10 rounded-full blur-[80px]"></div>
+            <div class="max-w-container-max mx-auto relative z-10">
+                <div class="flex flex-col md:flex-row items-center md:items-end gap-8">
+                    <div class="relative group">
+                        <div class="absolute -inset-1 bg-gradient-to-tr from-primary to-tertiary-fixed rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
+                        <div class="relative w-48 h-48 md:w-56 md:h-56 rounded-2xl shadow-xl border-4 border-white bg-gradient-to-br from-primary to-tertiary flex items-center justify-center text-white font-bold text-6xl">
+                            ${alumni.name.charAt(0)}
+                        </div>
+                    </div>
+                    <div class="flex-1 text-center md:text-left">
+                        <div class="flex flex-col md:flex-row md:items-center gap-3 mb-2 justify-center md:justify-start">
+                            <h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight">${alumni.name}</h1>
+                            <span class="inline-flex items-center px-3 py-1 ${statusColors[alumni.status] || 'bg-secondary-container text-on-secondary-container'} rounded-full font-label-sm text-label-sm">${alumni.status}</span>
+                        </div>
+                        <p class="font-body-lg text-body-lg text-on-surface-variant mb-4 font-medium">${alumni.title} di ${alumni.company}</p>
+                        <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 text-on-surface-variant/80">
+                            <span class="flex items-center gap-1 font-label-md text-label-md">
+                                <span class="material-symbols-outlined text-[20px]">public</span>
+                                ${alumni.country}
+                            </span>
+                            <span class="flex items-center gap-1 font-label-md text-label-md">
+                                <span class="material-symbols-outlined text-[20px]">school</span>
+                                ${alumni.university} • ${alumni.graduationYear}
+                            </span>
+                            <span class="flex items-center gap-1 font-label-md text-label-md">
+                                <span class="material-symbols-outlined text-[20px]">mail</span>
+                                ${alumni.email}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 pb-2">
+                        <a href="mailto:${alumni.email}" class="flex items-center gap-2 px-6 py-3 bg-primary text-on-primary rounded-xl font-label-md text-label-md hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
+                            <span class="material-symbols-outlined text-[20px]">email</span>
+                            Kirim Email
+                        </a>
+                        <a href="tel:${alumni.phone.replace(/[^0-9+]/g, '')}" class="flex items-center gap-2 px-6 py-3 bg-surface-container-lowest text-primary border border-primary/20 rounded-xl font-label-md text-label-md hover:bg-surface-container-low transition-all">
+                            <span class="material-symbols-outlined text-[20px]">phone</span>
+                            Hubungi
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="max-w-container-max mx-auto px-gutter -mt-10 pb-20">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div class="lg:col-span-8 space-y-8">
+                    <section class="glass-card rounded-2xl p-8 shadow-sm">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 rounded-lg bg-primary-fixed-dim flex items-center justify-center">
+                                <span class="material-symbols-outlined text-primary">description</span>
+                            </div>
+                            <h2 class="font-headline-md text-headline-md">Tentang Alumni</h2>
+                        </div>
+                        <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">${alumni.bio}</p>
+                    </section>
+
+                    <section class="glass-card rounded-2xl p-8 shadow-sm">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 rounded-lg bg-primary-fixed-dim flex items-center justify-center">
+                                <span class="material-symbols-outlined text-primary">badge</span>
+                            </div>
+                            <h2 class="font-headline-md text-headline-md">Informasi Pribadi</h2>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="flex items-start gap-3">
+                                <span class="material-symbols-outlined text-primary mt-0.5">cake</span>
+                                <div>
+                                    <p class="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Tanggal Lahir</p>
+                                    <p class="font-body-md text-body-md text-on-surface">${alumni.dateOfBirth}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="material-symbols-outlined text-primary mt-0.5">wc</span>
+                                <div>
+                                    <p class="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Jenis Kelamin</p>
+                                    <p class="font-body-md text-body-md text-on-surface">${alumni.gender}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="material-symbols-outlined text-primary mt-0.5">public</span>
+                                <div>
+                                    <p class="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Negara</p>
+                                    <p class="font-body-md text-body-md text-on-surface">${alumni.country}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="material-symbols-outlined text-primary mt-0.5">location_on</span>
+                                <div>
+                                    <p class="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Alamat</p>
+                                    <p class="font-body-md text-body-md text-on-surface">${alumni.address}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="material-symbols-outlined text-primary mt-0.5">email</span>
+                                <div>
+                                    <p class="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Email</p>
+                                    <p class="font-body-md text-body-md text-on-surface">${alumni.email}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="material-symbols-outlined text-primary mt-0.5">phone</span>
+                                <div>
+                                    <p class="font-label-sm text-label-sm text-secondary uppercase tracking-wider">No. HP</p>
+                                    <p class="font-body-md text-body-md text-on-surface">${alumni.phone}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="glass-card rounded-2xl p-8 shadow-sm">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 rounded-lg bg-primary-fixed-dim flex items-center justify-center">
+                                <span class="material-symbols-outlined text-primary">school</span>
+                            </div>
+                            <h2 class="font-headline-md text-headline-md">Riwayat Pendidikan</h2>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="w-12 h-12 bg-surface-container rounded-lg flex items-center justify-center flex-shrink-0">
+                                <span class="material-symbols-outlined text-on-surface-variant">account_balance</span>
+                            </div>
+                            <div>
+                                <h4 class="font-body-lg text-body-lg font-bold">${alumni.major}</h4>
+                                <p class="font-body-md text-body-md text-on-surface-variant">${alumni.university} • Lulus ${alumni.graduationYear}</p>
+                                <p class="font-label-sm text-label-sm text-primary mt-1">Alumni ${alumni.country}</p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="lg:col-span-4 space-y-8">
+                    <section class="glass-card rounded-2xl p-8 shadow-sm">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 rounded-lg bg-primary-fixed-dim flex items-center justify-center">
+                                <span class="material-symbols-outlined text-primary">work</span>
+                            </div>
+                            <h2 class="font-headline-md text-headline-md">Pekerjaan Saat Ini</h2>
+                        </div>
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-14 h-14 rounded-xl bg-primary-fixed flex items-center justify-center">
+                                <span class="material-symbols-outlined text-primary text-3xl">business_center</span>
+                            </div>
+                            <div>
+                                <h4 class="font-body-lg text-body-lg font-bold">${alumni.title}</h4>
+                                <p class="font-body-md text-body-md text-primary">${alumni.company}</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="glass-card rounded-2xl p-8 shadow-sm">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 rounded-lg bg-primary-fixed-dim flex items-center justify-center">
+                                <span class="material-symbols-outlined text-primary">psychology</span>
+                            </div>
+                            <h2 class="font-headline-md text-headline-md">Keahlian</h2>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            ${alumni.skills.map(s => `<span class="px-3 py-1.5 bg-secondary-container text-on-secondary-container rounded-full font-label-md text-label-md">${s}</span>`).join('')}
+                        </div>
+                    </section>
+
+                    <section class="glass-card rounded-2xl p-8 shadow-sm">
+                        <h3 class="font-body-lg text-body-lg font-bold mb-4">Kontak Cepat</h3>
+                        <div class="space-y-4">
+                            <a href="mailto:${alumni.email}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container transition-colors group">
+                                <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
+                                    <span class="material-symbols-outlined">mail</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="font-label-md text-label-md text-on-surface-variant">Email</p>
+                                    <p class="font-body-md text-body-md font-medium text-on-surface truncate">${alumni.email}</p>
+                                </div>
+                                <span class="material-symbols-outlined text-outline group-hover:translate-x-1 transition-transform">chevron_right</span>
+                            </a>
+                            <a href="tel:${alumni.phone.replace(/[^0-9+]/g, '')}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-surface-container transition-colors group">
+                                <div class="w-10 h-10 rounded-lg bg-green-100 text-green-600 flex items-center justify-center">
+                                    <span class="material-symbols-outlined">phone</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="font-label-md text-label-md text-on-surface-variant">Telepon</p>
+                                    <p class="font-body-md text-body-md font-medium text-on-surface">${alumni.phone}</p>
+                                </div>
+                                <span class="material-symbols-outlined text-outline group-hover:translate-x-1 transition-transform">chevron_right</span>
+                            </a>
+                            <div class="flex items-center gap-3 p-3 rounded-xl">
+                                <div class="w-10 h-10 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center">
+                                    <span class="material-symbols-outlined">location_on</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="font-label-md text-label-md text-on-surface-variant">Lokasi</p>
+                                    <p class="font-body-md text-body-md font-medium text-on-surface truncate">${alumni.country}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <a href="index.html" class="flex items-center justify-center gap-2 w-full py-3 bg-surface-container-high text-on-surface rounded-xl font-label-md text-label-md hover:bg-surface-container transition-all">
+                        <span class="material-symbols-outlined">arrow_back</span>
+                        Kembali ke Daftar Alumni
+                    </a>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+const alumni = getAlumni();
+renderProfile(alumni);
+
+window.addEventListener('scroll', () => {
+    const nav = document.querySelector('nav');
+    if (window.scrollY > 20) {
+        nav.classList.add('shadow-md');
+        nav.classList.replace('bg-surface-container-lowest', 'bg-white/90');
+        nav.style.backdropFilter = 'blur(10px)';
+    } else {
+        nav.classList.remove('shadow-md');
+        nav.classList.replace('bg-white/90', 'bg-surface-container-lowest');
+        nav.style.backdropFilter = 'none';
+    }
+});
+</script>
 </body></html>
