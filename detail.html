@@ -122,10 +122,10 @@
 <a href="index.html" class="font-headline-md text-headline-md font-bold text-primary">AlumniLink</a>
 <div class="hidden md:flex gap-6 items-center">
 <a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md" href="index.html">Directory</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="tambah.html">Tambah Data</a>
 <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#">Events</a>
 <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#">Mentorship</a>
 <a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#">Jobs</a>
-<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-body-md" href="#">Giving</a>
 </div>
 </div>
 <div class="flex items-center gap-4">
@@ -156,7 +156,7 @@
 </div>
 </footer>
 <script>
-const alumniData = [
+const defaultData = [
     { id: 1, name: "Aditya Pratama", dateOfBirth: "15 Maret 1996", gender: "Laki-laki", country: "Indonesia", university: "Universitas Indonesia", major: "Teknik Informatika", graduationYear: "2018", address: "Jl. Merpati No. 42, RT.05/RW.03, Kel. Kebayoran Baru, Jakarta Selatan 12110", phone: "+62 812-3456-7890", email: "aditya.pratama@email.com", title: "Senior Software Engineer", company: "Google Indonesia", skills: ["Cloud Architecture", "Kubernetes", "Golang", "Microservices"], status: "Terverifikasi", bio: "Insinyur perangkat lunak berpengalaman dengan fokus pada arsitektur cloud dan sistem terdistribusi. Lebih dari 6 tahun pengalaman dalam mengembangkan dan menskalakan aplikasi berbasis cloud di lingkungan startup hingga perusahaan multinasional." },
     { id: 2, name: "Budi Santoso", dateOfBirth: "22 Agustus 1993", gender: "Laki-laki", country: "Indonesia", university: "Institut Teknologi Bandung", major: "Manajemen Bisnis", graduationYear: "2015", address: "Jl. Diponegoro No. 17, Bandung, Jawa Barat 40115", phone: "+62 821-2345-6789", email: "budi.santoso@email.com", title: "Product Manager", company: "Traveloka", skills: ["Product Strategy", "Agile", "Data Analytics", "UX Research"], status: "Anggota Aktif", bio: "Manajer produk dengan pengalaman dalam mengembangkan produk digital dari nol hingga skala nasional. Berkomitmen untuk menciptakan solusi yang berpusat pada pengguna dan mendorong pertumbuhan bisnis." },
     { id: 3, name: "Chandra Wijaya", dateOfBirth: "10 November 1997", gender: "Laki-laki", country: "Australia", university: "University of Melbourne", major: "Data Science", graduationYear: "2019", address: "25 Flinders Lane, Melbourne VIC 3000, Australia", phone: "+61 412-345-678", email: "chandra.wijaya@email.com", title: "Data Scientist", company: "Gojek", skills: ["Machine Learning", "Python", "TensorFlow", "Big Data"], status: "Premium Alumni", bio: "Data scientist dengan keahlian dalam machine learning dan analisis data skala besar. Berpengalaman dalam membangun model prediktif yang memberikan dampak bisnis signifikan." },
@@ -168,6 +168,12 @@ const alumniData = [
     { id: 9, name: "Sari Dewi Lestari", dateOfBirth: "3 Juni 1998", gender: "Perempuan", country: "Indonesia", university: "Universitas Diponegoro", major: "Teknik Elektro", graduationYear: "2020", address: "Jl. Prof. Soedarto No. 13, Semarang, Jawa Tengah 50275", phone: "+62 896-7890-1234", email: "sari.dewi@email.com", title: "AI Engineer", company: "Bukalapak", skills: ["Deep Learning", "NLP", "Computer Vision", "Python"], status: "Terverifikasi", bio: "Insinyur AI yang berfokus pada pengembangan solusi natural language processing dan computer vision. Berambisi untuk menciptakan teknologi AI yang inklusif dan bermanfaat." },
     { id: 10, name: "Rina Amalia Putri", dateOfBirth: "28 Februari 1996", gender: "Perempuan", country: "Malaysia", university: "Universiti Malaya", major: "Hubungan Internasional", graduationYear: "2018", address: "Jalan Prof. Diraja Ungku Aziz, 50603 Kuala Lumpur, Malaysia", phone: "+60 12-345-6789", email: "rina.amalia@email.com", title: "Corporate Relations Manager", company: "Petronas", skills: ["Public Relations", "Negotiation", "Cross-cultural Communication", "Strategic Partnership"], status: "Premium Alumni", bio: "Manajer hubungan korporat dengan pengalaman dalam membangun kemitraan strategis lintas negara. Fasih dalam tiga bahasa dan memiliki jaringan global yang luas." }
 ];
+
+const stored = localStorage.getItem('alumniData');
+if (!stored) {
+    localStorage.setItem('alumniData', JSON.stringify(defaultData));
+}
+const alumniData = JSON.parse(localStorage.getItem('alumniData'));
 
 function getAlumni() {
     const params = new URLSearchParams(window.location.search);

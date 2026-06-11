@@ -125,11 +125,11 @@
 <div class="flex items-center gap-8">
 <a class="font-headline-md text-headline-md font-bold text-primary" href="#">AlumniLink</a>
 <nav class="hidden md:flex items-center gap-6">
-<a class="font-body-md text-body-md text-primary font-bold border-b-2 border-primary pb-1" href="#">Directory</a>
+<a class="font-body-md text-body-md text-primary font-bold border-b-2 border-primary pb-1" href="index.html">Directory</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="tambah.html">Tambah Data</a>
 <a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Events</a>
 <a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Mentorship</a>
 <a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Jobs</a>
-<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Giving</a>
 </nav>
 </div>
 <div class="flex items-center gap-4">
@@ -178,6 +178,11 @@
 </span>
 </div>
 </div>
+<div class="flex items-center gap-3">
+<a href="tambah.html" class="bg-primary text-white px-4 py-2 rounded-lg font-label-md text-label-md hover:bg-primary-container transition-all flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px]">add</span>
+Tambah
+</a>
 <div class="hidden md:flex items-center gap-2 bg-surface-container rounded-lg p-1">
 <button class="p-2 bg-white rounded shadow-sm text-primary">
 <span class="material-symbols-outlined">grid_view</span>
@@ -187,11 +192,12 @@
 </button>
 </div>
 </div>
+</div>
 <!-- Bento-inspired Grid -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 <!-- Alumni Card Template -->
 <script>
-                const alumniData = [
+                const defaultData = [
                     { id: 1, name: "Aditya Pratama", dateOfBirth: "15 Maret 1996", gender: "Laki-laki", country: "Indonesia", university: "Universitas Indonesia", major: "Teknik Informatika", graduationYear: "2018", address: "Jl. Merpati No. 42, Jakarta Selatan", phone: "+62 812-3456-7890", email: "aditya.pratama@email.com", title: "Senior Software Engineer", company: "Google Indonesia", skills: ["Cloud Architecture", "Kubernetes", "Golang"], status: "Terverifikasi" },
                     { id: 2, name: "Budi Santoso", dateOfBirth: "22 Agustus 1993", gender: "Laki-laki", country: "Indonesia", university: "Institut Teknologi Bandung", major: "Manajemen Bisnis", graduationYear: "2015", address: "Jl. Diponegoro No. 17, Bandung", phone: "+62 821-2345-6789", email: "budi.santoso@email.com", title: "Product Manager", company: "Traveloka", skills: ["Product Strategy", "Agile", "Data Analytics"], status: "Anggota Aktif" },
                     { id: 3, name: "Chandra Wijaya", dateOfBirth: "10 November 1997", gender: "Laki-laki", country: "Australia", university: "University of Melbourne", major: "Data Science", graduationYear: "2019", address: "25 Flinders Lane, Melbourne VIC 3000", phone: "+61 412-345-678", email: "chandra.wijaya@email.com", title: "Data Scientist", company: "Gojek", skills: ["Machine Learning", "Python", "TensorFlow"], status: "Premium Alumni" },
@@ -204,7 +210,11 @@
                     { id: 10, name: "Rina Amalia Putri", dateOfBirth: "28 Februari 1996", gender: "Perempuan", country: "Malaysia", university: "Universiti Malaya", major: "Hubungan Internasional", graduationYear: "2018", address: "Jalan Prof. Diraja Ungku Aziz, Kuala Lumpur", phone: "+60 12-345-6789", email: "rina.amalia@email.com", title: "Corporate Relations Manager", company: "Petronas", skills: ["Public Relations", "Negotiation", "Strategic Partnership"], status: "Premium Alumni" }
                 ];
 
-                localStorage.setItem('alumniData', JSON.stringify(alumniData));
+                const stored = localStorage.getItem('alumniData');
+                if (!stored) {
+                    localStorage.setItem('alumniData', JSON.stringify(defaultData));
+                }
+                const alumniData = JSON.parse(localStorage.getItem('alumniData'));
 
                 document.write(alumniData.map(alumni => `
                     <div class="glass-card card-hover p-5 rounded-2xl transition-all duration-300 flex flex-col">
