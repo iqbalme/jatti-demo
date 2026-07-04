@@ -2,7 +2,10 @@
   "builds": [
     {
       "src": "dist/index.js",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "config": {
+        "maxDuration": 30
+      }
     }
   ],
   "routes": [
@@ -10,10 +13,5 @@
       "src": "/(.*)",
       "dest": "dist/index.js"
     }
-  ],
-  "functions": {
-    "dist/index.js": {
-      "maxDuration": 30
-    }
-  }
+  ]
 }
