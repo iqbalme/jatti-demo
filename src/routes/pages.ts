@@ -326,7 +326,13 @@ router.get('/alumni/:id', async (req, res) => {
       a.businesses = (a.businesses as Record<string, unknown>[]).map(parseProducts);
     }
 
-    res.render('pages/alumni/detail', { a, error: null, token: (req.cookies['sb-access-token'] as string) || '' });
+    let isAlreadyAdmin = false;
+    if (alumni.email) {
+      const existingAdmin = await prisma.admin.findUnique({ where: { email: alumni.email } });
+      if (existingAdmin) isAlreadyAdmin = true;
+    }
+
+    res.render('pages/alumni/detail', { a, error: null, token: (req.cookies['sb-access-token'] as string) || '', isAlreadyAdmin });
   } catch (err) {
     res.status(500).render('pages/alumni/detail', { a: null, error: (err as Error).message });
   }
@@ -427,7 +433,13 @@ router.get('/dashboard/alumni/:id/edit', requirePageAuth, async (req, res) => {
       a.businesses = (a.businesses as Record<string, unknown>[]).map(parseProducts);
     }
 
-    res.render('pages/dashboard/alumni-form', { a, error: null, token: (req.cookies['sb-access-token'] as string) || '', maxFileSize: env.uploadMaxFileSize, maxFileSizeKb: env.uploadMaxFileSizeKb });
+    let isAlreadyAdmin = false;
+    if (alumni.email) {
+      const existingAdmin = await prisma.admin.findUnique({ where: { email: alumni.email } });
+      if (existingAdmin) isAlreadyAdmin = true;
+    }
+
+    res.render('pages/dashboard/alumni-form', { a, error: null, token: (req.cookies['sb-access-token'] as string) || '', maxFileSize: env.uploadMaxFileSize, maxFileSizeKb: env.uploadMaxFileSizeKb, isAlreadyAdmin });
   } catch (err) {
     res.status(500).render('pages/dashboard/alumni-form', { a: null, error: (err as Error).message, token: '', maxFileSize: 0, maxFileSizeKb: 0 });
   }
