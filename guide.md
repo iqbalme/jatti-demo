@@ -82,11 +82,13 @@ Saat pertama `pnpm dev`, super admin dari `SUPER_ADMIN_EMAIL` / `SUPER_ADMIN_PAS
 | Fitur | Supabase | Local |
 |---|---|---|
 | Login | via `supabase.auth.signInWithPassword()` | verifikasi bcrypt ke tabel `admins` |
-| Session | JWT dari Supabase | JWT ditandatangani lokal |
+| Session | **Own JWT** (7 hari) — lihat catatan | **Own JWT** (7 hari) |
 | Password admin | dikelola Supabase Auth | disimpan (bcrypt) di tabel `admins` |
 | Super admin seeding | buat user Supabase + record `admins` | langsung buat record `admins` dengan password hash |
 | Dashboard password | ubah via Supabase Auth API | update hash di tabel `admins` |
 | Ketergantungan | wajib `NEXT_PUBLIC_SUPABASE_*` | hanya perlu database |
+
+> **Catatan:** Kedua provider sekarang memakai **Own JWT** yang ditandatangani lokal (`signToken` dari `src/utils/jwt.ts`) dengan expiry **7 hari**, bukan Supabase `access_token` (yang default 1 jam). Token disimpan di cookie `sb-access-token`. Verifikasi dilakukan langsung via `jsonwebtoken` + lookup `admins` table — tanpa panggilan ke Supabase Auth API per-request. Setelah login via Supabase, server langsung menerbitkan own JWT. (File: `src/routes/pages.ts`, `src/middleware/auth.ts`).
 
 ---
 

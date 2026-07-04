@@ -1,6 +1,8 @@
 # Done
 
 ## 2026-07-04
+- [x] Fix `EMAXCONNSESSION` max clients — batasi pool size PrismaPg `max: 3` (Vercel) / `max: 5` (lokal) + `idleTimeoutMillis: 10000` (`src/utils/db.ts`)
+- [x] Fix "invalid token" / sering minta login — ganti Supabase access_token (expiry 1 jam) dengan own JWT 7 hari (`src/routes/pages.ts`, `src/middleware/auth.ts`)
 - [x] Setup deployment Vercel — `api/index.js` entry point, `vercel.json` (builds + routes + includeFiles), `vercel-build` script (prisma generate + tsc + copy views), `tsconfig.json` (CommonJS), build script cross-platform (node cpSync), guide.md section Deployment
 
 ## 2026-06-30

@@ -22,27 +22,13 @@ async function loadUser(req: Request, res: Response, next: NextFunction) {
   const token = req.cookies?.['sb-access-token'] as string | undefined;
   if (!token) return next();
 
-  if (authProvider === 'local') {
-    try {
-      const decoded = verifyToken(token);
-      const admin = await prisma.admin.findUnique({ where: { id: decoded.id } });
-      if (admin) {
-        res.locals.user = { id: admin.id, email: admin.email, role: admin.role, fullName: admin.name };
-      }
-    } catch {}
-    return next();
-  }
-
-  const supabase = getSupabaseAdmin();
-  const { data } = await supabase.auth.getUser(token).catch(() => ({ data: null }));
-  if (data?.user) {
-    res.locals.user = {
-      id: data.user.id,
-      email: data.user.email ?? '',
-      role: data.user.user_metadata?.role ?? 'alumni',
-      fullName: data.user.user_metadata?.full_name,
-    };
-  }
+  try {
+    const decoded = verifyToken(token);
+    const admin = await prisma.admin.findUnique({ where: { id: decoded.id } });
+    if (admin) {
+      res.locals.user = { id: admin.id, email: admin.email, role: admin.role, fullName: admin.name };
+    }
+  } catch {}
   next();
 }
 
@@ -81,12 +67,13 @@ router.post('/login', async (req, res) => {
     return res.redirect('/dashboard');
   }
 
+  const supabase = getSupabaseAdmin();
+
   if (email === superAdminEmail) {
     if (password !== superAdminPassword) {
       return res.render('pages/login', { error: 'Invalid credentials' });
     }
 
-    const supabase = getSupabaseAdmin();
     const { data: authUsers } = await supabase.auth.admin.listUsers();
     let authUser = authUsers.users.find(u => u.email === email);
 
@@ -103,28 +90,33 @@ router.post('/login', async (req, res) => {
       await supabase.auth.admin.updateUserById(authUser.id, { password, user_metadata: { ...authUser.user_metadata, role: 'super_admin' } });
     }
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) return res.render('pages/login', { error: error.message });
+    let admin = await prisma.admin.findUnique({ where: { email } });
+    if (!admin) {
+      admin = await prisma.admin.create({
+        data: { email, name: 'Super Admin', role: 'super_admin', isBuiltin: true },
+      });
+    }
 
-    res.cookie('sb-access-token', data.session!.access_token, {
+    const token = signToken({ id: admin.id, email: admin.email, role: admin.role });
+    res.cookie('sb-access-token', token, {
       httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax',
-      maxAge: data.session!.expires_in * 1000,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     return res.redirect('/dashboard');
   }
 
-  const supabase = getSupabaseAdmin();
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) return res.render('pages/login', { error: error.message });
 
-  const role = data.user?.user_metadata?.role;
-  if (role !== 'admin' && role !== 'super_admin') {
+  const admin = await prisma.admin.findUnique({ where: { email } });
+  if (!admin || (admin.role !== 'admin' && admin.role !== 'super_admin')) {
     return res.render('pages/login', { error: 'Unauthorized: not an admin account' });
   }
 
-  res.cookie('sb-access-token', data.session!.access_token, {
+  const token = signToken({ id: admin.id, email: admin.email, role: admin.role });
+  res.cookie('sb-access-token', token, {
     httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax',
-    maxAge: data.session!.expires_in * 1000,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   });
   res.redirect('/dashboard');
 });
