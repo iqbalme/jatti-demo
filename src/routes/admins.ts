@@ -132,6 +132,11 @@ router.delete('/:id', async (req, res) => {
       }
     }
 
+    const deleteAlumni = req.query.deleteAlumni as string;
+    if (deleteAlumni && existing.email) {
+      await prisma.alumni.deleteMany({ where: { email: existing.email } }).catch(() => {});
+    }
+
     await prisma.admin.delete({ where: { id: req.params.id } });
     sendSuccess(res, { message: 'Admin deleted' });
   } catch (err) {

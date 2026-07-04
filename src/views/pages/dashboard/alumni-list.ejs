@@ -24,7 +24,11 @@
         <p id="confirmHint" class="text-xs text-gray-500 mt-1"></p>
       </div>
     </div>
-    <div class="flex justify-end gap-2 mt-5">
+    <div id="confirmCheckboxWrap" class="hidden mt-4 flex items-center gap-2">
+      <input id="confirmCheckbox" type="checkbox" class="w-4 h-4 text-red-600 rounded border-gray-300 focus:ring-red-500" />
+      <label id="confirmCheckboxLabel" for="confirmCheckbox" class="text-xs text-gray-600"></label>
+    </div>
+    <div class="flex justify-end gap-2 mt-4">
       <button onclick="closeConfirm()" class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">Batal</button>
       <button id="confirmOkBtn" class="px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors">Ya</button>
     </div>
@@ -194,7 +198,7 @@
                     Lihat<span class="material-symbols-outlined" style="font-size:14px">open_in_new</span>
                   </a>
                   <% if (!_sameLevel) { %>
-                  <button onclick="deleteAlumni('<%= a.id %>')" class="inline-flex items-center gap-1 px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-xs font-medium hover:bg-red-100 transition-colors">
+                  <button onclick="deleteAlumni('<%= a.id %>', <%= _admInfo ? 'true' : 'false' %>)" class="inline-flex items-center gap-1 px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-xs font-medium hover:bg-red-100 transition-colors">
                     <span class="material-symbols-outlined" style="font-size:14px">delete</span>Hapus
                   </button>
                   <% } %>
@@ -264,7 +268,7 @@ function showToast(message, type) {
 // --- Confirm Modal ---
 var confirmResolve = null;
 
-function showConfirm(message, hint, iconType) {
+function showConfirm(message, hint, iconType, checkboxLabel) {
   iconType = iconType || 'info';
   var iconMap = {
     danger: { icon: 'warning', bg: 'bg-red-100', color: 'text-red-600', btn: 'bg-red-600 hover:bg-red-700' },
@@ -277,6 +281,14 @@ function showConfirm(message, hint, iconType) {
   document.getElementById('confirmMessage').textContent = message;
   document.getElementById('confirmHint').textContent = hint || '';
   document.getElementById('confirmOkBtn').className = 'px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors ' + m.btn;
+  var cw = document.getElementById('confirmCheckboxWrap');
+  if (checkboxLabel) {
+    document.getElementById('confirmCheckbox').checked = false;
+    document.getElementById('confirmCheckboxLabel').textContent = checkboxLabel;
+    cw.classList.remove('hidden');
+  } else {
+    cw.classList.add('hidden');
+  }
   document.getElementById('confirmModal').classList.remove('hidden');
   document.getElementById('confirmModal').classList.add('flex');
   return new Promise(function(resolve) { confirmResolve = resolve; });
@@ -285,6 +297,7 @@ function showConfirm(message, hint, iconType) {
 function closeConfirm() { document.getElementById('confirmModal').classList.add('hidden'); document.getElementById('confirmModal').classList.remove('flex'); if (confirmResolve) { confirmResolve(false); confirmResolve = null; } }
 
 document.getElementById('confirmOkBtn').addEventListener('click', function() { document.getElementById('confirmModal').classList.add('hidden'); document.getElementById('confirmModal').classList.remove('flex'); if (confirmResolve) { confirmResolve(true); confirmResolve = null; } });
+function isConfirmChecked() { return document.getElementById('confirmCheckbox').checked; }
 
 // --- Escape HTML ---
 function escapeHtml(str) {
@@ -397,11 +410,15 @@ async function toggleStatus(id, current) {
   }
 }
 
-async function deleteAlumni(id) {
-  var ok = await showConfirm('Hapus alumni ini?', 'Data terkait (pendidikan, sertifikat, dll) akan ikut terhapus.', 'danger');
+async function deleteAlumni(id, isAdmin) {
+  var checkboxLabel = isAdmin ? 'Juga hapus akun adminnya' : null;
+  var ok = await showConfirm('Hapus alumni ini?', 'Data terkait (pendidikan, sertifikat, dll) akan ikut terhapus.', 'danger', checkboxLabel);
   if (!ok) return;
+  var deleteAdmin = isConfirmChecked();
   try {
-    var res = await fetch('/api/v1/alumni/' + id, {
+    var url = '/api/v1/alumni/' + id;
+    if (deleteAdmin) url += '?deleteAdmin=1';
+    var res = await fetch(url, {
       method: 'DELETE',
       headers: { 'Authorization': 'Bearer ' + token },
     });

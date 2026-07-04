@@ -402,6 +402,11 @@ router.delete('/:id', requireAuth, requireRole('admin', 'super_admin'), async (r
       if (adminInfo.role === req.user!.role) return sendError(res, 403, 'Tidak bisa menghapus admin yang selevel');
     }
 
+    const deleteAdmin = req.query.deleteAdmin === '1';
+    if (deleteAdmin && existing.email && adminInfo) {
+      await prisma.admin.deleteMany({ where: { email: existing.email } }).catch(() => {});
+    }
+
     await prisma.alumni.delete({ where: { id: alumniId } });
     sendSuccess(res, { message: 'Alumni deleted' });
   } catch (err) {

@@ -468,13 +468,20 @@ router.get('/dashboard/admins', requirePageAuth, async (req, res) => {
   if (userRole !== 'super_admin') return res.redirect('/dashboard');
 
   try {
-    const list = await prisma.admin.findMany({
-      orderBy: { createdAt: 'asc' },
-      select: { id: true, email: true, name: true, role: true, isBuiltin: true, createdAt: true, updatedAt: true },
-    });
-    res.render('pages/dashboard/admins', { admins: list, error: null, token: (req.cookies['sb-access-token'] as string) || '' });
+    const [list, allAlumni] = await Promise.all([
+      prisma.admin.findMany({
+        orderBy: { createdAt: 'asc' },
+        select: { id: true, email: true, name: true, role: true, isBuiltin: true, createdAt: true, updatedAt: true },
+      }),
+      prisma.alumni.findMany({ select: { id: true, email: true } }),
+    ]);
+    const alumniByEmail: Record<string, string> = {};
+    for (const al of allAlumni) {
+      if (al.email) alumniByEmail[al.email.toLowerCase()] = al.id;
+    }
+    res.render('pages/dashboard/admins', { admins: list, error: null, token: (req.cookies['sb-access-token'] as string) || '', alumniByEmailJson: JSON.stringify(alumniByEmail) });
   } catch (err) {
-    res.render('pages/dashboard/admins', { admins: [], error: (err as Error).message, token: (req.cookies['sb-access-token'] as string) || '' });
+    res.render('pages/dashboard/admins', { admins: [], error: (err as Error).message, token: (req.cookies['sb-access-token'] as string) || '', alumniByEmailJson: '{}' });
   }
 });
 
