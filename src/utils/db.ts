@@ -28,7 +28,12 @@ if (isMySql) {
     connectionLimit: 5,
   })
 } else {
-  adapter = new PrismaPg({ connectionString: url })
+  const isServerless = process.env.VERCEL === '1'
+  adapter = new PrismaPg({
+    connectionString: url,
+    max: isServerless ? 3 : 5,
+    idleTimeoutMillis: 10000,
+  })
 }
 
 export const prisma = new PrismaClient({ adapter })
