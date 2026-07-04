@@ -130,14 +130,14 @@ Akses di `http://localhost:3000`.
 | `pnpm dev` | Development server (`tsx watch`) |
 | `pnpm build` | Compile TypeScript + copy views ke `dist/` |
 | `pnpm start` | Production server |
-| `pnpm vercel-build` | Build untuk Vercel (prisma generate + tsc + copy views) |
+| `pnpm vercel-build` | Build untuk Vercel (prisma generate + tsc + copy `src/views` ke `dist/views`) |
+| `pnpm lint` | Cek error TypeScript |
 | `pnpm db:generate` | Generate Prisma Client (deteksi provider otomatis) |
 | `pnpm db:migrate` | Migrasi database (deteksi provider otomatis) |
 | `pnpm db:push` | Push schema tanpa file migrasi (deteksi provider otomatis) |
 | `pnpm db:seed` | Isi data contoh (alumni) |
 | `pnpm db:seed-countries` | Isi data negara dari CSV `src/database/country_phone_codes-v2.csv` |
 | `pnpm db:studio` | Prisma Studio |
-| `pnpm lint` | Cek error TypeScript |
 | `pnpm test` | Jalankan semua unit test (vitest) |
 
 ---
@@ -197,7 +197,12 @@ Test files berada di `src/__tests__/`:
 
 ### Vercel
 
-Aplikasi siap di-deploy ke Vercel. Hubungkan repo GitHub dan set **Root Directory** ke `/`.
+Aplikasi siap di-deploy ke Vercel. Hubungkan repo GitHub dan set **Root Directory** ke `/`. Build otomatis via `vercel-build` script di `package.json`.
+
+**Struktur deployment:**
+- `api/index.js` — entry point yang Vercel auto-detect, me-load `dist/index.js`
+- `vercel.json` — konfigurasi `builds` + `routes`, include `dist/**` untuk views + compiled code
+- `pnpm vercel-build` — `prisma generate`, `tsc`, copy `src/views` ke `dist/views`
 
 **Environment variables** yang wajib diisi di Vercel Dashboard:
 ```
