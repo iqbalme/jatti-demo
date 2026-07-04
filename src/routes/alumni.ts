@@ -27,8 +27,19 @@ function isSuperAdmin(req: { user?: { role?: string } }): boolean {
 }
 
 async function getAdminEmailSet(): Promise<Set<string>> {
-  const admins = await prisma.admin.findMany({ select: { email: true, isBuiltin: true } });
+  const admins = await prisma.admin.findMany({ select: { email: true } });
   return new Set(admins.map(a => a.email.toLowerCase()));
+}
+
+async function getAdminRoleMap(): Promise<Map<string, { role: string; isBuiltin: boolean }>> {
+  const admins = await prisma.admin.findMany({ select: { email: true, role: true, isBuiltin: true } });
+  const map = new Map<string, { role: string; isBuiltin: boolean }>();
+  if (admins) {
+    for (const a of admins) {
+      map.set(a.email.toLowerCase(), { role: a.role, isBuiltin: a.isBuiltin });
+    }
+  }
+  return map;
 }
 
 async function getBuiltinAdminEmailSet(): Promise<Set<string>> {
@@ -175,20 +186,17 @@ router.post('/bulk/delete', requireAuth, requireRole('admin', 'super_admin'), as
     const alumni = await prisma.alumni.findMany({ where: { id: { in: ids } } });
     if (!alumni.length) return sendError(res, 404, 'No alumni found');
 
-    const adminEmails = await getAdminEmailSet();
-    const builtinEmails = await getBuiltinAdminEmailSet();
-    const isSuper = isSuperAdmin(req);
+    const adminRoleMap = await getAdminRoleMap();
 
     const canDelete: string[] = [];
     const blocked: string[] = [];
 
     for (const a of alumni) {
-      const isAlumniAdmin = !!a.email && adminEmails.has(a.email.toLowerCase());
-      const isBuiltin = !!a.email && builtinEmails.has(a.email.toLowerCase());
+      const adminInfo = a.email ? adminRoleMap.get(a.email.toLowerCase()) : undefined;
 
-      if (!isAlumniAdmin) {
+      if (!adminInfo) {
         canDelete.push(a.id);
-      } else if (isSuper && !isBuiltin) {
+      } else if (!adminInfo.isBuiltin && adminInfo.role !== req.user!.role) {
         canDelete.push(a.id);
       } else {
         blocked.push(a.name);
@@ -244,11 +252,19 @@ router.get('/:id', optionalAuth, async (req, res) => {
   }
 });
 
+async function checkSameLevelAdmin(req: { user?: { role?: string } }, email: string | null): Promise<boolean> {
+  if (!email) return false;
+  const adminRoleMap = await getAdminRoleMap();
+  const info = adminRoleMap.get(email.toLowerCase());
+  return !!info && info.role === req.user?.role;
+}
+
 router.put('/:id', requireAuth, requireRole('admin', 'super_admin'), async (req, res) => {
   try {
     const alumniId = req.params.id as string;
     const existing = await prisma.alumni.findUnique({ where: { id: alumniId } });
     if (!existing) return sendError(res, 404, 'Alumni not found');
+    if (await checkSameLevelAdmin(req, existing.email)) return sendError(res, 403, 'Tidak bisa mengedit admin yang selevel');
 
     if (req.body.nik) {
       if (!/^\d{16}$/.test(req.body.nik)) {
@@ -322,6 +338,7 @@ router.patch('/:id/status', requireAuth, requireRole('admin', 'super_admin'), as
     const alumniId = req.params.id as string;
     const existing = await prisma.alumni.findUnique({ where: { id: alumniId } });
     if (!existing) return sendError(res, 404, 'Alumni not found');
+    if (await checkSameLevelAdmin(req, existing.email)) return sendError(res, 403, 'Tidak bisa mengubah status admin yang selevel');
 
     const updated = await prisma.alumni.update({
       where: { id: alumniId },
@@ -344,9 +361,15 @@ router.post('/:id/make-admin', requireAuth, requireRole('super_admin'), async (r
     if (existing) return sendError(res, 409, 'Email ini sudah terdaftar sebagai admin');
 
     const hashed = bcrypt.hashSync('admin123', 10);
-    const admin = await prisma.admin.create({
-      data: { email: alumni.email, name: alumni.name, role: 'admin', password: hashed, isBuiltin: false },
-    });
+    const [admin] = await Promise.all([
+      prisma.admin.create({
+        data: { email: alumni.email, name: alumni.name, role: 'admin', password: hashed, isBuiltin: false },
+      }),
+      prisma.alumni.update({
+        where: { id: req.params.id as string },
+        data: { isActive: true },
+      }),
+    ]);
     sendSuccess(res, { id: admin.id, email: admin.email, role: admin.role, name: admin.name }, 201);
   } catch (err) {
     sendError(res, 500, (err as Error).message);
@@ -371,18 +394,12 @@ router.delete('/:id', requireAuth, requireRole('admin', 'super_admin'), async (r
     const existing = await prisma.alumni.findUnique({ where: { id: alumniId } });
     if (!existing) return sendError(res, 404, 'Alumni not found');
 
-    const adminEmails = await getAdminEmailSet();
-    const isAlumniAdmin = !!existing.email && adminEmails.has(existing.email.toLowerCase());
+    const adminRoleMap = await getAdminRoleMap();
+    const adminInfo = existing.email ? adminRoleMap.get(existing.email.toLowerCase()) : undefined;
 
-    if (isAlumniAdmin && !isSuperAdmin(req)) {
-      return sendError(res, 403, 'Tidak bisa menghapus alumni yang juga admin');
-    }
-
-    if (isAlumniAdmin && isSuperAdmin(req)) {
-      const builtinEmails = await getBuiltinAdminEmailSet();
-      if (existing.email && builtinEmails.has(existing.email.toLowerCase())) {
-        return sendError(res, 403, 'Tidak bisa menghapus alumni admin built-in');
-      }
+    if (adminInfo) {
+      if (adminInfo.isBuiltin) return sendError(res, 403, 'Tidak bisa menghapus alumni admin built-in');
+      if (adminInfo.role === req.user!.role) return sendError(res, 403, 'Tidak bisa menghapus admin yang selevel');
     }
 
     await prisma.alumni.delete({ where: { id: alumniId } });

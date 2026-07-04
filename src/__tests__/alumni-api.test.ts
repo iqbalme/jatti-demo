@@ -198,6 +198,7 @@ describe('Alumni API', () => {
 
   describe('PUT /api/v1/alumni/:id', () => {
     it('updates alumni when admin', async () => {
+      prismaMock.admin.findMany.mockResolvedValue([]);
       prismaMock.alumni.findUnique.mockResolvedValue(mockAlumni);
       prismaMock.alumni.update.mockResolvedValue({ ...mockAlumni, name: 'Updated Name' });
       prismaMock.alumni.findUnique.mockResolvedValue({ ...mockAlumni, name: 'Updated Name' });
@@ -227,6 +228,7 @@ describe('Alumni API', () => {
     });
 
     it('returns 409 when updating to duplicate NIK', async () => {
+      prismaMock.admin.findMany.mockResolvedValue([]);
       prismaMock.admin.findUnique.mockResolvedValue(mockAdmin);
       prismaMock.alumni.findUnique
         .mockResolvedValueOnce(mockAlumni)
@@ -242,6 +244,7 @@ describe('Alumni API', () => {
 
   describe('PATCH /api/v1/alumni/:id/status', () => {
     it('toggles alumni active status', async () => {
+      prismaMock.admin.findMany.mockResolvedValue([]);
       prismaMock.admin.findUnique.mockResolvedValue(mockAdmin);
       prismaMock.alumni.findUnique.mockResolvedValue(mockAlumni);
       prismaMock.alumni.update.mockResolvedValue({ ...mockAlumni, isActive: false });
@@ -291,7 +294,7 @@ describe('Alumni API', () => {
         .delete('/api/v1/alumni/alumni-1')
         .set(adminAuth());
       expect(res.status).toBe(403);
-      expect(res.body.error).toContain('Tidak bisa menghapus alumni yang juga admin');
+      expect(res.body.error).toContain('Tidak bisa menghapus admin yang selevel');
     });
 
     it('allows super admin to delete non-builtin admin alumni', async () => {

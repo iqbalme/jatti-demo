@@ -127,8 +127,15 @@ router.post('/login', async (req, res) => {
 
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) {
-    const adminExists = await prisma.admin.findUnique({ where: { email }, select: { id: true } });
-    if (adminExists) return res.render('pages/login', { error: 'Email atau password salah' });
+    const adminExists = await prisma.admin.findUnique({ where: { email } });
+    if (adminExists) {
+      if (adminExists.password && await bcrypt.compare(password, adminExists.password)) {
+        const token = signToken({ id: adminExists.id, email: adminExists.email, role: adminExists.role, source: 'admin' });
+        res.cookie('sb-access-token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 });
+        return res.redirect('/dashboard');
+      }
+      return res.render('pages/login', { error: 'Email atau password salah' });
+    }
     const alumni = await prisma.alumni.findFirst({ where: { email, isActive: true } });
     if (alumni) {
       if (!alumni.password) {
@@ -405,17 +412,24 @@ router.get('/dashboard/alumni', requirePageAuth, async (req, res) => {
 
     const where = filters.length ? { AND: filters } : undefined;
 
-    const [total, alumniList] = await Promise.all([
+    const [total, alumniList, allAdmins] = await Promise.all([
       prisma.alumni.count({ where }),
       prisma.alumni.findMany({ where, orderBy: { createdAt: 'desc' }, take: limit, skip: offset }),
+      prisma.admin.findMany({ select: { email: true, role: true, isBuiltin: true } }),
     ]);
+
+    const adminRoleMap: Record<string, { role: string; isBuiltin: boolean }> = {};
+    for (const ad of allAdmins) {
+      adminRoleMap[ad.email.toLowerCase()] = { role: ad.role, isBuiltin: ad.isBuiltin };
+    }
 
     res.render('pages/dashboard/alumni-list', {
       alumni: alumniList, total, page, limit, totalPages: Math.ceil(total / limit), search, statusFilter,
       token: (req.cookies['sb-access-token'] as string) || '',
+      adminRoleMapJson: JSON.stringify(adminRoleMap),
     });
   } catch (err) {
-    res.render('pages/dashboard/alumni-list', { alumni: [], total: 0, page: 1, limit: 10, totalPages: 0, search: '', statusFilter: '', error: (err as Error).message, token: '' });
+    res.render('pages/dashboard/alumni-list', { alumni: [], total: 0, page: 1, limit: 10, totalPages: 0, search: '', statusFilter: '', error: (err as Error).message, token: '', adminRoleMapJson: '{}' });
   }
 });
 
