@@ -97,7 +97,7 @@ describe('Page Routes', () => {
         .post('/login')
         .send({ email: 'wrong@test.com', password: 'wrong' });
       expect(res.status).toBe(200);
-      expect(res.text).toContain('Invalid credentials');
+      expect(res.text).toContain('Email atau password salah');
     });
   });
 

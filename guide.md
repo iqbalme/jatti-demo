@@ -90,6 +90,21 @@ Saat pertama `pnpm dev`, super admin dari `SUPER_ADMIN_EMAIL` / `SUPER_ADMIN_PAS
 
 > **Catatan:** Kedua provider sekarang memakai **Own JWT** yang ditandatangani lokal (`signToken` dari `src/utils/jwt.ts`) dengan expiry **7 hari**, bukan Supabase `access_token` (yang default 1 jam). Token disimpan di cookie `sb-access-token`. Verifikasi dilakukan langsung via `jsonwebtoken` + lookup `admins` table — tanpa panggilan ke Supabase Auth API per-request. Setelah login via Supabase, server langsung menerbitkan own JWT. (File: `src/routes/pages.ts`, `src/middleware/auth.ts`).
 
+### User Role (Akun Alumni)
+
+Setiap alumni yang terdaftar (dengan email) otomatis mendapat akun login dengan role `user`:
+
+- **Password default:** `user123` (hash bcrypt untuk local auth, atau user Supabase Auth untuk supabase)
+- **Syarat login:** alumni harus berstatus **aktif** (`isActive: true`)
+- **Setelah login:** diarahkan ke halaman detail alumni miliknya (`/alumni/:id`)
+- **Fitur:**
+  - Lihat data diri sendiri (nomor HP full, NIK tetap disembunyikan)
+  - Ubah password sendiri (`/dashboard/password`)
+- **Akses dashboard:** tidak bisa — dialihkan ke halaman detail alumninya
+- **Role di tabel `admins`:** nilai kolom `role` = `'user'` (nilai lain: `'admin'`, `'super_admin'`)
+- **Pembuatan akun otomatis:** terjadi saat POST `/api/v1/alumni` (API) dan POST `/alumni/baru` (form publik), serta PUT `/api/v1/alumni/:id` (update). File: `src/routes/alumni.ts`, `src/routes/pages.ts` — fungsi `ensureUserAccount()`.
+- **Penghapusan akun:** saat alumni dihapus, akun user ikut dihapus (hanya role `user`, bukan admin/super_admin). File: `src/routes/alumni.ts` — fungsi `deleteUserAccount()`.
+
 ---
 
 ## Storage Upload

@@ -3,26 +3,52 @@
   <header class="bg-white border-b border-gray-200">
     <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
       <h1 class="text-xl font-bold" style="color: var(--brand-color)"><%= typeof settings !== 'undefined' && settings.site_name ? settings.site_name : 'AlumniLink' %></h1>
-      <% if (typeof user !== 'undefined' && user) { %>
-        <a href="/logout" class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700">Keluar</a>
-      <% } else { %>
-        <a href="/login" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Masuk</a>
-      <% } %>
+      <div class="flex items-center gap-2">
+        <% if (typeof user !== 'undefined' && user) { %>
+          <a href="/logout" class="hidden md:inline-flex px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700">Keluar</a>
+        <% } else { %>
+          <a href="/login" class="hidden md:inline-flex px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Masuk</a>
+        <% } %>
+        <button id="menuBtn" class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors" onclick="toggleMenu()" aria-label="Menu">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+      </div>
     </div>
   </header>
+  <div class="md:hidden h-0.5" style="background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to));"></div>
+
+  <!-- Mobile menu -->
+  <div id="mobileMenu" class="fixed inset-0 z-[60] hidden md:hidden">
+    <div class="absolute inset-0 bg-black/40" onclick="toggleMenu()"></div>
+    <div class="absolute right-0 top-0 h-full w-72 max-w-[85vw] bg-white shadow-2xl">
+      <div class="flex items-center justify-between p-4 border-b border-gray-200">
+        <span class="font-semibold text-gray-900">Menu</span>
+        <button onclick="toggleMenu()" class="p-1 rounded-lg hover:bg-gray-100 transition-colors">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <nav class="p-4 flex flex-col gap-1">
+        <a href="/alumni" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">Directory</a>
+        <a href="/statistik" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">Statistik</a>
+        <a href="/alumni/baru" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">Tambah Data</a>
+        <hr class="my-2 border-gray-200" />
+        <% if (typeof user !== 'undefined' && user) { %>
+          <a href="/dashboard" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">Dashboard</a>
+          <a href="/logout" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50">Keluar</a>
+        <% } else { %>
+          <a href="/login" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-blue-600 hover:bg-blue-50">Masuk</a>
+        <% } %>
+      </nav>
+    </div>
+  </div>
 
   <main class="flex-1 flex flex-col items-center justify-center px-4 py-16 text-center">
-    <h2 class="text-4xl font-bold mb-4" style="color: var(--brand-color)"><%= typeof settings !== 'undefined' && settings.site_name ? settings.site_name : 'AlumniLink' %></h2>
-    <p class="text-lg text-gray-600 mb-8 max-w-md"><%= typeof settings !== 'undefined' && settings.site_description ? settings.site_description : 'Sistem informasi tracer study dan directory alumni' %></p>
-    <div class="flex gap-4">
-      <% if (typeof user !== 'undefined' && user) { %>
-        <a href="/dashboard" class="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700">Dashboard</a>
-      <% } else { %>
-        <a href="/login" class="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700">Masuk</a>
-      <% } %>
-      <a href="/alumni/baru" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-100">Tambah Data</a>
-      <a href="/alumni" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-100">Lihat Alumni</a>
-      <a href="/statistik" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-100">Statistik</a>
+    <h2 class="text-3xl sm:text-4xl font-bold mb-4" style="color: var(--brand-color)"><%= typeof settings !== 'undefined' && settings.site_name ? settings.site_name : 'AlumniLink' %></h2>
+    <p class="text-base sm:text-lg text-gray-600 mb-8 max-w-md"><%= typeof settings !== 'undefined' && settings.site_description ? settings.site_description : 'Sistem informasi tracer study dan directory alumni' %></p>
+    <div class="flex flex-wrap items-center justify-center gap-3">
+      <a href="/alumni/baru" class="px-5 py-3 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Tambah Data</a>
+      <a href="/alumni" class="px-5 py-3 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-100">Lihat Alumni</a>
+      <a href="/statistik" class="px-5 py-3 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-100">Statistik</a>
     </div>
 
     <div class="grid md:grid-cols-3 gap-6 mt-16 max-w-4xl">
@@ -50,4 +76,11 @@
     </div>
   </main>
 </div>
+<script>
+function toggleMenu() {
+  var menu = document.getElementById('mobileMenu');
+  menu.classList.toggle('hidden');
+  document.body.classList.toggle('overflow-hidden');
+}
+</script>
 <%- include('../partials/footer') %>

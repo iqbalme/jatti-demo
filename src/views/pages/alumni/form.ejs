@@ -13,23 +13,51 @@
     <div class="flex items-center justify-between h-16 px-4 max-w-4xl mx-auto">
       <div class="flex items-center gap-2">
         <a href="/" class="text-xl font-bold" style="color: var(--brand-color)"><%= typeof settings !== 'undefined' && settings.site_name ? settings.site_name : 'AlumniLink' %></a>
-        <a href="/statistik" class="md:hidden text-xs text-blue-600 hover:underline">Statistik</a>
       </div>
       <nav class="hidden md:flex items-center gap-6 text-sm">
         <a href="/alumni" class="text-gray-500 hover:text-blue-600 transition-colors">Directory</a>
         <a href="/statistik" class="text-gray-500 hover:text-blue-600 transition-colors">Statistik</a>
         <a href="/alumni/baru" class="text-blue-600 font-semibold border-b-2 border-blue-600 pb-1">Tambah Data</a>
       </nav>
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2">
         <% if (typeof user !== 'undefined' && user) { %>
-          <a href="/dashboard" class="text-sm font-medium px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">Dashboard</a>
-          <a href="/logout" class="text-sm font-medium px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Keluar</a>
+          <a href="/dashboard" class="hidden md:inline-flex text-sm font-medium px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">Dashboard</a>
+          <a href="/logout" class="hidden md:inline-flex text-sm font-medium px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Keluar</a>
         <% } else { %>
-          <a href="/login" class="text-sm font-medium px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Masuk</a>
+          <a href="/login" class="hidden md:inline-flex text-sm font-medium px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Masuk</a>
         <% } %>
+        <button id="menuBtn" class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors" onclick="toggleMenu()" aria-label="Menu">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
       </div>
     </div>
   </header>
+  <div class="md:hidden h-0.5" style="background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to));"></div>
+
+  <!-- Mobile menu -->
+  <div id="mobileMenu" class="fixed inset-0 z-[60] hidden md:hidden">
+    <div class="absolute inset-0 bg-black/40" onclick="toggleMenu()"></div>
+    <div class="absolute right-0 top-0 h-full w-72 max-w-[85vw] bg-white shadow-2xl">
+      <div class="flex items-center justify-between p-4 border-b border-gray-200">
+        <span class="font-semibold text-gray-900">Menu</span>
+        <button onclick="toggleMenu()" class="p-1 rounded-lg hover:bg-gray-100 transition-colors">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <nav class="p-4 flex flex-col gap-1">
+        <a href="/alumni" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">Directory</a>
+        <a href="/statistik" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">Statistik</a>
+        <a href="/alumni/baru" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium bg-blue-50 text-blue-600">Tambah Data</a>
+        <hr class="my-2 border-gray-200" />
+        <% if (typeof user !== 'undefined' && user) { %>
+          <a href="/dashboard" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">Dashboard</a>
+          <a href="/logout" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50">Keluar</a>
+        <% } else { %>
+          <a href="/login" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-blue-600 hover:bg-blue-50">Masuk</a>
+        <% } %>
+      </nav>
+    </div>
+  </div>
 
   <section class="soft-gradient py-12 px-4 relative overflow-hidden">
     <div class="absolute inset-0 opacity-10">
@@ -268,6 +296,13 @@
   </main>
 </div>
 
+<script>
+function toggleMenu() {
+  var menu = document.getElementById('mobileMenu');
+  menu.classList.toggle('hidden');
+  document.body.classList.toggle('overflow-hidden');
+}
+</script>
 <script id="authData" type="application/json"><%- JSON.stringify(typeof token !== 'undefined' ? token : '') %></script>
 <script>
 (function() {

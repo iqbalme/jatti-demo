@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import bcrypt from 'bcryptjs';
 import { Prisma } from '@prisma/client';
 import { prisma } from '../utils/db';
 import { requireAuth, requireRole, optionalAuth } from '../middleware/auth';
@@ -56,12 +57,22 @@ router.post('/', optionalAuth, async (req, res) => {
     }
 
     const isAdminUser = isAdmin(req);
+    const emailVal = alumniData.email as string | undefined;
+    if (emailVal) {
+      const dupEmail = await prisma.alumni.findFirst({ where: { email: emailVal } });
+      if (dupEmail) return sendError(res, 409, 'Email sudah terdaftar');
+      if (!isAdminUser) {
+        const adminWithEmail = await prisma.admin.findUnique({ where: { email: emailVal } });
+        if (adminWithEmail) return sendError(res, 409, 'Email tidak dapat digunakan');
+      }
+    }
 
     const created = await prisma.alumni.create({
       data: {
         ...alumniData,
         products: undefined,
         isActive: isAdminUser ? true : false,
+        password: bcrypt.hashSync('user123', 10),
         education: edu?.length ? { createMany: { data: edu.map((e: Record<string, unknown>) => e) } } : undefined,
         certificates: cert?.length ? { createMany: { data: cert.map((c: Record<string, unknown>) => c) } } : undefined,
         organizations: org?.length ? { createMany: { data: org.map((o: Record<string, unknown>) => o) } } : undefined,
@@ -251,42 +262,45 @@ router.put('/:id', requireAuth, requireRole('admin', 'super_admin'), async (req,
 
     const { education: edu, certificates: cert, organizations: org, portfolios: port, businesses: bus, socialLinks: social, ...alumniData } = req.body;
 
+    const updateData: Prisma.AlumniUpdateInput = {
+      ...alumniData,
+      products: undefined,
+      education: edu !== undefined ? {
+        deleteMany: {},
+        createMany: edu.length ? { data: edu.map((e: Record<string, unknown>) => e) } : undefined,
+      } : undefined,
+      certificates: cert !== undefined ? {
+        deleteMany: {},
+        createMany: cert.length ? { data: cert.map((c: Record<string, unknown>) => c) } : undefined,
+      } : undefined,
+      organizations: org !== undefined ? {
+        deleteMany: {},
+        createMany: org.length ? { data: org.map((o: Record<string, unknown>) => o) } : undefined,
+      } : undefined,
+      portfolios: port !== undefined ? {
+        deleteMany: {},
+        createMany: port.length ? { data: port.map((p: Record<string, unknown>) => p) } : undefined,
+      } : undefined,
+      businesses: bus !== undefined ? {
+        deleteMany: {},
+        createMany: bus.length ? { data: bus.map((b: Record<string, unknown>) => {
+          let products = b.products;
+          if (typeof products === 'string' && products) {
+            try { products = JSON.parse(products as string); } catch { products = (products as string).split(',').map((s: string) => s.trim()).filter(Boolean); }
+          }
+          return { ...b, products: Array.isArray(products) && products.length ? JSON.stringify(products) : null };
+        }) } : undefined,
+      } : undefined,
+      socialLinks: social !== undefined ? {
+        deleteMany: {},
+        createMany: social.length ? { data: social.map((s: Record<string, unknown>) => s) } : undefined,
+      } : undefined,
+    };
+    if (!existing.password) updateData.password = bcrypt.hashSync('user123', 10);
+
     await prisma.alumni.update({
       where: { id: alumniId },
-      data: {
-        ...alumniData,
-        products: undefined,
-        education: edu !== undefined ? {
-          deleteMany: {},
-          createMany: edu.length ? { data: edu.map((e: Record<string, unknown>) => e) } : undefined,
-        } : undefined,
-        certificates: cert !== undefined ? {
-          deleteMany: {},
-          createMany: cert.length ? { data: cert.map((c: Record<string, unknown>) => c) } : undefined,
-        } : undefined,
-        organizations: org !== undefined ? {
-          deleteMany: {},
-          createMany: org.length ? { data: org.map((o: Record<string, unknown>) => o) } : undefined,
-        } : undefined,
-        portfolios: port !== undefined ? {
-          deleteMany: {},
-          createMany: port.length ? { data: port.map((p: Record<string, unknown>) => p) } : undefined,
-        } : undefined,
-        businesses: bus !== undefined ? {
-          deleteMany: {},
-          createMany: bus.length ? { data: bus.map((b: Record<string, unknown>) => {
-            let products = b.products;
-            if (typeof products === 'string' && products) {
-              try { products = JSON.parse(products as string); } catch { products = (products as string).split(',').map((s: string) => s.trim()).filter(Boolean); }
-            }
-            return { ...b, products: Array.isArray(products) && products.length ? JSON.stringify(products) : null };
-          }) } : undefined,
-        } : undefined,
-        socialLinks: social !== undefined ? {
-          deleteMany: {},
-          createMany: social.length ? { data: social.map((s: Record<string, unknown>) => s) } : undefined,
-        } : undefined,
-      },
+      data: updateData,
     });
 
     const result = await prisma.alumni.findUnique({
@@ -317,6 +331,37 @@ router.patch('/:id/status', requireAuth, requireRole('admin', 'super_admin'), as
     sendSuccess(res, updated);
   } catch (err) {
     sendError(res, 400, (err as Error).message);
+  }
+});
+
+router.post('/:id/make-admin', requireAuth, requireRole('super_admin'), async (req, res) => {
+  try {
+    const alumni = await prisma.alumni.findUnique({ where: { id: req.params.id as string } });
+    if (!alumni) return sendError(res, 404, 'Alumni not found');
+    if (!alumni.email) return sendError(res, 400, 'Alumni tidak memiliki email');
+
+    const existing = await prisma.admin.findUnique({ where: { email: alumni.email } });
+    if (existing) return sendError(res, 409, 'Email ini sudah terdaftar sebagai admin');
+
+    const hashed = bcrypt.hashSync('admin123', 10);
+    const admin = await prisma.admin.create({
+      data: { email: alumni.email, name: alumni.name, role: 'admin', password: hashed, isBuiltin: false },
+    });
+    sendSuccess(res, { id: admin.id, email: admin.email, role: admin.role, name: admin.name }, 201);
+  } catch (err) {
+    sendError(res, 500, (err as Error).message);
+  }
+});
+
+router.put('/:id/reset-password', requireAuth, requireRole('admin', 'super_admin'), async (req, res) => {
+  try {
+    const alumni = await prisma.alumni.findUnique({ where: { id: req.params.id as string } });
+    if (!alumni) return sendError(res, 404, 'Alumni not found');
+    const hashed = bcrypt.hashSync('user123', 10);
+    await prisma.alumni.update({ where: { id: req.params.id as string }, data: { password: hashed } });
+    sendSuccess(res, { message: 'Password berhasil direset ke default' });
+  } catch (err) {
+    sendError(res, 500, (err as Error).message);
   }
 });
 

@@ -1,5 +1,23 @@
 # Done
 
+## 2026-07-05
+- [x] Add Reset Password & Jadikan Admin buttons to dashboard edit form (`src/views/pages/dashboard/alumni-form.ejs`) — section "Tindakan Admin" di paling bawah form, ganti confirm()/alert() native → modal konfirmasi + toast notification
+- [x] Responsive layout: hamburger menu for all public pages (`/`, `/alumni`, `/alumni/baru`, `/alumni/:id`, `/statistik`)
+- [x] Responsive layout: hamburger menu for all dashboard pages (index, alumni-list, alumni-form, admins, admin-form, password, settings)
+- [x] Fix filter toolbar in `/alumni` — stack on mobile instead of overflow
+- [x] Fix search/filter form in `/dashboard/alumni` — responsive stacking on mobile
+- [x] Fix table in `/dashboard/admins` — overflow-x-auto scroll, hide secondary columns on mobile
+- [x] Fix detail page buttons — wrap on mobile with shorter labels
+- [x] Fix landing page hero buttons — wrap with `flex-wrap` and use smaller text
+- [x] Feature: User role "user" — setiap alumni yang terdaftar (dengan email) otomatis mendapat akun admin role "user", password default "user123"
+- [x] Login user: validasi isActive alumni, redirect ke `/alumni/:id` sendiri
+- [x] Ubah password: tombol "Ubah Password" di detail alumni untuk pemilik data, redirect sesuai role
+- [x] NIK disembunyikan dari publik dan user role — hanya admin/super_admin bisa lihat
+- [x] Phone number: full untuk semua logged-in user, masked untuk publik
+- [x] Dashboard redirect: user role dialihkan ke halaman detail alumninya
+- [x] Button "Edit" hanya untuk admin/super_admin
+- [x] Mobile menu: user role tidak lihat link Dashboard/Kelola Alumni, hanya Ubah Password + Keluar
+
 ## 2026-07-04
 - [x] Fix `EMAXCONNSESSION` max clients — batasi pool size PrismaPg `max: 3` (Vercel) / `max: 5` (lokal) + `idleTimeoutMillis: 10000` (`src/utils/db.ts`)
 - [x] Fix "invalid token" / sering minta login — ganti Supabase access_token (expiry 1 jam) dengan own JWT 7 hari (`src/routes/pages.ts`, `src/middleware/auth.ts`)
@@ -85,8 +103,39 @@
 - [x] Update fixtures — pakai `countryCode: 'ID'` bukan `country: 'Indonesia'`
 - [x] Update form dashboard & publik: value dropdown = country code (bukan nama), field name = `countryCode`
 
-## Handoff Notes
-All planned tests are now written and passing. The key challenge was vitest v4's hoisting behavior — `vi.mock` factories cannot reference any module-level variables (even `let`). The solution uses `vi.hoisted()` to create mock objects before `vi.mock` processing. `guide.md` updated with test commands and testing patterns. Next session could focus on: adding more edge-case tests, integration/E2E tests, or feature work.
+## 2026-07-05 (Session Handoff)
+### Ringkasan
+Sesi ini fokus pada:
+1. **Responsive layout** — hamburger menu, gradient divider, filter/search stacking, table scroll, button wrap untuk mobile di semua halaman publik dan dashboard.
+2. **Detail page** — header gradient (tanpa blur), badge putih + border, NIK disembunyikan dari non-admin, phone di-mask untuk publik, Hubungi button hanya untuk logged-in user.
+3. **User role "user"** — password disimpan di tabel Alumni langsung (bukan Admin table). Login user via bcrypt lokal (tidak pakai Supabase Auth). Default password "user123". Login memeriksa isActive alumni. Redirect ke `/alumni/:id` sendiri. NIK hanya admin/super_admin. Ubah password via `/dashboard/password`. Dashboard dialihkan. Reset password oleh admin via tombol di detail page.
+
+### Perubahan Arsitektur
+- `password` field ditambahkan ke model `Alumni` (prisma schema + db:push)
+- Login user: verifikasi bcrypt langsung ke tabel Alumni, tanpa Admin table
+- Login admin: tetap via Admin table (supabase auth atau local bcrypt)
+- JWT token kini menyertakan `source: 'alumni' | 'admin'` untuk lookup table yang benar
+- `requireAuth` / `optionalAuth` middleware: lookup alumni atau admin sesuai `source`
+- `loadUser` (pages.ts): handle alumni source dari cookie token
+- `ensureUserAccount` / `deleteUserAccount` dihapus (sudah tidak perlu buat admin record untuk user)
+
+### File yang dimodifikasi
+- `prisma/schema.prisma` — tambah field `password String?` di model Alumni
+- `src/routes/alumni.ts` — set default password di POST/PUT, tambah endpoint reset-password, hapus ensureUserAccount
+- `src/routes/auth.ts` — handle alumni source di password change
+- `src/middleware/auth.ts` — lookup alumni atau admin berdasarkan source dari JWT
+- `src/utils/jwt.ts` — tambah `source?: string` di signToken/verifyToken
+- `src/routes/pages.ts` — login handler: admin dulu, baru fallback alumni; loadUser handle alumni source; hapus ensureUserAccount
+- `src/views/pages/alumni/detail.ejs` — reset password button untuk admin, token passed ke template
+- `src/views/pages/login.ejs` — password visibility toggle (icon mata)
+- `src/views/pages/dashboard/password.ejs` — redirect sesuai role, admin link visibility
+- `src/__tests__/pages.test.ts` — update error message expectation
+- `guide.md` — dokumentasi User Role
+
+### Next Steps
+- Integration/E2E tests untuk user role flow (login, password change, NIK/phone visibility)
+- Testing edge cases: alumni tanpa email, alumni nonaktif mencoba login
+- Export helper functions ke shared utility jika perlu
 
 ## 2026-06-29
 - [x] fix 500 error on POST /api/v1/admins — add password column to database (`pnpm db:push`)

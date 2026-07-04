@@ -31,6 +31,7 @@ model Alumni {
   institutionField String? @map("institution_field")
   position        String?  @map("position")
   isActive        Boolean? @default(true) @map("is_active")
+  password        String?  @map("password")
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @default(now()) @updatedAt @map("updated_at")
 

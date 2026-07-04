@@ -10,14 +10,41 @@
   <header class="bg-white border-b border-gray-200">
     <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
       <h1 class="text-xl font-bold" style="color: var(--brand-color)"><%= typeof settings !== 'undefined' && settings.site_name ? settings.site_name : 'AlumniLink' %> Dashboard</h1>
-      <div class="flex items-center gap-4">
+      <div class="hidden md:flex items-center gap-4">
         <a href="/dashboard" class="text-sm text-gray-600 hover:underline">Dashboard</a>
+        <a href="/dashboard/alumni" class="text-sm text-gray-600 hover:underline">Kelola Alumni</a>
         <a href="/dashboard/admins" class="text-sm text-blue-600 hover:underline">Kelola Admin</a>
         <a href="/dashboard/settings" class="text-sm text-blue-600 hover:underline">Pengaturan</a>
         <a href="/logout" class="text-sm text-red-600 hover:underline">Keluar</a>
       </div>
+      <button id="menuBtn" class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors" onclick="toggleMenu()" aria-label="Menu">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
     </div>
   </header>
+  <div class="md:hidden h-0.5" style="background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to));"></div>
+
+  <!-- Mobile menu -->
+  <div id="mobileMenu" class="fixed inset-0 z-[60] hidden md:hidden">
+    <div class="absolute inset-0 bg-black/40" onclick="toggleMenu()"></div>
+    <div class="absolute right-0 top-0 h-full w-72 max-w-[85vw] bg-white shadow-2xl">
+      <div class="flex items-center justify-between p-4 border-b border-gray-200">
+        <span class="font-semibold text-gray-900">Menu</span>
+        <button onclick="toggleMenu()" class="p-1 rounded-lg hover:bg-gray-100 transition-colors">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <nav class="p-4 flex flex-col gap-1">
+        <a href="/dashboard" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">Dashboard</a>
+        <a href="/dashboard/alumni" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">Kelola Alumni</a>
+        <a href="/dashboard/password" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">Ubah Password</a>
+        <a href="/dashboard/admins" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium bg-blue-50 text-blue-600">Kelola Admin</a>
+        <a href="/dashboard/settings" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">Pengaturan</a>
+        <hr class="my-2 border-gray-200" />
+        <a href="/logout" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50">Keluar</a>
+      </nav>
+    </div>
+  </div>
 
   <section class="py-10 px-4" style="background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to));">
     <div class="max-w-6xl mx-auto">
@@ -59,6 +86,12 @@
 </div>
 
 <script>
+function toggleMenu() {
+  var menu = document.getElementById('mobileMenu');
+  menu.classList.toggle('hidden');
+  document.body.classList.toggle('overflow-hidden');
+}
+
 function escapeHtml(str) {
   var d = document.createElement('div'); d.textContent = str; return d.innerHTML;
 }

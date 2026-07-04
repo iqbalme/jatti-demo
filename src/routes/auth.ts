@@ -51,6 +51,16 @@ router.put('/password', requireAuth, async (req, res) => {
       return sendError(res, 400, 'New password must be at least 6 characters');
     }
 
+    if (req.user!.source === 'alumni') {
+      const alumni = await prisma.alumni.findUnique({ where: { id: req.user!.id } });
+      if (!alumni || !alumni.password) return sendError(res, 400, 'Account not configured for password change');
+      const valid = await bcrypt.compare(currentPassword, alumni.password);
+      if (!valid) return sendError(res, 400, 'Current password is incorrect');
+      const hashed = await bcrypt.hash(newPassword, 10);
+      await prisma.alumni.update({ where: { id: req.user!.id }, data: { password: hashed } });
+      return sendSuccess(res, { message: 'Password changed successfully' });
+    }
+
     if (authProvider === 'local') {
       const admin = await prisma.admin.findUnique({ where: { id: req.user!.id } });
       if (!admin || !admin.password) return sendError(res, 400, 'Account not configured for password change');

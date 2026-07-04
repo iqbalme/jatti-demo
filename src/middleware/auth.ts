@@ -12,12 +12,24 @@ declare global {
         role: string;
         fullName?: string;
         avatarUrl?: string;
+        source?: 'admin' | 'alumni';
       };
     }
   }
 }
 
 const authProvider = (process.env.AUTH_PROVIDER || 'supabase') as 'supabase' | 'local';
+
+async function lookupUser(decoded: { id: string; email: string; role: string; source?: string }) {
+  if (decoded.source === 'alumni') {
+    const alumni = await prisma.alumni.findUnique({ where: { id: decoded.id } });
+    if (!alumni) return null;
+    return { id: alumni.id, email: alumni.email || '', role: 'user', fullName: alumni.name, source: 'alumni' as const };
+  }
+  const admin = await prisma.admin.findUnique({ where: { id: decoded.id } });
+  if (!admin) return null;
+  return { id: admin.id, email: admin.email, role: admin.role, fullName: admin.name, source: 'admin' as const };
+}
 
 export async function requireAuth(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
@@ -29,15 +41,10 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
 
   try {
     const decoded = verifyToken(token);
-    const admin = await prisma.admin.findUnique({ where: { id: decoded.id } });
-    if (!admin) return sendError(res, 401, 'Unauthorized: admin not found');
+    const user = await lookupUser(decoded);
+    if (!user) return sendError(res, 401, 'Unauthorized: user not found');
 
-    req.user = {
-      id: admin.id,
-      email: admin.email,
-      role: admin.role,
-      fullName: admin.name,
-    };
+    req.user = user;
     return next();
   } catch {
     return sendError(res, 401, 'Unauthorized: invalid token');
@@ -52,10 +59,8 @@ export async function optionalAuth(req: Request, res: Response, next: NextFuncti
 
   try {
     const decoded = verifyToken(token);
-    const admin = await prisma.admin.findUnique({ where: { id: decoded.id } });
-    if (admin) {
-      req.user = { id: admin.id, email: admin.email, role: admin.role, fullName: admin.name };
-    }
+    const user = await lookupUser(decoded);
+    if (user) req.user = user;
   } catch {}
   next();
 }

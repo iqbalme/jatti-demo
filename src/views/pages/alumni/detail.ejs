@@ -1,65 +1,115 @@
 <%- include('../../partials/header') %>
 <style>
-  .soft-gradient-bg { background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to)); opacity: 0.15; }
   .glass-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(226, 232, 240, 0.5); }
 </style>
 <div class="min-h-screen flex flex-col">
   <header class="w-full top-0 sticky z-50 bg-white shadow-sm border-b border-gray-200">
     <div class="flex items-center justify-between h-16 px-4 max-w-7xl mx-auto">
       <a href="/" class="text-xl font-bold" style="color: var(--brand-color)"><%= typeof settings !== 'undefined' && settings.site_name ? settings.site_name : 'AlumniLink' %></a>
-      <div class="flex items-center gap-4">
-        <a href="/alumni" class="text-sm text-blue-600 hover:underline flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:18px">arrow_back</span>Kembali</a>
-        <a href="/statistik" class="text-sm text-blue-600 hover:underline">Statistik</a>
+      <div class="flex items-center gap-2">
+        <a href="/alumni" class="hidden md:inline-flex text-sm text-blue-600 hover:underline items-center gap-1"><span class="material-symbols-outlined" style="font-size:18px">arrow_back</span>Kembali</a>
+        <a href="/statistik" class="hidden md:inline-flex text-sm text-blue-600 hover:underline">Statistik</a>
         <% if (typeof user !== 'undefined' && user) { %>
-          <a href="/logout" class="text-sm font-medium px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Keluar</a>
+          <a href="/logout" class="hidden md:inline-flex text-sm font-medium px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Keluar</a>
         <% } else { %>
-          <a href="/login" class="text-sm font-medium px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Masuk</a>
+          <a href="/login" class="hidden md:inline-flex text-sm font-medium px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Masuk</a>
         <% } %>
+        <button id="menuBtn" class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors" onclick="toggleMenu()" aria-label="Menu">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
       </div>
     </div>
   </header>
+  <div class="md:hidden h-0.5" style="background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to));"></div>
 
+  <!-- Mobile menu -->
+  <div id="mobileMenu" class="fixed inset-0 z-[60] hidden md:hidden">
+    <div class="absolute inset-0 bg-black/40" onclick="toggleMenu()"></div>
+    <div class="absolute right-0 top-0 h-full w-72 max-w-[85vw] bg-white shadow-2xl">
+      <div class="flex items-center justify-between p-4 border-b border-gray-200">
+        <span class="font-semibold text-gray-900">Menu</span>
+        <button onclick="toggleMenu()" class="p-1 rounded-lg hover:bg-gray-100 transition-colors">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <nav class="p-4 flex flex-col gap-1">
+        <a href="/alumni" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">Directory</a>
+        <a href="/statistik" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">Statistik</a>
+        <a href="/alumni/baru" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">Tambah Data</a>
+        <hr class="my-2 border-gray-200" />
+        <% if (typeof user !== 'undefined' && user) { %>
+          <% if (user.role === 'admin' || user.role === 'super_admin') { %>
+          <a href="/dashboard" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">Dashboard</a>
+          <% } %>
+          <% if (typeof a !== 'undefined' && a && user.email === a.email) { %>
+          <a href="/dashboard/password" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">Ubah Password</a>
+          <% } %>
+          <a href="/logout" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50">Keluar</a>
+        <% } else { %>
+          <a href="/login" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-blue-600 hover:bg-blue-50">Masuk</a>
+        <% } %>
+      </nav>
+    </div>
+  </div>
+
+<%
+function maskPhone(p) {
+  if (!p) return '-';
+  var c = p.replace(/[^0-9+]/g, '');
+  var d = c.replace(/[^0-9]/g, '');
+  if (d.length <= 6) return d.length > 3 ? d.slice(0, 3) + 'xxx' + d.slice(-2) : d;
+  return d.slice(0, 3) + 'xxxxx' + d.slice(-3);
+}
+%>
   <main class="flex-1">
     <% if (typeof error !== 'undefined' && error) { %>
       <div class="max-w-4xl mx-auto px-4 py-8">
         <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"><%= error %></div>
       </div>
     <% } else if (typeof a !== 'undefined' && a) { %>
-      <header class="relative soft-gradient-bg pt-12 pb-24 px-4 border-b border-gray-200/20 overflow-hidden">
-        <div class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-[100px]"></div>
-        <div class="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-64 h-64 bg-teal-500/10 rounded-full blur-[80px]"></div>
+      <header class="relative pt-12 pb-24 px-4 border-b border-gray-200/20 overflow-hidden" style="background: linear-gradient(135deg, color-mix(in srgb, var(--gradient-from) 85%, white), color-mix(in srgb, var(--gradient-to) 85%, white));">
         <div class="max-w-7xl mx-auto relative z-10">
           <div class="flex flex-col md:flex-row items-center md:items-end gap-8">
-            <div class="relative group">
-              <div class="absolute -inset-1 style="background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to));" rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
+            <div class="relative">
               <% if (a.photoUrl) { %>
-                <img src="<%= a.photoUrl %>" class="relative w-32 h-32 md:w-44 md:h-44 rounded-2xl object-cover shadow-xl border-4 border-white" alt="<%= a.name %>" />
+                <img src="<%= a.photoUrl %>" class="w-32 h-32 md:w-44 md:h-44 rounded-2xl object-cover shadow-xl border-4 border-white" alt="<%= a.name %>" />
               <% } else { %>
-                <div class="relative w-32 h-32 md:w-44 md:h-44 rounded-2xl shadow-xl border-4 border-white style="background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to));" flex items-center justify-center text-white font-bold text-5xl"><%= (a.name || '?').charAt(0).toUpperCase() %></div>
+                <div class="w-32 h-32 md:w-44 md:h-44 rounded-2xl shadow-xl border-4 border-white flex items-center justify-center text-white font-bold text-5xl" style="background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to));"><%= (a.name || '?').charAt(0).toUpperCase() %></div>
               <% } %>
             </div>
             <div class="flex-1 text-center md:text-left">
               <h1 class="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight mb-2"><%= a.name %></h1>
               <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-3">
-                <span class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">NIK: <%= a.nik || '-' %></span>
-                <span class="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold"><%= a.gender || '-' %></span>
-                <span class="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold"><%= a.maritalStatus || '-' %></span>
+                <% if (typeof user !== 'undefined' && user && (user.role === 'admin' || user.role === 'super_admin')) { %>
+                <span class="inline-flex items-center px-3 py-1 bg-white text-blue-700 rounded-full text-xs font-semibold shadow border border-blue-200">NIK: <%= a.nik || '-' %></span>
+                <% } %>
+                <span class="inline-flex items-center px-3 py-1 bg-white text-gray-900 rounded-full text-xs font-semibold shadow border border-gray-200"><%= a.gender || '-' %></span>
+                <span class="inline-flex items-center px-3 py-1 bg-white text-gray-900 rounded-full text-xs font-semibold shadow border border-gray-200"><%= a.maritalStatus || '-' %></span>
               </div>
-              <p class="text-lg text-gray-600 mb-3 font-medium"><%= a.position ? a.position + ' di ' + a.institutionName : a.careerStatus || '' %></p>
-              <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 text-gray-500 text-sm">
+              <p class="text-lg text-white mb-3 font-medium drop-shadow-sm"><%= a.position ? a.position + ' di ' + a.institutionName : a.careerStatus || '' %></p>
+              <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 text-white text-sm drop-shadow-sm">
                 <span class="flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:18px">location_on</span><%=
   [a.villageName, a.districtName, a.regencyName, a.province].filter(Boolean).join(', ') || '-'
 %></span>
                 <span class="flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:18px">mail</span><%= a.email %></span>
-                <span class="flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:18px">phone</span><%= a.phone %></span>
+                <span class="flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:18px">phone</span><%= typeof user !== 'undefined' && user ? a.phone : maskPhone(a.phone) %></span>
               </div>
             </div>
-            <div class="flex gap-3 pb-2">
-              <% if (typeof user !== 'undefined' && user) { %>
-                <a href="/dashboard/alumni/<%= a.id %>/edit" class="flex items-center gap-2 px-5 py-2.5 bg-amber-500 text-white rounded-xl text-sm font-medium hover:bg-amber-600 shadow-lg shadow-amber-500/20"><span class="material-symbols-outlined" style="font-size:18px">edit</span>Edit</a>
+            <div class="flex flex-wrap gap-2 pb-2">
+              <% if (typeof user !== 'undefined' && user && (user.role === 'admin' || user.role === 'super_admin')) { %>
+                <a href="/dashboard/alumni/<%= a.id %>/edit" class="flex items-center gap-2 px-4 py-2.5 bg-amber-500 text-white rounded-xl text-sm font-medium hover:bg-amber-600 shadow-lg shadow-amber-500/20"><span class="material-symbols-outlined" style="font-size:18px">edit</span>Edit</a>
+                <button type="button" onclick="resetPassword('<%= a.id %>')" class="flex items-center gap-2 px-4 py-2.5 bg-red-500 text-white rounded-xl text-sm font-medium hover:bg-red-600 shadow-lg shadow-red-500/20"><span class="material-symbols-outlined" style="font-size:18px">lock_reset</span><span class="hidden sm:inline">Reset </span>Password</button>
+                <% if (user.role === 'super_admin') { %>
+                <button type="button" onclick="makeAdmin('<%= a.id %>')" class="flex items-center gap-2 px-4 py-2.5 bg-purple-600 text-white rounded-xl text-sm font-medium hover:bg-purple-700 shadow-lg shadow-purple-600/20"><span class="material-symbols-outlined" style="font-size:18px">admin_panel_settings</span><span class="hidden sm:inline">Jadikan </span>Admin</button>
+                <% } %>
               <% } %>
-              <a href="mailto:<%= a.email %>" class="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 shadow-lg shadow-blue-600/20"><span class="material-symbols-outlined" style="font-size:18px">email</span>Kirim Email</a>
-              <a href="tel:<%= (a.phone || '').replace(/[^0-9+]/g, '') %>" class="flex items-center gap-2 px-5 py-2.5 bg-white text-blue-600 border border-blue-200 rounded-xl text-sm font-medium hover:bg-gray-50"><span class="material-symbols-outlined" style="font-size:18px">phone</span>Hubungi</a>
+              <a href="mailto:<%= a.email %>" class="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 shadow-lg shadow-blue-600/20"><span class="material-symbols-outlined" style="font-size:18px">email</span><span class="hidden sm:inline">Kirim </span>Email</a>
+              <% if (typeof user !== 'undefined' && user) { %>
+              <a href="tel:<%= (a.phone || '').replace(/[^0-9+]/g, '') %>" class="flex items-center gap-2 px-4 py-2.5 bg-white text-blue-600 border border-blue-200 rounded-xl text-sm font-medium hover:bg-gray-50"><span class="material-symbols-outlined" style="font-size:18px">phone</span><span class="hidden sm:inline">Hubungi</span></a>
+              <% } %>
+              <% if (typeof user !== 'undefined' && user && user.email === a.email) { %>
+              <a href="/dashboard/password" class="flex items-center gap-2 px-4 py-2.5 bg-gray-100 text-gray-700 border border-gray-200 rounded-xl text-sm font-medium hover:bg-gray-200"><span class="material-symbols-outlined" style="font-size:18px">lock</span><span class="hidden sm:inline">Ubah </span>Password</a>
+              <% } %>
             </div>
           </div>
         </div>
@@ -75,11 +125,13 @@
                 <h2 class="text-lg font-semibold">Data Pribadi</h2>
               </div>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <% if (typeof user !== 'undefined' && user && (user.role === 'admin' || user.role === 'super_admin')) { %>
                 <div class="flex items-start gap-3"><span class="material-symbols-outlined text-blue-600 mt-0.5" style="font-size:20px">badge</span><div><p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">NIK</p><p class="text-sm text-gray-900"><%= a.nik || '-' %></p></div></div>
+                <% } %>
                 <div class="flex items-start gap-3"><span class="material-symbols-outlined text-blue-600 mt-0.5" style="font-size:20px">person</span><div><p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Nama Lengkap</p><p class="text-sm text-gray-900"><%= a.name %></p></div></div>
                 <div class="flex items-start gap-3"><span class="material-symbols-outlined text-blue-600 mt-0.5" style="font-size:20px"><%= a.gender === 'Laki-laki' ? 'male' : 'female' %></span><div><p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Jenis Kelamin</p><p class="text-sm text-gray-900"><%= a.gender || '-' %></p></div></div>
                 <div class="flex items-start gap-3"><span class="material-symbols-outlined text-blue-600 mt-0.5" style="font-size:20px">favorite</span><div><p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Status Pernikahan</p><p class="text-sm text-gray-900"><%= a.maritalStatus || '-' %></p></div></div>
-                <div class="flex items-start gap-3"><span class="material-symbols-outlined text-blue-600 mt-0.5" style="font-size:20px">phone</span><div><p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">No. HP/WhatsApp</p><p class="text-sm text-gray-900"><%= a.phone || '-' %></p></div></div>
+                <div class="flex items-start gap-3"><span class="material-symbols-outlined text-blue-600 mt-0.5" style="font-size:20px">phone</span><div><p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">No. HP/WhatsApp</p><p class="text-sm text-gray-900"><%= typeof user !== 'undefined' && user ? a.phone : maskPhone(a.phone) %></p></div></div>
                 <div class="flex items-start gap-3"><span class="material-symbols-outlined text-blue-600 mt-0.5" style="font-size:20px">email</span><div><p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Email Aktif</p><p class="text-sm text-gray-900"><%= a.email || '-' %></p></div></div>
                 <div class="flex items-start gap-3"><span class="material-symbols-outlined text-blue-600 mt-0.5" style="font-size:20px">location_on</span><div><p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Wilayah</p><p class="text-sm text-gray-900"><%= [a.villageName, a.districtName, a.regencyName, a.province].filter(Boolean).join(', ') || '-' %></p></div></div>
                 <div class="md:col-span-2 flex items-start gap-3"><span class="material-symbols-outlined text-blue-600 mt-0.5" style="font-size:20px">home</span><div><p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Alamat Domisili</p><p class="text-sm text-gray-900"><%= a.address || '-' %></p></div></div>
@@ -242,4 +294,27 @@
     <% } %>
   </main>
 </div>
+<script>
+function toggleMenu() {
+  var menu = document.getElementById('mobileMenu');
+  menu.classList.toggle('hidden');
+  document.body.classList.toggle('overflow-hidden');
+}
+async function resetPassword(id) {
+  if (!confirm('Reset password alumni ini ke default (user123)?')) return;
+  try {
+    var res = await fetch('/api/v1/alumni/' + id + '/reset-password', { method: 'PUT', headers: { 'Authorization': 'Bearer <%= typeof token !== 'undefined' ? token : '' %>' } });
+    var data = await res.json();
+    if (data.success) { alert('Password berhasil direset ke user123'); } else { alert(data.error || 'Gagal'); }
+  } catch (e) { alert('Terjadi kesalahan: ' + e.message); }
+}
+async function makeAdmin(id) {
+  if (!confirm('Jadikan alumni ini sebagai admin (password default: admin123)?')) return;
+  try {
+    var res = await fetch('/api/v1/alumni/' + id + '/make-admin', { method: 'POST', headers: { 'Authorization': 'Bearer <%= typeof token !== 'undefined' ? token : '' %>', 'Content-Type': 'application/json' } });
+    var data = await res.json();
+    if (data.success) { alert('Berhasil dijadikan admin! Email: ' + data.data.email + ', Password: admin123'); } else { alert(data.error || 'Gagal'); }
+  } catch (e) { alert('Terjadi kesalahan: ' + e.message); }
+}
+</script>
 <%- include('../../partials/footer') %>

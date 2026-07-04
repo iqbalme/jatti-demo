@@ -24,9 +24,16 @@ async function loadUser(req: Request, res: Response, next: NextFunction) {
 
   try {
     const decoded = verifyToken(token);
-    const admin = await prisma.admin.findUnique({ where: { id: decoded.id } });
-    if (admin) {
-      res.locals.user = { id: admin.id, email: admin.email, role: admin.role, fullName: admin.name };
+    if (decoded.source === 'alumni') {
+      const alumni = await prisma.alumni.findUnique({ where: { id: decoded.id } });
+      if (alumni) {
+        res.locals.user = { id: alumni.id, email: alumni.email || '', role: 'user', fullName: alumni.name, source: 'alumni' };
+      }
+    } else {
+      const admin = await prisma.admin.findUnique({ where: { id: decoded.id } });
+      if (admin) {
+        res.locals.user = { id: admin.id, email: admin.email, role: admin.role, fullName: admin.name, source: 'admin' };
+      }
     }
   } catch {}
   next();
@@ -56,15 +63,28 @@ router.post('/login', async (req, res) => {
 
   if (authProvider === 'local') {
     const admin = await prisma.admin.findUnique({ where: { email } });
-    if (!admin || !admin.password || !(await bcrypt.compare(password, admin.password))) {
-      return res.render('pages/login', { error: 'Invalid credentials' });
+    if (admin) {
+      if (admin.password && await bcrypt.compare(password, admin.password)) {
+        const token = signToken({ id: admin.id, email: admin.email, role: admin.role, source: 'admin' });
+        res.cookie('sb-access-token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 });
+        return res.redirect('/dashboard');
+      }
+      return res.render('pages/login', { error: 'Email atau password salah' });
     }
-    const token = signToken({ id: admin.id, email: admin.email, role: admin.role });
-    res.cookie('sb-access-token', token, {
-      httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
-    return res.redirect('/dashboard');
+    const alumni = await prisma.alumni.findFirst({ where: { email, isActive: true } });
+    if (alumni) {
+      if (!alumni.password) {
+        const h = await bcrypt.hash('user123', 10);
+        await prisma.alumni.update({ where: { id: alumni.id }, data: { password: h } });
+        alumni.password = h;
+      }
+      if (await bcrypt.compare(password, alumni.password)) {
+        const token = signToken({ id: alumni.id, email: alumni.email || '', role: 'user', source: 'alumni' });
+        res.cookie('sb-access-token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 });
+        return res.redirect('/alumni/' + alumni.id);
+      }
+    }
+    return res.render('pages/login', { error: 'Email atau password salah' });
   }
 
   const supabase = getSupabaseAdmin();
@@ -97,7 +117,7 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    const token = signToken({ id: admin.id, email: admin.email, role: admin.role });
+    const token = signToken({ id: admin.id, email: admin.email, role: admin.role, source: 'admin' });
     res.cookie('sb-access-token', token, {
       httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -106,19 +126,40 @@ router.post('/login', async (req, res) => {
   }
 
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) return res.render('pages/login', { error: error.message });
-
-  const admin = await prisma.admin.findUnique({ where: { email } });
-  if (!admin || (admin.role !== 'admin' && admin.role !== 'super_admin')) {
-    return res.render('pages/login', { error: 'Unauthorized: not an admin account' });
+  if (error) {
+    const adminExists = await prisma.admin.findUnique({ where: { email }, select: { id: true } });
+    if (adminExists) return res.render('pages/login', { error: 'Email atau password salah' });
+    const alumni = await prisma.alumni.findFirst({ where: { email, isActive: true } });
+    if (alumni) {
+      if (!alumni.password) {
+        const h = await bcrypt.hash('user123', 10);
+        await prisma.alumni.update({ where: { id: alumni.id }, data: { password: h } });
+        alumni.password = h;
+      }
+      if (await bcrypt.compare(password, alumni.password)) {
+        const token = signToken({ id: alumni.id, email: alumni.email || '', role: 'user', source: 'alumni' });
+        res.cookie('sb-access-token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 });
+        return res.redirect('/alumni/' + alumni.id);
+      }
+    }
+    return res.render('pages/login', { error: 'Email atau password salah' });
   }
 
-  const token = signToken({ id: admin.id, email: admin.email, role: admin.role });
-  res.cookie('sb-access-token', token, {
-    httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax',
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-  });
-  res.redirect('/dashboard');
+  const admin = await prisma.admin.findUnique({ where: { email } });
+  if (admin) {
+    const token = signToken({ id: admin.id, email: admin.email, role: admin.role, source: 'admin' });
+    res.cookie('sb-access-token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 });
+    return res.redirect('/dashboard');
+  }
+
+  const alumni = await prisma.alumni.findFirst({ where: { email, isActive: true } });
+  if (!alumni) {
+    return res.render('pages/login', { error: 'Email atau password salah' });
+  }
+
+  const token = signToken({ id: alumni.id, email: alumni.email || '', role: 'user', source: 'alumni' });
+  res.cookie('sb-access-token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 });
+  res.redirect('/alumni/' + alumni.id);
 });
 
 router.get('/logout', async (_req, res) => {
@@ -213,7 +254,18 @@ router.post('/alumni/baru', async (req, res) => {
       return res.render('pages/alumni/form', { error: 'NIK sudah terdaftar', success: null, token: (req.cookies['sb-access-token'] as string) || '', maxFileSize: env.uploadMaxFileSize, maxFileSizeKb: env.uploadMaxFileSizeKb });
     }
 
-    await prisma.alumni.create({
+    if (email) {
+      const emailAlumni = await prisma.alumni.findFirst({ where: { email } });
+      if (emailAlumni) {
+        return res.render('pages/alumni/form', { error: 'Email sudah terdaftar', success: null, token: (req.cookies['sb-access-token'] as string) || '', maxFileSize: env.uploadMaxFileSize, maxFileSizeKb: env.uploadMaxFileSizeKb });
+      }
+      const emailAdmin = await prisma.admin.findUnique({ where: { email } });
+      if (emailAdmin) {
+        return res.render('pages/alumni/form', { error: 'Email tidak dapat digunakan', success: null, token: (req.cookies['sb-access-token'] as string) || '', maxFileSize: env.uploadMaxFileSize, maxFileSizeKb: env.uploadMaxFileSizeKb });
+      }
+    }
+
+    const created = await prisma.alumni.create({
       data: {
         name, nik,
         gender: gender || undefined,
@@ -231,6 +283,7 @@ router.post('/alumni/baru', async (req, res) => {
         villageName: villageName || undefined,
         careerStatus: careerStatus || undefined,
         isActive: false,
+        password: await bcrypt.hash('user123', 10),
       },
     });
 
@@ -247,7 +300,12 @@ router.get('/alumni/:id', async (req, res) => {
       include: { education: true, certificates: true, organizations: true, portfolios: true, businesses: true, socialLinks: true },
     });
 
-    if (!alumni || !alumni.isActive) return res.status(404).render('pages/alumni/detail', { a: null, error: 'Alumni not found' });
+    if (!alumni) return res.status(404).render('pages/alumni/detail', { a: null, error: 'Alumni not found' });
+
+    const isOwner = !!alumni.email && !!res.locals.user && res.locals.user.email === alumni.email;
+    if (!alumni.isActive && !isOwner && (!res.locals.user || (res.locals.user.role !== 'admin' && res.locals.user.role !== 'super_admin'))) {
+      return res.status(404).render('pages/alumni/detail', { a: null, error: 'Alumni not found' });
+    }
 
     const a: Record<string, unknown> = { ...alumni } as Record<string, unknown>;
 
@@ -268,7 +326,7 @@ router.get('/alumni/:id', async (req, res) => {
       a.businesses = (a.businesses as Record<string, unknown>[]).map(parseProducts);
     }
 
-    res.render('pages/alumni/detail', { a, error: null });
+    res.render('pages/alumni/detail', { a, error: null, token: (req.cookies['sb-access-token'] as string) || '' });
   } catch (err) {
     res.status(500).render('pages/alumni/detail', { a: null, error: (err as Error).message });
   }
@@ -291,6 +349,11 @@ router.get('/statistik', async (req, res) => {
 });
 
 router.get('/dashboard', requirePageAuth, async (req, res) => {
+  if (res.locals.user?.role === 'user') {
+    const alumni = await prisma.alumni.findFirst({ where: { email: res.locals.user.email } });
+    if (alumni) return res.redirect('/alumni/' + alumni.id);
+    return res.redirect('/alumni');
+  }
   try {
     const [total, totalActive, totalInactive, perProvinsi] = await Promise.all([
       prisma.alumni.count(),
