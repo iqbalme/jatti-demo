@@ -116,9 +116,11 @@
               <td class="px-4 py-3.5 text-right">
                 <div class="flex items-center justify-end gap-1 sm:gap-2">
                   <% if (!a.isBuiltin) { %>
+                    <% if (user.isBuiltin || (a.id !== user.id && a.role !== user.role)) { %>
                     <button onclick="changeRole('<%= a.id %>', '<%= a.role === 'super_admin' ? 'admin' : 'super_admin' %>')" class="inline-flex items-center gap-1 px-2 sm:px-3 py-1.5 bg-amber-50 text-amber-600 rounded-lg text-xs font-medium hover:bg-amber-100 transition-colors" title="<%= a.role === 'super_admin' ? 'Turunkan' : 'Naikkan' %>">
                       <%= a.role === 'super_admin' ? '\u2B07 ' : '\u2B06 ' %><span class="hidden sm:inline"><%= a.role === 'super_admin' ? 'Turunkan' : 'Naikkan' %></span>
                     </button>
+                    <% } %>
                     <button onclick="deleteAdmin('<%= a.id %>')" class="inline-flex items-center gap-1 px-2 sm:px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-xs font-medium hover:bg-red-100 transition-colors">
                       <span class="material-symbols-outlined" style="font-size:14px">delete</span><span class="hidden sm:inline">Hapus</span>
                     </button>

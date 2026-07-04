@@ -32,7 +32,7 @@ async function loadUser(req: Request, res: Response, next: NextFunction) {
     } else {
       const admin = await prisma.admin.findUnique({ where: { id: decoded.id } });
       if (admin) {
-        res.locals.user = { id: admin.id, email: admin.email, role: admin.role, fullName: admin.name, source: 'admin' };
+        res.locals.user = { id: admin.id, email: admin.email, role: admin.role, fullName: admin.name, source: 'admin', isBuiltin: admin.isBuiltin };
       }
     }
   } catch {}

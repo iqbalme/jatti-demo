@@ -13,6 +13,7 @@ declare global {
         fullName?: string;
         avatarUrl?: string;
         source?: 'admin' | 'alumni';
+        isBuiltin?: boolean;
       };
     }
   }
@@ -28,7 +29,7 @@ async function lookupUser(decoded: { id: string; email: string; role: string; so
   }
   const admin = await prisma.admin.findUnique({ where: { id: decoded.id } });
   if (!admin) return null;
-  return { id: admin.id, email: admin.email, role: admin.role, fullName: admin.name, source: 'admin' as const };
+  return { id: admin.id, email: admin.email, role: admin.role, fullName: admin.name, source: 'admin' as const, isBuiltin: admin.isBuiltin };
 }
 
 export async function requireAuth(req: Request, res: Response, next: NextFunction) {

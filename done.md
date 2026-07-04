@@ -1,6 +1,7 @@
 # Done
 
 ## 2026-07-05
+- [x] Proteksi role admin: tidak bisa mengubah role sendiri atau admin selevel — backend (`src/routes/admins.ts`) + frontend sembunyikan tombol (`src/views/pages/dashboard/admins.ejs`)
 - [x] Add Reset Password & Jadikan Admin buttons to dashboard edit form (`src/views/pages/dashboard/alumni-form.ejs`) — section "Tindakan Admin" di paling bawah form, ganti confirm()/alert() native → modal konfirmasi + toast notification
 - [x] Responsive layout: hamburger menu for all public pages (`/`, `/alumni`, `/alumni/baru`, `/alumni/:id`, `/statistik`)
 - [x] Responsive layout: hamburger menu for all dashboard pages (index, alumni-list, alumni-form, admins, admin-form, password, settings)

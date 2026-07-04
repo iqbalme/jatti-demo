@@ -90,6 +90,10 @@ router.put('/:id/role', async (req, res) => {
     const existing = await prisma.admin.findUnique({ where: { id: req.params.id } });
     if (!existing) return sendError(res, 404, 'Admin not found');
     if (existing.isBuiltin) return sendError(res, 403, 'Cannot change role of built-in admin');
+    if (!req.user!.isBuiltin) {
+      if (existing.id === req.user!.id) return sendError(res, 403, 'Tidak bisa mengubah role sendiri');
+      if (existing.role === req.user!.role) return sendError(res, 403, 'Tidak bisa mengubah role admin yang selevel');
+    }
 
     if (authProvider !== 'local') {
       const supabase = getSupabaseAdmin();
