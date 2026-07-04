@@ -128,8 +128,9 @@ Akses di `http://localhost:3000`.
 | Perintah | Fungsi |
 |---|---|
 | `pnpm dev` | Development server (`tsx watch`) |
-| `pnpm build` | Compile TypeScript |
+| `pnpm build` | Compile TypeScript + copy views ke `dist/` |
 | `pnpm start` | Production server |
+| `pnpm vercel-build` | Build untuk Vercel (prisma generate + tsc + copy views) |
 | `pnpm db:generate` | Generate Prisma Client (deteksi provider otomatis) |
 | `pnpm db:migrate` | Migrasi database (deteksi provider otomatis) |
 | `pnpm db:push` | Push schema tanpa file migrasi (deteksi provider otomatis) |
@@ -189,6 +190,52 @@ Test files berada di `src/__tests__/`:
 - Untuk `AUTH_PROVIDER=local`, field `password` di tabel `admins` akan terisi hash bcrypt. Untuk `AUTH_PROVIDER=supabase`, field tersebut `NULL` (password dikelola Supabase Auth).
 
 ---
+
+---
+
+## Deployment
+
+### Vercel
+
+Aplikasi siap di-deploy ke Vercel. Hubungkan repo GitHub dan set **Root Directory** ke `/`.
+
+**Environment variables** yang wajib diisi di Vercel Dashboard:
+```
+DATABASE_URL=postgresql://...
+AUTH_PROVIDER=supabase
+STORAGE_PROVIDER=supabase
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+SUPABASE_SERVICE_ROLE_KEY=...
+SUPABASE_JWT_SECRET=...
+SUPABASE_STORAGE_BUCKET=alumni-photos
+SUPER_ADMIN_EMAIL=...
+SUPER_ADMIN_PASSWORD=...
+PORT=3000
+NODE_ENV=production
+```
+
+> **Catatan:** Storage lokal (`STORAGE_PROVIDER=local`) tidak bisa dipakai di Vercel karena filesystem ephemeral. Wajib pakai Supabase Storage.
+
+**Database:** Pastikan sudah pakai connection pooling (contoh: Supabase Pooler atau Neon Pooler) agar tidak kehabisan koneksi di serverless.
+
+**Migrasi database:** Jalankan `pnpm db:migrate` atau `pnpm db:push` secara terpisah (tidak otomatis di Vercel). Bisa via local pointing ke production DB, atau via GitHub Actions.
+
+### VPS (Manual)
+
+```bash
+pnpm install
+pnpm build        # tsc + copy views ke dist/
+pnpm start        # node dist/index.js
+```
+
+Pastikan `.env` terisi lengkap dan database sudah siap.
+
+### Catatan Build
+
+- `pnpm build` — kompilasi TypeScript + copy folder `src/views` ke `dist/views` (agar EJS template bisa diakses runtime)
+- `pnpm vercel-build` — otomatis dipakai Vercel (prisma generate + tsc + copy views)
+- `tsconfig.json` menggunakan `module: "CommonJS"` karena codebase memakai `__dirname`
 
 ## Pengaturan Website
 

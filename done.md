@@ -1,5 +1,8 @@
 # Done
 
+## 2026-07-04
+- [x] Setup deployment Vercel — `vercel.json`, `vercel-build` script, update `tsconfig.json` (`module: CommonJS`, `moduleResolution: node`), update `build` script (copy views), update `guide.md` dengan section Deployment
+
 ## 2026-06-30
 - [x] Alumni publik bisa tambah data, isActive=false menunggu aktivasi admin; admin langsung isActive=true (`src/routes/alumni.ts`, `src/middleware/auth.ts`)
 - [x] Validasi NIK unik — error 409 "NIK sudah terdaftar" (`src/routes/alumni.ts`)
