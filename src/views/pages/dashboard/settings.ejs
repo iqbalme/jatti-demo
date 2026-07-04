@@ -1,0 +1,389 @@
+<%- include('../../partials/header') %>
+<style>
+  .toast-enter { animation: toastIn 0.3s ease-out; }
+  .toast-leave { animation: toastOut 0.3s ease-in forwards; }
+  @keyframes toastIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes toastOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+</style>
+<div id="toastContainer" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none" style="min-width:320px;max-width:420px"></div>
+<div class="min-h-screen flex flex-col">
+  <header class="bg-white border-b border-gray-200">
+    <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+      <h1 class="text-xl font-bold" style="color: var(--brand-color)"><%= typeof settings !== 'undefined' && settings.site_name ? settings.site_name : 'AlumniLink' %> Dashboard</h1>
+      <div class="flex items-center gap-4">
+        <a href="/dashboard" class="text-sm text-gray-600 hover:underline">Dashboard</a>
+        <a href="/dashboard/alumni" class="text-sm text-blue-600 hover:underline">Kelola Alumni</a>
+        <a href="/dashboard/admins" class="text-sm text-blue-600 hover:underline">Kelola Admin</a>
+        <a href="/logout" class="text-sm text-red-600 hover:underline">Keluar</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="py-10 px-4" style="background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to));">
+    <div class="max-w-4xl mx-auto">
+      <a href="/dashboard" class="text-sm text-white/80 hover:text-white">&larr; Dashboard</a>
+      <h2 class="text-2xl font-bold text-white mt-1">Pengaturan Website</h2>
+    </div>
+  </section>
+
+  <main class="flex-1 max-w-4xl mx-auto px-4 py-8 w-full">
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-4"><%= error %></div>
+    <% } %>
+    <% if (typeof success !== 'undefined' && success) { %>
+      <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm mb-4"><%= success %></div>
+    <% } %>
+
+    <div class="space-y-6">
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+            <span class="material-symbols-outlined text-blue-600">settings</span>
+          </div>
+          <h2 class="text-lg font-semibold">Informasi Website</h2>
+        </div>
+        <form id="settingsForm" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="site_name">Nama Website</label>
+            <input id="site_name" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" value="<%= typeof settings !== 'undefined' && settings.site_name ? settings.site_name : 'AlumniLink' %>" />
+            <p class="text-xs text-gray-400 mt-1">Digunakan di header dan judul halaman</p>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="site_title">Title (Browser Tab)</label>
+            <input id="site_title" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" value="<%= typeof settings !== 'undefined' && settings.site_title ? settings.site_title : 'AlumniLink \u2014 Alumni Directory' %>" />
+            <p class="text-xs text-gray-400 mt-1">Muncul di title bar browser dan hasil pencarian</p>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="site_description">Deskripsi (SEO)</label>
+            <textarea id="site_description" rows="3" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"><%= typeof settings !== 'undefined' && settings.site_description ? settings.site_description : 'Alumni Directory and Tracer Study Platform' %></textarea>
+            <p class="text-xs text-gray-400 mt-1">Meta description untuk SEO, muncul di hasil pencarian Google</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="favicon_url">Favicon URL</label>
+              <input id="favicon_url" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" value="<%= typeof settings !== 'undefined' && settings.favicon_url ? settings.favicon_url : '' %>" placeholder="https://example.com/favicon.ico" />
+              <p class="text-xs text-gray-400 mt-1">URL gambar favicon (ikon di tab browser)</p>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="logo_url">Logo URL</label>
+              <input id="logo_url" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" value="<%= typeof settings !== 'undefined' && settings.logo_url ? settings.logo_url : '' %>" placeholder="https://example.com/logo.png" />
+              <p class="text-xs text-gray-400 mt-1">URL gambar logo untuk header website</p>
+            </div>
+          </div>
+          <button type="submit" class="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 flex items-center gap-2">
+            <span class="material-symbols-outlined" style="font-size:18px">save</span>Simpan Pengaturan
+          </button>
+        </form>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+            <span class="material-symbols-outlined text-purple-600">palette</span>
+          </div>
+          <h2 class="text-lg font-semibold">Tema & Warna</h2>
+        </div>
+        <form id="themeForm" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Preset Tema</label>
+            <div class="flex gap-4">
+              <label class="flex items-center gap-2 cursor-pointer text-sm">
+                <input type="radio" name="theme_preset" value="default" <%= typeof settings !== 'undefined' && settings.theme_preset === 'custom' ? '' : 'checked' %> class="w-4 h-4 text-blue-600" />
+                <span>Default (Biru)</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer text-sm">
+                <input type="radio" name="theme_preset" value="custom" <%= typeof settings !== 'undefined' && settings.theme_preset === 'custom' ? 'checked' : '' %> class="w-4 h-4 text-blue-600" />
+                <span>Kustom</span>
+              </label>
+            </div>
+          </div>
+          <div id="customThemeFields" class="<%= typeof settings !== 'undefined' && settings.theme_preset === 'custom' ? '' : 'hidden' %> space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="theme_primary">Warna Teks Nama Website</label>
+                <div class="flex gap-2">
+                  <input type="color" id="theme_primary" class="w-10 h-10 rounded-lg border border-gray-300 cursor-pointer p-0.5" value="<%= typeof settings !== 'undefined' && settings.theme_primary ? settings.theme_primary : '#2563eb' %>" />
+                  <input type="text" id="theme_primary_hex" class="flex-1 px-3 py-2 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 outline-none font-mono" value="<%= typeof settings !== 'undefined' && settings.theme_primary ? settings.theme_primary : '#2563eb' %>" />
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="theme_gradient_from">Gradient — Warna Awal</label>
+                <div class="flex gap-2">
+                  <input type="color" id="theme_gradient_from" class="w-10 h-10 rounded-lg border border-gray-300 cursor-pointer p-0.5" value="<%= typeof settings !== 'undefined' && settings.theme_gradient_from ? settings.theme_gradient_from : '#2563eb' %>" />
+                  <input type="text" id="theme_gradient_from_hex" class="flex-1 px-3 py-2 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 outline-none font-mono" value="<%= typeof settings !== 'undefined' && settings.theme_gradient_from ? settings.theme_gradient_from : '#2563eb' %>" />
+                </div>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="theme_gradient_to">Gradient — Warna Akhir</label>
+                <div class="flex gap-2">
+                  <input type="color" id="theme_gradient_to" class="w-10 h-10 rounded-lg border border-gray-300 cursor-pointer p-0.5" value="<%= typeof settings !== 'undefined' && settings.theme_gradient_to ? settings.theme_gradient_to : '#2dd4bf' %>" />
+                  <input type="text" id="theme_gradient_to_hex" class="flex-1 px-3 py-2 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 outline-none font-mono" value="<%= typeof settings !== 'undefined' && settings.theme_gradient_to ? settings.theme_gradient_to : '#2dd4bf' %>" />
+                </div>
+              </div>
+            </div>
+            <div class="p-4 rounded-xl bg-gray-50 border border-gray-200">
+              <p class="text-xs text-gray-500 mb-2">Pratinjau gradient:</p>
+              <div class="h-10 rounded-lg" id="gradientPreview" style="background: linear-gradient(135deg, <%= typeof settings !== 'undefined' && settings.theme_gradient_from ? settings.theme_gradient_from : '#2563eb' %>, <%= typeof settings !== 'undefined' && settings.theme_gradient_to ? settings.theme_gradient_to : '#2dd4bf' %>)"></div>
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <button type="button" id="resetThemeBtn" class="px-5 py-2.5 bg-gray-200 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-300 transition-all flex items-center gap-2">
+              <span class="material-symbols-outlined" style="font-size:18px">restart_alt</span>Reset ke Default
+            </button>
+            <button type="submit" id="saveThemeBtn" class="px-5 py-2.5 bg-purple-600 text-white rounded-xl text-sm font-medium hover:bg-purple-700 transition-all flex items-center gap-2">
+              <span class="material-symbols-outlined" style="font-size:18px">save</span>Simpan Tema
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+            <span class="material-symbols-outlined text-blue-600">backup</span>
+          </div>
+          <h2 class="text-lg font-semibold">Backup & Restore Database</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="p-4 rounded-xl bg-gray-50 border border-gray-200">
+            <h3 class="text-sm font-semibold text-gray-700 mb-2">Export Database</h3>
+            <p class="text-xs text-gray-500 mb-4">Download seluruh data database sebagai file JSON</p>
+            <button id="exportBtn" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 transition-all flex items-center gap-2">
+              <span class="material-symbols-outlined" style="font-size:18px">download</span>Download Backup
+            </button>
+          </div>
+          <div class="p-4 rounded-xl bg-gray-50 border border-gray-200">
+            <h3 class="text-sm font-semibold text-gray-700 mb-2">Import Database</h3>
+            <p class="text-xs text-gray-500 mb-4">Restore data dari file backup JSON. Data lama akan diganti.</p>
+            <form id="importForm" enctype="multipart/form-data">
+              <div class="flex gap-2">
+                <input type="file" id="importFile" accept=".json" class="flex-1 px-3 py-2 rounded-xl border border-gray-300 bg-white text-sm file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-blue-100 file:text-blue-700 file:text-xs file:font-semibold" />
+                <button type="submit" class="px-5 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-medium hover:bg-emerald-700 transition-all flex items-center gap-2">
+                  <span class="material-symbols-outlined" style="font-size:18px">upload</span>Restore
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+var token = '<%= typeof token !== 'undefined' ? token : '' %>';
+
+function escapeHtml(str) {
+  var d = document.createElement('div'); d.textContent = str; return d.innerHTML;
+}
+
+function showToast(message, type) {
+  type = type || 'info';
+  var colors = {
+    success: { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-800', icon: 'check_circle', iconBg: 'bg-green-100', iconColor: 'text-green-600' },
+    error:   { bg: 'bg-red-50',    border: 'border-red-200',   text: 'text-red-800',   icon: 'error',         iconBg: 'bg-red-100',   iconColor: 'text-red-600' },
+    warning: { bg: 'bg-yellow-50', border: 'border-yellow-200', text: 'text-yellow-800', icon: 'warning',       iconBg: 'bg-yellow-100', iconColor: 'text-yellow-600' },
+    info:    { bg: 'bg-blue-50',   border: 'border-blue-200',  text: 'text-blue-800',  icon: 'info',          iconBg: 'bg-blue-100',  iconColor: 'text-blue-600' },
+  };
+  var c = colors[type] || colors.info;
+  var container = document.getElementById('toastContainer');
+  var el = document.createElement('div');
+  el.className = 'pointer-events-auto toast-enter ' + c.bg + ' ' + c.border + ' border rounded-xl shadow-lg px-4 py-3 flex items-start gap-3';
+  el.innerHTML =
+    '<div class="w-8 h-8 rounded-full ' + c.iconBg + ' flex items-center justify-center flex-shrink-0">' +
+      '<span class="material-symbols-outlined ' + c.iconColor + '" style="font-size:18px">' + c.icon + '</span>' +
+    '</div>' +
+    '<p class="text-sm ' + c.text + ' flex-1 pt-0.5">' + escapeHtml(message) + '</p>' +
+    '<button onclick="this.closest(\'div\').classList.add(\'toast-leave\');setTimeout(function(){this.closest(\'div\').remove()}.bind(this),300)" class="flex-shrink-0 ' + c.text + ' hover:opacity-70">' +
+      '<span class="material-symbols-outlined" style="font-size:16px">close</span>' +
+    '</button>';
+  container.appendChild(el);
+  setTimeout(function() {
+    if (el.parentNode) { el.classList.add('toast-leave'); setTimeout(function() { if (el.parentNode) el.remove(); }, 300); }
+  }, 4000);
+}
+
+// --- Theme toggle ---
+document.querySelectorAll('[name="theme_preset"]').forEach(function(r) {
+  r.addEventListener('change', function() {
+    document.getElementById('customThemeFields').classList.toggle('hidden', this.value !== 'custom');
+  });
+});
+
+// --- Color picker sync ---
+['theme_primary', 'theme_gradient_from', 'theme_gradient_to'].forEach(function(id) {
+  var color = document.getElementById(id);
+  var hex = document.getElementById(id + '_hex');
+  if (color && hex) {
+    color.addEventListener('input', function() { hex.value = this.value; updateGradientPreview(); });
+    hex.addEventListener('input', function() { if (/^#[0-9a-f]{6}$/i.test(this.value)) { color.value = this.value; updateGradientPreview(); } });
+  }
+});
+
+function updateGradientPreview() {
+  var el = document.getElementById('gradientPreview');
+  if (!el) return;
+  var from = document.getElementById('theme_gradient_from_hex')?.value || '#2563eb';
+  var to = document.getElementById('theme_gradient_to_hex')?.value || '#2dd4bf';
+  el.style.background = 'linear-gradient(135deg, ' + from + ', ' + to + ')';
+}
+
+// --- Theme form submit ---
+document.getElementById('themeForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  var presetEl = document.querySelector('[name="theme_preset"]:checked');
+  var preset = presetEl ? presetEl.value : 'default';
+  var btn = document.getElementById('saveThemeBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px">sync</span>Menyimpan...';
+
+  var body = { theme_preset: preset };
+  if (preset === 'custom') {
+    body.theme_primary = document.getElementById('theme_primary_hex').value;
+    body.theme_gradient_from = document.getElementById('theme_gradient_from_hex').value;
+    body.theme_gradient_to = document.getElementById('theme_gradient_to_hex').value;
+  }
+
+  try {
+    var res = await fetch('/api/v1/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify(body),
+    });
+    var data = await res.json();
+    if (data.success) {
+      showToast('Tema berhasil disimpan', 'success');
+      setTimeout(function() { location.reload(); }, 800);
+    } else {
+      showToast(data.error || 'Gagal menyimpan tema', 'error');
+    }
+  } catch (e) {
+    showToast('Terjadi kesalahan: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px">save</span>Simpan Tema';
+  }
+});
+
+// --- Reset theme ---
+document.getElementById('resetThemeBtn')?.addEventListener('click', async function() {
+  var ok = confirm('Reset tema ke default (biru)?');
+  if (!ok) return;
+  try {
+    var res = await fetch('/api/v1/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({
+        theme_preset: 'default',
+        theme_primary: '#2563eb',
+        theme_gradient_from: '#2563eb',
+        theme_gradient_to: '#2dd4bf',
+      }),
+    });
+    var data = await res.json();
+    if (data.success) {
+      showToast('Tema direset ke default', 'success');
+      setTimeout(function() { location.reload(); }, 800);
+    } else {
+      showToast(data.error || 'Gagal reset tema', 'error');
+    }
+  } catch (e) {
+    showToast('Terjadi kesalahan: ' + e.message, 'error');
+  }
+});
+
+document.getElementById('settingsForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  var btn = this.querySelector('button[type="submit"]');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px">sync</span>Menyimpan...';
+
+  try {
+    var res = await fetch('/api/v1/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({
+        site_name: document.getElementById('site_name').value,
+        site_title: document.getElementById('site_title').value,
+        site_description: document.getElementById('site_description').value,
+        favicon_url: document.getElementById('favicon_url').value,
+        logo_url: document.getElementById('logo_url').value,
+      }),
+    });
+    var data = await res.json();
+    if (data.success) {
+      showToast('Pengaturan berhasil disimpan', 'success');
+      setTimeout(function() { location.reload(); }, 800);
+    } else {
+      showToast(data.error || 'Gagal menyimpan pengaturan', 'error');
+    }
+  } catch (e) {
+    showToast('Terjadi kesalahan: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px">save</span>Simpan Pengaturan';
+  }
+});
+
+document.getElementById('exportBtn').addEventListener('click', async function() {
+  this.disabled = true;
+  this.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px">sync</span>Menyiapkan...';
+  try {
+    var res = await fetch('/api/v1/settings/export', {
+      headers: { 'Authorization': 'Bearer ' + token },
+    });
+    if (!res.ok) { showToast('Gagal export database', 'error'); return; }
+    var blob = await res.blob();
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'alumnilink-backup.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('Backup berhasil di-download', 'success');
+  } catch (e) {
+    showToast('Terjadi kesalahan: ' + e.message, 'error');
+  } finally {
+    this.disabled = false;
+    this.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px">download</span>Download Backup';
+  }
+});
+
+document.getElementById('importForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  var file = document.getElementById('importFile').files[0];
+  if (!file) { showToast('Pilih file backup terlebih dahulu', 'warning'); return; }
+
+  var confirmed = confirm('PERHATIAN: Import akan MENGGANTI seluruh data yang ada saat ini. Lanjutkan?');
+  if (!confirmed) return;
+
+  var btn = this.querySelector('button[type="submit"]');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px">sync</span>Merestore...';
+
+  try {
+    var formData = new FormData();
+    formData.append('file', file);
+    var res = await fetch('/api/v1/settings/import', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token },
+      body: formData,
+    });
+    var data = await res.json();
+    if (data.success) {
+      showToast('Database berhasil di-restore', 'success');
+      setTimeout(function() { location.reload(); }, 1000);
+    } else {
+      showToast(data.error || 'Gagal import database', 'error');
+    }
+  } catch (e) {
+    showToast('Terjadi kesalahan: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px">upload</span>Restore';
+  }
+});
+</script>
+<%- include('../../partials/footer') %>

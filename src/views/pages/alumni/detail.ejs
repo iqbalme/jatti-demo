@@ -1,0 +1,245 @@
+<%- include('../../partials/header') %>
+<style>
+  .soft-gradient-bg { background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to)); opacity: 0.15; }
+  .glass-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(226, 232, 240, 0.5); }
+</style>
+<div class="min-h-screen flex flex-col">
+  <header class="w-full top-0 sticky z-50 bg-white shadow-sm border-b border-gray-200">
+    <div class="flex items-center justify-between h-16 px-4 max-w-7xl mx-auto">
+      <a href="/" class="text-xl font-bold" style="color: var(--brand-color)"><%= typeof settings !== 'undefined' && settings.site_name ? settings.site_name : 'AlumniLink' %></a>
+      <div class="flex items-center gap-4">
+        <a href="/alumni" class="text-sm text-blue-600 hover:underline flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:18px">arrow_back</span>Kembali</a>
+        <a href="/statistik" class="text-sm text-blue-600 hover:underline">Statistik</a>
+        <% if (typeof user !== 'undefined' && user) { %>
+          <a href="/logout" class="text-sm font-medium px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Keluar</a>
+        <% } else { %>
+          <a href="/login" class="text-sm font-medium px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Masuk</a>
+        <% } %>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1">
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="max-w-4xl mx-auto px-4 py-8">
+        <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"><%= error %></div>
+      </div>
+    <% } else if (typeof a !== 'undefined' && a) { %>
+      <header class="relative soft-gradient-bg pt-12 pb-24 px-4 border-b border-gray-200/20 overflow-hidden">
+        <div class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-[100px]"></div>
+        <div class="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-64 h-64 bg-teal-500/10 rounded-full blur-[80px]"></div>
+        <div class="max-w-7xl mx-auto relative z-10">
+          <div class="flex flex-col md:flex-row items-center md:items-end gap-8">
+            <div class="relative group">
+              <div class="absolute -inset-1 style="background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to));" rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
+              <% if (a.photoUrl) { %>
+                <img src="<%= a.photoUrl %>" class="relative w-32 h-32 md:w-44 md:h-44 rounded-2xl object-cover shadow-xl border-4 border-white" alt="<%= a.name %>" />
+              <% } else { %>
+                <div class="relative w-32 h-32 md:w-44 md:h-44 rounded-2xl shadow-xl border-4 border-white style="background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to));" flex items-center justify-center text-white font-bold text-5xl"><%= (a.name || '?').charAt(0).toUpperCase() %></div>
+              <% } %>
+            </div>
+            <div class="flex-1 text-center md:text-left">
+              <h1 class="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight mb-2"><%= a.name %></h1>
+              <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-3">
+                <span class="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">NIK: <%= a.nik || '-' %></span>
+                <span class="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold"><%= a.gender || '-' %></span>
+                <span class="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold"><%= a.maritalStatus || '-' %></span>
+              </div>
+              <p class="text-lg text-gray-600 mb-3 font-medium"><%= a.position ? a.position + ' di ' + a.institutionName : a.careerStatus || '' %></p>
+              <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 text-gray-500 text-sm">
+                <span class="flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:18px">location_on</span><%=
+  [a.villageName, a.districtName, a.regencyName, a.province].filter(Boolean).join(', ') || '-'
+%></span>
+                <span class="flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:18px">mail</span><%= a.email %></span>
+                <span class="flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:18px">phone</span><%= a.phone %></span>
+              </div>
+            </div>
+            <div class="flex gap-3 pb-2">
+              <% if (typeof user !== 'undefined' && user) { %>
+                <a href="/dashboard/alumni/<%= a.id %>/edit" class="flex items-center gap-2 px-5 py-2.5 bg-amber-500 text-white rounded-xl text-sm font-medium hover:bg-amber-600 shadow-lg shadow-amber-500/20"><span class="material-symbols-outlined" style="font-size:18px">edit</span>Edit</a>
+              <% } %>
+              <a href="mailto:<%= a.email %>" class="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 shadow-lg shadow-blue-600/20"><span class="material-symbols-outlined" style="font-size:18px">email</span>Kirim Email</a>
+              <a href="tel:<%= (a.phone || '').replace(/[^0-9+]/g, '') %>" class="flex items-center gap-2 px-5 py-2.5 bg-white text-blue-600 border border-blue-200 rounded-xl text-sm font-medium hover:bg-gray-50"><span class="material-symbols-outlined" style="font-size:18px">phone</span>Hubungi</a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="max-w-7xl mx-auto px-4 -mt-10 pb-20">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div class="lg:col-span-8 space-y-6">
+            <!-- Data Pribadi -->
+            <section class="glass-card rounded-2xl p-6 shadow-sm bg-white/80">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center"><span class="material-symbols-outlined text-blue-600">badge</span></div>
+                <h2 class="text-lg font-semibold">Data Pribadi</h2>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="flex items-start gap-3"><span class="material-symbols-outlined text-blue-600 mt-0.5" style="font-size:20px">badge</span><div><p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">NIK</p><p class="text-sm text-gray-900"><%= a.nik || '-' %></p></div></div>
+                <div class="flex items-start gap-3"><span class="material-symbols-outlined text-blue-600 mt-0.5" style="font-size:20px">person</span><div><p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Nama Lengkap</p><p class="text-sm text-gray-900"><%= a.name %></p></div></div>
+                <div class="flex items-start gap-3"><span class="material-symbols-outlined text-blue-600 mt-0.5" style="font-size:20px"><%= a.gender === 'Laki-laki' ? 'male' : 'female' %></span><div><p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Jenis Kelamin</p><p class="text-sm text-gray-900"><%= a.gender || '-' %></p></div></div>
+                <div class="flex items-start gap-3"><span class="material-symbols-outlined text-blue-600 mt-0.5" style="font-size:20px">favorite</span><div><p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Status Pernikahan</p><p class="text-sm text-gray-900"><%= a.maritalStatus || '-' %></p></div></div>
+                <div class="flex items-start gap-3"><span class="material-symbols-outlined text-blue-600 mt-0.5" style="font-size:20px">phone</span><div><p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">No. HP/WhatsApp</p><p class="text-sm text-gray-900"><%= a.phone || '-' %></p></div></div>
+                <div class="flex items-start gap-3"><span class="material-symbols-outlined text-blue-600 mt-0.5" style="font-size:20px">email</span><div><p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Email Aktif</p><p class="text-sm text-gray-900"><%= a.email || '-' %></p></div></div>
+                <div class="flex items-start gap-3"><span class="material-symbols-outlined text-blue-600 mt-0.5" style="font-size:20px">location_on</span><div><p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Wilayah</p><p class="text-sm text-gray-900"><%= [a.villageName, a.districtName, a.regencyName, a.province].filter(Boolean).join(', ') || '-' %></p></div></div>
+                <div class="md:col-span-2 flex items-start gap-3"><span class="material-symbols-outlined text-blue-600 mt-0.5" style="font-size:20px">home</span><div><p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Alamat Domisili</p><p class="text-sm text-gray-900"><%= a.address || '-' %></p></div></div>
+              </div>
+            </section>
+
+            <!-- Pendidikan -->
+            <% if (typeof a.education !== 'undefined' && a.education && a.education.length) { %>
+            <section class="glass-card rounded-2xl p-6 shadow-sm bg-white/80">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center"><span class="material-symbols-outlined text-blue-600">school</span></div>
+                <h2 class="text-lg font-semibold">Latar Belakang Pendidikan</h2>
+              </div>
+              <div class="space-y-3">
+                <% a.education.forEach(function(e) { %>
+                  <div class="flex gap-4 p-4 rounded-xl bg-gray-50/50">
+                    <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined text-blue-600">school</span></div>
+                    <div class="flex-1">
+                      <div class="flex items-center gap-2 mb-1"><span class="text-xs font-semibold bg-blue-600 text-white px-2 py-0.5 rounded-full"><%= e.level || '-' %></span><span class="text-xs text-gray-500"><%= e.country || '' %></span></div>
+                      <h4 class="text-sm font-bold"><%= e.major || '' %></h4>
+                      <p class="text-sm text-gray-500"><%= e.university || '' %><%= e.faculty ? ' • ' + e.faculty : '' %></p>
+                      <p class="text-xs text-blue-600 mt-1">Lulus <%= e.graduationYear || '-' %></p>
+                    </div>
+                  </div>
+                <% }); %>
+              </div>
+            </section>
+            <% } %>
+
+            <!-- Sertifikat -->
+            <% if (typeof a.certificates !== 'undefined' && a.certificates && a.certificates.length) { %>
+            <section class="glass-card rounded-2xl p-6 shadow-sm bg-white/80">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center"><span class="material-symbols-outlined text-blue-600">verified</span></div>
+                <h2 class="text-lg font-semibold">Sertifikat Kompetensi</h2>
+              </div>
+              <div class="space-y-3">
+                <% a.certificates.forEach(function(c) { %>
+                  <div class="flex gap-4 p-4 rounded-xl bg-gray-50/50">
+                    <div class="w-10 h-10 rounded-lg bg-green-100 text-green-600 flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined">verified</span></div>
+                    <div>
+                      <h4 class="text-sm font-bold"><%= c.name %></h4>
+                      <p class="text-sm text-gray-500"><%= c.publisher || '' %><%= c.validUntil ? ' • Berlaku s/d: ' + c.validUntil : '' %></p>
+                      <% if (c.url) { %><a href="<%= c.url %>" target="_blank" class="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline mt-1">Lihat Sertifikat<span class="material-symbols-outlined" style="font-size:14px">open_in_new</span></a><% } %>
+                    </div>
+                  </div>
+                <% }); %>
+              </div>
+            </section>
+            <% } %>
+
+            <!-- Organisasi -->
+            <% if (typeof a.organizations !== 'undefined' && a.organizations && a.organizations.length) { %>
+            <section class="glass-card rounded-2xl p-6 shadow-sm bg-white/80">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center"><span class="material-symbols-outlined text-blue-600">groups</span></div>
+                <h2 class="text-lg font-semibold">Pengalaman Organisasi</h2>
+              </div>
+              <div class="space-y-3">
+                <% a.organizations.forEach(function(o) { %>
+                  <div class="flex gap-4 p-4 rounded-xl bg-gray-50/50">
+                    <div class="w-10 h-10 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined">groups</span></div>
+                    <div><h4 class="text-sm font-bold"><%= o.name %></h4><p class="text-sm text-gray-500"><%= [o.type, o.level].filter(Boolean).join(' • ') %></p><p class="text-xs text-blue-600 font-medium"><%= [o.position, o.field].filter(Boolean).join(' • ') %></p></div>
+                  </div>
+                <% }); %>
+              </div>
+            </section>
+            <% } %>
+
+            <!-- Portfolio -->
+            <% if (typeof a.portfolios !== 'undefined' && a.portfolios && a.portfolios.length) { %>
+            <section class="glass-card rounded-2xl p-6 shadow-sm bg-white/80">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center"><span class="material-symbols-outlined text-blue-600">folder</span></div>
+                <h2 class="text-lg font-semibold">Portofolio</h2>
+              </div>
+              <div class="space-y-3">
+                <% a.portfolios.forEach(function(p) { %>
+                  <div class="flex gap-4 p-4 rounded-xl bg-gray-50/50">
+                    <div class="w-10 h-10 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center flex-shrink-0"><span class="material-symbols-outlined">folder</span></div>
+                    <div>
+                      <h4 class="text-sm font-bold"><%= p.name %></h4>
+                      <p class="text-sm text-gray-500">
+                        <%= p.type === 'Lainnya' && p.typeOther ? p.typeOther : p.type || '-' %>
+                        <%= p.year ? ' • ' + p.year : '' %>
+                      </p>
+                      <% if (p.link) { %><a href="<%= p.link %>" target="_blank" class="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline mt-1">Lihat Portofolio<span class="material-symbols-outlined" style="font-size:14px">open_in_new</span></a><% } %>
+                    </div>
+                  </div>
+                <% }); %>
+              </div>
+            </section>
+            <% } %>
+          </div>
+
+          <div class="lg:col-span-4 space-y-6">
+            <!-- Karir -->
+            <section class="glass-card rounded-2xl p-6 shadow-sm bg-white/80">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center"><span class="material-symbols-outlined text-blue-600">work</span></div>
+                <h2 class="text-lg font-semibold">Profil Pekerjaan</h2>
+              </div>
+              <div class="space-y-4">
+                <div><span class="text-xs font-semibold text-gray-500 uppercase block mb-1">Status</span><span class="inline-flex px-3 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-medium"><%= a.careerStatus || '-' %><%= a.careerOther ? ' - ' + a.careerOther : '' %></span></div>
+                <% if (a.institutionName) { %><div><span class="text-xs font-semibold text-gray-500 uppercase block mb-1">Instansi/Perusahaan</span><p class="text-base font-bold"><%= a.institutionName %></p></div><% } %>
+                <% if (a.institutionField) { %><div><span class="text-xs font-semibold text-gray-500 uppercase block mb-1">Bidang Instansi</span><p class="text-sm"><%= a.institutionField %></p></div><% } %>
+                <% if (a.position) { %><div><span class="text-xs font-semibold text-gray-500 uppercase block mb-1">Jabatan</span><p class="text-base font-bold text-blue-600"><%= a.position %></p></div><% } %>
+              </div>
+            </section>
+
+            <!-- Kontak & Media Sosial -->
+            <% if (typeof a.socialLinks !== 'undefined' && a.socialLinks && a.socialLinks.length) { %>
+            <section class="glass-card rounded-2xl p-6 shadow-sm bg-white/80">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center"><span class="material-symbols-outlined text-blue-600">contacts</span></div>
+                <h2 class="text-lg font-semibold">Kontak & Media Sosial</h2>
+              </div>
+              <div class="space-y-3">
+                <% a.socialLinks.forEach(function(s) { %>
+                  <a href="<%= s.url %>" target="_blank" class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors group">
+                    <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center"><span class="material-symbols-outlined" style="font-size:18px">link</span></div>
+                    <div class="flex-1 min-w-0"><p class="text-xs font-medium text-gray-700 truncate"><%= s.url %></p></div>
+                    <span class="material-symbols-outlined text-gray-400 group-hover:translate-x-1 transition-transform" style="font-size:16px">open_in_new</span>
+                  </a>
+                <% }); %>
+              </div>
+            </section>
+            <% } %>
+
+            <!-- Usaha -->
+            <% if (typeof a.businesses !== 'undefined' && a.businesses && a.businesses.length) { %>
+              <% a.businesses.forEach(function(b) { %>
+                <section class="glass-card rounded-2xl p-6 shadow-sm bg-white/80">
+                  <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center"><span class="material-symbols-outlined text-blue-600">store</span></div>
+                    <h3 class="text-base font-semibold"><%= b.name %></h3>
+                  </div>
+                  <div class="grid grid-cols-1 gap-3 text-sm">
+                    <div><span class="text-xs font-semibold text-gray-500 uppercase block">Bentuk Usaha</span><span class="text-gray-900"><%= b.legalForm || '-' %></span></div>
+                    <div><span class="text-xs font-semibold text-gray-500 uppercase block">Bidang Usaha</span><span class="text-gray-900"><%= b.field || '-' %></span></div>
+                    <div><span class="text-xs font-semibold text-gray-500 uppercase block">Skala Usaha</span><span class="text-gray-900"><%= b.scale || '-' %></span></div>
+                    <div><span class="text-xs font-semibold text-gray-500 uppercase block">Model Bisnis</span><span class="text-gray-900"><%= b.businessModel || '-' %></span></div>
+                    <% if (b.products && b.products.length) { %>
+                      <div><span class="text-xs font-semibold text-gray-500 uppercase block mb-1">Produk/Jasa Utama</span>
+                        <div class="flex flex-wrap gap-1.5"><% b.products.forEach(function(p) { %><span class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs"><%= p %></span><% }); %></div>
+                      </div>
+                    <% } %>
+                    <% if (b.website) { %><div><span class="text-xs font-semibold text-gray-500 uppercase block">Website</span><a href="<%= b.website %>" target="_blank" class="text-blue-600 hover:underline text-sm"><%= b.website %></a></div><% } %>
+                  </div>
+                </section>
+              <% }); %>
+            <% } %>
+
+            <a href="/alumni" class="flex items-center justify-center gap-2 w-full py-3 bg-gray-200 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-300 transition-all">
+              <span class="material-symbols-outlined" style="font-size:18px">arrow_back</span>Kembali ke Daftar Alumni
+            </a>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </main>
+</div>
+<%- include('../../partials/footer') %>

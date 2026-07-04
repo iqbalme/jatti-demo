@@ -1,0 +1,53 @@
+<%- include('../partials/header') %>
+<div class="min-h-screen flex flex-col">
+  <header class="bg-white border-b border-gray-200">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <h1 class="text-xl font-bold" style="color: var(--brand-color)"><%= typeof settings !== 'undefined' && settings.site_name ? settings.site_name : 'AlumniLink' %></h1>
+      <% if (typeof user !== 'undefined' && user) { %>
+        <a href="/logout" class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700">Keluar</a>
+      <% } else { %>
+        <a href="/login" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Masuk</a>
+      <% } %>
+    </div>
+  </header>
+
+  <main class="flex-1 flex flex-col items-center justify-center px-4 py-16 text-center">
+    <h2 class="text-4xl font-bold mb-4" style="color: var(--brand-color)"><%= typeof settings !== 'undefined' && settings.site_name ? settings.site_name : 'AlumniLink' %></h2>
+    <p class="text-lg text-gray-600 mb-8 max-w-md"><%= typeof settings !== 'undefined' && settings.site_description ? settings.site_description : 'Sistem informasi tracer study dan directory alumni' %></p>
+    <div class="flex gap-4">
+      <% if (typeof user !== 'undefined' && user) { %>
+        <a href="/dashboard" class="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700">Dashboard</a>
+      <% } else { %>
+        <a href="/login" class="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700">Masuk</a>
+      <% } %>
+      <a href="/alumni/baru" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-100">Tambah Data</a>
+      <a href="/alumni" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-100">Lihat Alumni</a>
+      <a href="/statistik" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-100">Statistik</a>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6 mt-16 max-w-4xl">
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+          <span class="material-symbols-outlined text-blue-600">groups</span>
+        </div>
+        <h3 class="font-semibold text-gray-900 mb-2">Directory Alumni</h3>
+        <p class="text-sm text-gray-600">Database lengkap alumni dengan informasi profil, pendidikan, dan karir</p>
+      </div>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+          <span class="material-symbols-outlined text-blue-600">analytics</span>
+        </div>
+        <h3 class="font-semibold text-gray-900 mb-2">Tracer Study</h3>
+        <p class="text-sm text-gray-600">Pemantauan dan pelacakan status alumni setelah lulus</p>
+      </div>
+      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+          <span class="material-symbols-outlined text-blue-600">database</span>
+        </div>
+        <h3 class="font-semibold text-gray-900 mb-2">Data Terpusat</h3>
+        <p class="text-sm text-gray-600">Semua data alumni tersimpan aman dan terintegrasi</p>
+      </div>
+    </div>
+  </main>
+</div>
+<%- include('../partials/footer') %>

@@ -1,0 +1,350 @@
+import { Router } from 'express';
+import { Prisma } from '@prisma/client';
+import { prisma } from '../utils/db';
+import { requireAuth, requireRole, optionalAuth } from '../middleware/auth';
+import { sendSuccess, sendPaginated, sendError } from '../utils/response';
+
+const router = Router();
+
+const alumniInclude = {
+  education: true,
+  certificates: true,
+  organizations: true,
+  portfolios: true,
+  businesses: true,
+  socialLinks: true,
+} as const;
+
+const ADMIN_ROLES = ['admin', 'super_admin'];
+
+function isAdmin(req: { user?: { role?: string } }): boolean {
+  return !!req.user && !!req.user.role && ADMIN_ROLES.includes(req.user.role);
+}
+
+function isSuperAdmin(req: { user?: { role?: string } }): boolean {
+  return req.user?.role === 'super_admin';
+}
+
+async function getAdminEmailSet(): Promise<Set<string>> {
+  const admins = await prisma.admin.findMany({ select: { email: true, isBuiltin: true } });
+  return new Set(admins.map(a => a.email.toLowerCase()));
+}
+
+async function getBuiltinAdminEmailSet(): Promise<Set<string>> {
+  const admins = await prisma.admin.findMany({ where: { isBuiltin: true }, select: { email: true } });
+  return new Set(admins.map(a => a.email.toLowerCase()));
+}
+
+const REQUIRED_FIELDS = ['name', 'nik'] as const;
+
+router.post('/', optionalAuth, async (req, res) => {
+  try {
+    const missing = REQUIRED_FIELDS.filter((f) => !req.body[f] || !String(req.body[f]).trim());
+    if (missing.length) {
+      return sendError(res, 400, `Field wajib diisi: ${missing.join(', ')}`);
+    }
+
+    if (!/^\d{16}$/.test(req.body.nik)) {
+      return sendError(res, 400, 'NIK harus 16 digit angka');
+    }
+
+    const { education: edu, certificates: cert, organizations: org, portfolios: port, businesses: bus, socialLinks: social, ...alumniData } = req.body;
+
+    const existing = await prisma.alumni.findUnique({ where: { nik: alumniData.nik as string } });
+    if (existing) {
+      return sendError(res, 409, 'NIK sudah terdaftar');
+    }
+
+    const isAdminUser = isAdmin(req);
+
+    const created = await prisma.alumni.create({
+      data: {
+        ...alumniData,
+        products: undefined,
+        isActive: isAdminUser ? true : false,
+        education: edu?.length ? { createMany: { data: edu.map((e: Record<string, unknown>) => e) } } : undefined,
+        certificates: cert?.length ? { createMany: { data: cert.map((c: Record<string, unknown>) => c) } } : undefined,
+        organizations: org?.length ? { createMany: { data: org.map((o: Record<string, unknown>) => o) } } : undefined,
+        portfolios: port?.length ? { createMany: { data: port.map((p: Record<string, unknown>) => p) } } : undefined,
+        businesses: bus?.length ? { createMany: { data: bus.map((b: Record<string, unknown>) => {
+          let products = b.products;
+          if (typeof products === 'string' && products) {
+            try { products = JSON.parse(products as string); } catch { products = (products as string).split(',').map((s: string) => s.trim()).filter(Boolean); }
+          }
+          return { ...b, products: Array.isArray(products) && products.length ? JSON.stringify(products) : null };
+        }) } } : undefined,
+        socialLinks: social?.length ? { createMany: { data: social.map((s: Record<string, unknown>) => s) } } : undefined,
+      },
+      include: alumniInclude,
+    });
+
+    sendSuccess(res, created, 201);
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+      return sendError(res, 409, 'NIK sudah terdaftar');
+    }
+    sendError(res, 400, (err as Error).message);
+  }
+});
+
+router.get('/', optionalAuth, async (req, res) => {
+  try {
+    const page = Math.max(1, Number(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 20));
+    const offset = (page - 1) * limit;
+
+    const filters: Prisma.AlumniWhereInput[] = [];
+
+    const isAdminUser = isAdmin(req);
+
+    if (!isAdminUser) {
+      filters.push({ isActive: true });
+    }
+
+    if (req.query.isActive !== undefined && isAdminUser) {
+      const val = req.query.isActive as string;
+      if (val === 'true') filters.push({ isActive: true });
+      else if (val === 'false') filters.push({ isActive: false });
+    }
+
+    if (req.query.search) {
+      const s = req.query.search as string;
+      filters.push({
+        OR: [
+          { name: { contains: s, mode: 'insensitive' } },
+          { nik: { contains: s, mode: 'insensitive' } },
+          { email: { contains: s, mode: 'insensitive' } },
+        ],
+      });
+    }
+    if (req.query.provinceCode) filters.push({ provinceCode: req.query.provinceCode as string });
+    if (req.query.regencyCode) filters.push({ regencyCode: req.query.regencyCode as string });
+    if (req.query.districtCode) filters.push({ districtCode: req.query.districtCode as string });
+    if (req.query.villageCode) filters.push({ villageCode: req.query.villageCode as string });
+    if (req.query.gender) filters.push({ gender: req.query.gender as string });
+    if (req.query.careerStatus) filters.push({ careerStatus: req.query.careerStatus as string });
+
+    if (req.query.graduationYear || req.query.major) {
+      const eduFilters: Prisma.EducationWhereInput[] = [];
+      if (req.query.graduationYear) eduFilters.push({ graduationYear: Number(req.query.graduationYear) });
+      if (req.query.major) eduFilters.push({ major: { contains: req.query.major as string, mode: 'insensitive' } });
+
+      const filtered = await prisma.education.groupBy({
+        by: ['alumniId'],
+        where: { AND: eduFilters },
+      });
+
+      if (filtered.length) {
+        filters.push({ id: { in: filtered.map((f) => f.alumniId) } });
+      }
+    }
+
+    const where: Prisma.AlumniWhereInput | undefined = filters.length ? { AND: filters } : undefined;
+
+    const sortBy = (req.query.sortBy as string) || 'createdAt';
+    const sortOrder = (req.query.sortOrder as string) || 'desc';
+    const orderBy = { [sortBy]: sortOrder } as Prisma.AlumniOrderByWithRelationInput;
+
+    const [total, data] = await Promise.all([
+      prisma.alumni.count({ where }),
+      prisma.alumni.findMany({ where, orderBy, take: limit, skip: offset, include: alumniInclude }),
+    ]);
+
+    sendPaginated(res, data, total, page, limit);
+  } catch (err) {
+    sendError(res, 500, (err as Error).message);
+  }
+});
+
+router.post('/bulk/delete', requireAuth, requireRole('admin', 'super_admin'), async (req, res) => {
+  try {
+    const { ids } = req.body;
+    if (!Array.isArray(ids) || !ids.length) return sendError(res, 400, 'IDs required');
+
+    const alumni = await prisma.alumni.findMany({ where: { id: { in: ids } } });
+    if (!alumni.length) return sendError(res, 404, 'No alumni found');
+
+    const adminEmails = await getAdminEmailSet();
+    const builtinEmails = await getBuiltinAdminEmailSet();
+    const isSuper = isSuperAdmin(req);
+
+    const canDelete: string[] = [];
+    const blocked: string[] = [];
+
+    for (const a of alumni) {
+      const isAlumniAdmin = !!a.email && adminEmails.has(a.email.toLowerCase());
+      const isBuiltin = !!a.email && builtinEmails.has(a.email.toLowerCase());
+
+      if (!isAlumniAdmin) {
+        canDelete.push(a.id);
+      } else if (isSuper && !isBuiltin) {
+        canDelete.push(a.id);
+      } else {
+        blocked.push(a.name);
+      }
+    }
+
+    if (canDelete.length) {
+      await prisma.alumni.deleteMany({ where: { id: { in: canDelete } } });
+    }
+
+    sendSuccess(res, {
+      deleted: canDelete.length,
+      blocked,
+      message: blocked.length
+        ? `${canDelete.length} berhasil dihapus. ${blocked.length} tidak bisa dihapus: ${blocked.join(', ')}`
+        : `${canDelete.length} alumni berhasil dihapus`,
+    });
+  } catch (err) {
+    sendError(res, 500, (err as Error).message);
+  }
+});
+
+router.post('/bulk/status', requireAuth, requireRole('admin', 'super_admin'), async (req, res) => {
+  try {
+    const { ids, isActive } = req.body;
+    if (!Array.isArray(ids) || !ids.length) return sendError(res, 400, 'IDs required');
+
+    const result = await prisma.alumni.updateMany({
+      where: { id: { in: ids } },
+      data: { isActive: isActive === true },
+    });
+
+    sendSuccess(res, { updated: result.count });
+  } catch (err) {
+    sendError(res, 500, (err as Error).message);
+  }
+});
+
+router.get('/:id', optionalAuth, async (req, res) => {
+  try {
+    const result = await prisma.alumni.findUnique({
+      where: { id: req.params.id as string },
+      include: alumniInclude,
+    });
+
+    if (!result) return sendError(res, 404, 'Alumni not found');
+
+    if (!result.isActive && !isAdmin(req)) return sendError(res, 404, 'Alumni not found');
+
+    sendSuccess(res, result);
+  } catch (err) {
+    sendError(res, 500, (err as Error).message);
+  }
+});
+
+router.put('/:id', requireAuth, requireRole('admin', 'super_admin'), async (req, res) => {
+  try {
+    const alumniId = req.params.id as string;
+    const existing = await prisma.alumni.findUnique({ where: { id: alumniId } });
+    if (!existing) return sendError(res, 404, 'Alumni not found');
+
+    if (req.body.nik) {
+      if (!/^\d{16}$/.test(req.body.nik)) {
+        return sendError(res, 400, 'NIK harus 16 digit angka');
+      }
+      if (req.body.nik !== existing.nik) {
+        const dup = await prisma.alumni.findUnique({ where: { nik: req.body.nik as string } });
+        if (dup) return sendError(res, 409, 'NIK sudah terdaftar');
+      }
+    }
+
+    const { education: edu, certificates: cert, organizations: org, portfolios: port, businesses: bus, socialLinks: social, ...alumniData } = req.body;
+
+    await prisma.alumni.update({
+      where: { id: alumniId },
+      data: {
+        ...alumniData,
+        products: undefined,
+        education: edu !== undefined ? {
+          deleteMany: {},
+          createMany: edu.length ? { data: edu.map((e: Record<string, unknown>) => e) } : undefined,
+        } : undefined,
+        certificates: cert !== undefined ? {
+          deleteMany: {},
+          createMany: cert.length ? { data: cert.map((c: Record<string, unknown>) => c) } : undefined,
+        } : undefined,
+        organizations: org !== undefined ? {
+          deleteMany: {},
+          createMany: org.length ? { data: org.map((o: Record<string, unknown>) => o) } : undefined,
+        } : undefined,
+        portfolios: port !== undefined ? {
+          deleteMany: {},
+          createMany: port.length ? { data: port.map((p: Record<string, unknown>) => p) } : undefined,
+        } : undefined,
+        businesses: bus !== undefined ? {
+          deleteMany: {},
+          createMany: bus.length ? { data: bus.map((b: Record<string, unknown>) => {
+            let products = b.products;
+            if (typeof products === 'string' && products) {
+              try { products = JSON.parse(products as string); } catch { products = (products as string).split(',').map((s: string) => s.trim()).filter(Boolean); }
+            }
+            return { ...b, products: Array.isArray(products) && products.length ? JSON.stringify(products) : null };
+          }) } : undefined,
+        } : undefined,
+        socialLinks: social !== undefined ? {
+          deleteMany: {},
+          createMany: social.length ? { data: social.map((s: Record<string, unknown>) => s) } : undefined,
+        } : undefined,
+      },
+    });
+
+    const result = await prisma.alumni.findUnique({
+      where: { id: alumniId },
+      include: alumniInclude,
+    });
+
+    sendSuccess(res, result);
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+      return sendError(res, 409, 'NIK sudah terdaftar');
+    }
+    sendError(res, 400, (err as Error).message);
+  }
+});
+
+router.patch('/:id/status', requireAuth, requireRole('admin', 'super_admin'), async (req, res) => {
+  try {
+    const alumniId = req.params.id as string;
+    const existing = await prisma.alumni.findUnique({ where: { id: alumniId } });
+    if (!existing) return sendError(res, 404, 'Alumni not found');
+
+    const updated = await prisma.alumni.update({
+      where: { id: alumniId },
+      data: { isActive: req.body.isActive === true },
+    });
+
+    sendSuccess(res, updated);
+  } catch (err) {
+    sendError(res, 400, (err as Error).message);
+  }
+});
+
+router.delete('/:id', requireAuth, requireRole('admin', 'super_admin'), async (req, res) => {
+  try {
+    const alumniId = req.params.id as string;
+    const existing = await prisma.alumni.findUnique({ where: { id: alumniId } });
+    if (!existing) return sendError(res, 404, 'Alumni not found');
+
+    const adminEmails = await getAdminEmailSet();
+    const isAlumniAdmin = !!existing.email && adminEmails.has(existing.email.toLowerCase());
+
+    if (isAlumniAdmin && !isSuperAdmin(req)) {
+      return sendError(res, 403, 'Tidak bisa menghapus alumni yang juga admin');
+    }
+
+    if (isAlumniAdmin && isSuperAdmin(req)) {
+      const builtinEmails = await getBuiltinAdminEmailSet();
+      if (existing.email && builtinEmails.has(existing.email.toLowerCase())) {
+        return sendError(res, 403, 'Tidak bisa menghapus alumni admin built-in');
+      }
+    }
+
+    await prisma.alumni.delete({ where: { id: alumniId } });
+    sendSuccess(res, { message: 'Alumni deleted' });
+  } catch (err) {
+    sendError(res, 500, (err as Error).message);
+  }
+});
+
+export default router as Router;

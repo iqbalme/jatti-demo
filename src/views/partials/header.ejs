@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= typeof settings !== 'undefined' && settings.site_title ? settings.site_title : 'AlumniLink \u2014 Alumni Directory' %></title>
+  <meta name="description" content="<%= typeof settings !== 'undefined' && settings.site_description ? settings.site_description : 'Alumni Directory and Tracer Study Platform' %>" />
+  <% if (typeof settings !== 'undefined' && settings.favicon_url) { %>
+    <link rel="icon" href="<%= settings.favicon_url %>" />
+  <% } %>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0,1" />
+  <style>
+    :root {
+      --brand-color: <%= typeof settings !== 'undefined' && settings.theme_primary ? settings.theme_primary : '#2563eb' %>;
+      --gradient-from: <%= typeof settings !== 'undefined' && settings.theme_gradient_from ? settings.theme_gradient_from : '#2563eb' %>;
+      --gradient-to: <%= typeof settings !== 'undefined' && settings.theme_gradient_to ? settings.theme_gradient_to : '#2dd4bf' %>;
+    }
+    * { font-family: 'Inter', sans-serif; }
+    .material-symbols-outlined { font-family: 'Material Symbols Outlined'; font-size: 1.25rem; vertical-align: middle; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 antialiased">

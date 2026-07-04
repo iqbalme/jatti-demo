@@ -1,0 +1,1049 @@
+<%- include('../../partials/header') %>
+<style>
+  .soft-gradient { background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to)); }
+  .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(8px); border: 1px solid rgba(226, 232, 240, 0.5); }
+</style>
+
+<% %>
+
+<div class="min-h-screen flex flex-col">
+  <header class="bg-white border-b border-gray-200">
+    <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+      <h1 class="text-xl font-bold" style="color: var(--brand-color)"><%= typeof settings !== 'undefined' && settings.site_name ? settings.site_name : 'AlumniLink' %> Dashboard</h1>
+      <div class="flex items-center gap-4">
+        <% if (typeof user !== 'undefined' && user && user.role === 'super_admin') { %>
+          <a href="/dashboard/settings" class="text-sm text-blue-600 hover:underline">Pengaturan</a>
+        <% } %>
+        <a href="/logout" class="text-sm text-red-600 hover:underline">Keluar</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="soft-gradient py-12 px-4 relative overflow-hidden">
+    <div class="absolute inset-0 opacity-10">
+      <div class="absolute top-0 left-0 w-64 h-64 bg-white rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+      <div class="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl translate-x-1/3 translate-y-1/3"></div>
+    </div>
+    <div class="max-w-4xl mx-auto relative z-10 text-center">
+      <h1 class="text-3xl font-bold text-white mb-2"><%= typeof a !== 'undefined' && a ? 'Edit' : 'Tambah' %> Data Alumni</h1>
+      <p class="text-white/80"><%= typeof a !== 'undefined' && a ? 'Perbarui data diri alumni' : 'Isi formulir data diri alumni secara lengkap.' %></p>
+    </div>
+  </section>
+
+  <main class="flex-1 max-w-4xl mx-auto px-4 py-8 w-full">
+    <a href="/dashboard/alumni" class="text-sm text-blue-600 hover:underline mb-4 inline-block">&larr; Kembali ke daftar</a>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-4"><%= error %></div>
+    <% } %>
+
+    <form id="alumniForm" action="/dashboard/alumni/new" method="POST" class="space-y-6">
+      <div id="formMessage" class="hidden p-4 rounded-lg text-sm"></div>
+
+      <!-- SECTION 1: Data Pribadi -->
+      <div class="glass-card rounded-2xl p-6 shadow-sm border border-gray-200/50 bg-white/90">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+            <span class="material-symbols-outlined text-blue-600">badge</span>
+          </div>
+          <h2 class="text-lg font-semibold">Data Pribadi</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="nik">NIK <span class="text-red-500">*</span></label>
+            <input class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="nik" name="nik" placeholder="16 digit NIK" required type="text" maxlength="16" value="<%= typeof a !== 'undefined' && a ? a.nik || '' : '' %>" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="name">Nama Lengkap <span class="text-red-500">*</span></label>
+            <input class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="name" name="name" placeholder="Nama lengkap sesuai KTP" required type="text" value="<%= typeof a !== 'undefined' && a ? a.name || '' : '' %>" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Jenis Kelamin <span class="text-red-500">*</span></label>
+            <div class="flex gap-4 pt-1.5">
+              <label class="flex items-center gap-2 cursor-pointer text-sm"><input class="w-4 h-4 text-blue-600" name="gender" required type="radio" value="Laki-laki" <%= typeof a !== 'undefined' && a && a.gender === 'Laki-laki' ? 'checked' : '' %> /><span>Laki-laki</span></label>
+              <label class="flex items-center gap-2 cursor-pointer text-sm"><input class="w-4 h-4 text-blue-600" name="gender" type="radio" value="Perempuan" <%= typeof a !== 'undefined' && a && a.gender === 'Perempuan' ? 'checked' : '' %> /><span>Perempuan</span></label>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="maritalStatus">Status Pernikahan <span class="text-red-500">*</span></label>
+            <select class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="maritalStatus" name="maritalStatus" required>
+              <option value="">Pilih status</option>
+              <option value="Belum Menikah" <%= typeof a !== 'undefined' && a && a.maritalStatus === 'Belum Menikah' ? 'selected' : '' %>>Belum Menikah</option>
+              <option value="Menikah" <%= typeof a !== 'undefined' && a && a.maritalStatus === 'Menikah' ? 'selected' : '' %>>Menikah</option>
+              <option value="Pernah Menikah (Duda/Janda)" <%= typeof a !== 'undefined' && a && a.maritalStatus === 'Pernah Menikah (Duda/Janda)' ? 'selected' : '' %>>Pernah Menikah (Duda/Janda)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="phone">No. HP/WhatsApp <span class="text-red-500">*</span></label>
+            <input class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="phone" name="phone" placeholder="+62 812-3456-7890" required type="tel" value="<%= typeof a !== 'undefined' && a ? a.phone || '' : '' %>" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="email">Email Aktif <span class="text-red-500">*</span></label>
+            <input class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="email" name="email" placeholder="nama@email.com" required type="email" value="<%= typeof a !== 'undefined' && a ? a.email || '' : '' %>" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Link Media Sosial</label>
+            <div class="flex gap-2 mb-2">
+              <input class="flex-1 px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="socialLinkInput" placeholder="https://linkedin.com/in/username" type="url" />
+              <button class="px-4 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-200 transition-all" id="addSocialBtn" type="button">Tambah</button>
+            </div>
+            <div class="flex flex-wrap gap-1.5" id="socialLinksContainer"></div>
+            <input id="socialLinks" name="socialLinks" type="hidden" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="photo">Foto</label>
+            <input class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-blue-100 file:text-blue-700 file:text-xs file:font-semibold" id="photo" name="photo" accept="image/*" type="file" />
+            <p class="text-xs text-gray-400 mt-1">Format: JPEG, PNG, GIF, WebP. Maksimal <%= typeof maxFileSizeKb !== 'undefined' && maxFileSizeKb ? maxFileSizeKb : 500 %>KB.</p>
+            <div id="photoPreview" class="mt-2 hidden">
+              <img class="w-20 h-20 rounded-xl object-cover border border-gray-300" id="photoPreviewImg" alt="Preview" />
+              <button type="button" id="removePhotoBtn" class="mt-1.5 text-xs text-red-600 hover:text-red-700 font-medium hidden">Hapus Foto</button>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Provinsi <span class="text-red-500">*</span></label>
+            <select class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="provinceCode" required>
+              <option value="">Pilih provinsi</option>
+            </select>
+            <input id="provinceName" name="province" type="hidden" />
+            <input id="regencyName" name="regencyName" type="hidden" />
+            <input id="districtName" name="districtName" type="hidden" />
+            <input id="villageName" name="villageName" type="hidden" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Kabupaten</label>
+            <select class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="regencyCode">
+              <option value="">Pilih kabupaten</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Kecamatan</label>
+            <select class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="districtCode">
+              <option value="">Pilih kecamatan</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Kelurahan</label>
+            <select class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="villageCode">
+              <option value="">Pilih kelurahan</option>
+            </select>
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="address">Alamat Domisili Lengkap <span class="text-red-500">*</span></label>
+            <textarea class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none" id="address" name="address" placeholder="RT/RW, Kelurahan, Kecamatan, Kota/Kabupaten, Kode Pos" rows="3"><%= typeof a !== 'undefined' && a ? a.address || '' : '' %></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: Pendidikan -->
+      <div class="glass-card rounded-2xl p-6 shadow-sm border border-gray-200/50 bg-white/90">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+            <span class="material-symbols-outlined text-blue-600">school</span>
+          </div>
+          <h2 class="text-lg font-semibold">Latar Belakang Pendidikan</h2>
+        </div>
+        <p class="text-sm text-gray-500 mb-4">Tambahkan riwayat pendidikan dari jenjang S1 sampai S3</p>
+        <div id="educationContainer" class="space-y-4"></div>
+        <button class="mt-3 px-6 py-2.5 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 text-sm font-medium hover:bg-gray-50 hover:border-blue-400 transition-all w-full flex items-center justify-center gap-2" id="addEducationBtn" type="button">
+          <span class="material-symbols-outlined">add</span>Tambah Riwayat Pendidikan
+        </button>
+      </div>
+
+      <!-- SECTION 3: Sertifikat -->
+      <div class="glass-card rounded-2xl p-6 shadow-sm border border-gray-200/50 bg-white/90">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+            <span class="material-symbols-outlined text-blue-600">verified</span>
+          </div>
+          <h2 class="text-lg font-semibold">Sertifikat Kompetensi</h2>
+        </div>
+        <div id="certificateContainer" class="space-y-4"></div>
+        <button class="mt-3 px-6 py-2.5 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 text-sm font-medium hover:bg-gray-50 hover:border-blue-400 transition-all w-full flex items-center justify-center gap-2" id="addCertificateBtn" type="button">
+          <span class="material-symbols-outlined">add</span>Tambah Sertifikat
+        </button>
+      </div>
+
+      <!-- SECTION 4: Organisasi -->
+      <div class="glass-card rounded-2xl p-6 shadow-sm border border-gray-200/50 bg-white/90">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+            <span class="material-symbols-outlined text-blue-600">groups</span>
+          </div>
+          <h2 class="text-lg font-semibold">Pengalaman Organisasi</h2>
+        </div>
+        <div id="organizationContainer" class="space-y-4"></div>
+        <button class="mt-3 px-6 py-2.5 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 text-sm font-medium hover:bg-gray-50 hover:border-blue-400 transition-all w-full flex items-center justify-center gap-2" id="addOrgBtn" type="button">
+          <span class="material-symbols-outlined">add</span>Tambah Pengalaman Organisasi
+        </button>
+      </div>
+
+      <!-- SECTION 4.5: Portfolio -->
+      <div class="glass-card rounded-2xl p-6 shadow-sm border border-gray-200/50 bg-white/90">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+            <span class="material-symbols-outlined text-blue-600">folder</span>
+          </div>
+          <h2 class="text-lg font-semibold">Portofolio</h2>
+        </div>
+        <p class="text-sm text-gray-500 mb-4">Tambahkan portofolio karya (buku, aplikasi, website, dll)</p>
+        <div id="portfolioContainer" class="space-y-4"></div>
+        <button class="mt-3 px-6 py-2.5 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 text-sm font-medium hover:bg-gray-50 hover:border-blue-400 transition-all w-full flex items-center justify-center gap-2" id="addPortfolioBtn" type="button">
+          <span class="material-symbols-outlined">add</span>Tambah Portofolio
+        </button>
+      </div>
+
+      <!-- SECTION 5: Karir -->
+      <div class="glass-card rounded-2xl p-6 shadow-sm border border-gray-200/50 bg-white/90">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+            <span class="material-symbols-outlined text-blue-600">work</span>
+          </div>
+          <h2 class="text-lg font-semibold">Profil Pekerjaan / Karir</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="careerStatus">Status Pekerjaan Saat Ini <span class="text-red-500">*</span></label>
+            <select class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="careerStatus" name="careerStatus" required>
+              <option value="">Pilih status</option>
+              <option value="Pekerja" <%= typeof a !== 'undefined' && a && a.careerStatus === 'Pekerja' ? 'selected' : '' %>>Pekerja</option>
+              <option value="Wirausaha" <%= typeof a !== 'undefined' && a && a.careerStatus === 'Wirausaha' ? 'selected' : '' %>>Wirausaha</option>
+              <option value="Profesional" <%= typeof a !== 'undefined' && a && a.careerStatus === 'Profesional' ? 'selected' : '' %>>Profesional (Pengacara, Dokter, Insinyur, Konsultan, dll)</option>
+              <option value="Tenaga Pendidik" <%= typeof a !== 'undefined' && a && a.careerStatus === 'Tenaga Pendidik' ? 'selected' : '' %>>Tenaga Pendidik</option>
+              <option value="Pencari Kerja" <%= typeof a !== 'undefined' && a && a.careerStatus === 'Pencari Kerja' ? 'selected' : '' %>>Pencari Kerja</option>
+              <option value="Lainnya" <%= typeof a !== 'undefined' && a && a.careerStatus === 'Lainnya' ? 'selected' : '' %>>Lainnya</option>
+            </select>
+          </div>
+          <div id="careerOtherWrapper" class="hidden">
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="careerOther">Sebutkan <span class="text-red-500">*</span></label>
+            <input class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="careerOther" name="careerOther" placeholder="Jabatan/profesi lainnya" type="text" value="<%= typeof a !== 'undefined' && a ? a.careerOther || '' : '' %>" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="institutionName">Nama Instansi/Perusahaan</label>
+            <input class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="institutionName" name="institutionName" placeholder="Nama perusahaan/instansi" type="text" value="<%= typeof a !== 'undefined' && a ? a.institutionName || '' : '' %>" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="institutionField">Bidang Instansi/Perusahaan</label>
+            <input class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="institutionField" name="institutionField" placeholder="Contoh: Teknologi Informasi" type="text" value="<%= typeof a !== 'undefined' && a ? a.institutionField || '' : '' %>" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="position">Jabatan</label>
+            <input class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="position" name="position" placeholder="Contoh: Senior Software Engineer" type="text" value="<%= typeof a !== 'undefined' && a ? a.position || '' : '' %>" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Status Alumni -->
+      <div class="glass-card rounded-2xl p-6 shadow-sm border border-gray-200/50 bg-white/90">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+            <span class="material-symbols-outlined text-blue-600">toggle_on</span>
+          </div>
+          <h2 class="text-lg font-semibold">Status Alumni</h2>
+        </div>
+        <div class="flex items-center gap-3">
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="isActiveToggle" class="sr-only peer" <%= typeof a !== 'undefined' && a ? (a.isActive !== false ? 'checked' : '') : 'checked' %> />
+            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            <span class="ms-3 text-sm font-medium text-gray-700" id="isActiveLabel"><%= typeof a !== 'undefined' && a ? (a.isActive !== false ? 'Aktif' : 'Nonaktif') : 'Aktif' %></span>
+          </label>
+          <input type="hidden" name="isActive" id="isActiveInput" value="<%= typeof a !== 'undefined' && a ? (a.isActive !== false ? 'true' : 'false') : 'true' %>" />
+        </div>
+      </div>
+
+      <!-- SECTION 6: Usaha -->
+      <div class="glass-card rounded-2xl p-6 shadow-sm border border-gray-200/50 bg-white/90">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+            <span class="material-symbols-outlined text-blue-600">store</span>
+          </div>
+          <h2 class="text-lg font-semibold">Data Usaha</h2>
+        </div>
+        <p class="text-sm text-gray-500 mb-4">Isi jika memiliki usaha (bisa lebih dari satu)</p>
+        <div id="businessContainer" class="space-y-4"></div>
+        <button class="mt-3 px-6 py-2.5 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 text-sm font-medium hover:bg-gray-50 hover:border-blue-400 transition-all w-full flex items-center justify-center gap-2" id="addBusinessBtn" type="button">
+          <span class="material-symbols-outlined">add</span>Tambah Data Usaha
+        </button>
+      </div>
+
+      <!-- Submit -->
+      <div class="flex flex-col md:flex-row gap-4">
+        <button class="flex-1 bg-blue-600 text-white py-3 px-6 rounded-xl font-semibold text-sm hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2" type="submit">
+          <span class="material-symbols-outlined">save</span><%= typeof a !== 'undefined' && a ? 'Perbarui' : 'Simpan' %> Data Alumni
+        </button>
+        <a class="flex-1 bg-gray-200 text-gray-700 py-3 px-6 rounded-xl font-semibold text-sm hover:bg-gray-300 transition-all flex items-center justify-center gap-2" href="/dashboard/alumni">
+          <span class="material-symbols-outlined">cancel</span>Batal
+        </a>
+      </div>
+    </form>
+  </main>
+</div>
+
+<% if (typeof a !== 'undefined' && a) { %>
+<script id="editData" type="application/json"><%- JSON.stringify(a) %></script>
+<% } %>
+<script id="authData" type="application/json"><%- JSON.stringify(typeof token !== 'undefined' ? token : '') %></script>
+<script>
+(function() {
+  // --- Auth token ---
+  var token = JSON.parse(document.getElementById('authData').textContent);
+
+  // --- Load existing data for edit mode ---
+  var editData = null;
+  var editScript = document.getElementById('editData');
+  if (editScript) { editData = JSON.parse(editScript.textContent); }
+
+  // --- Wilayah cascading dropdowns ---
+  function loadWilayah(parentCode, targetSelect, keepValue) {
+    var url = '/api/v1/wilayah' + (parentCode ? '?parent=' + parentCode : '');
+    return fetch(url)
+      .then(function(r) { return r.json(); })
+      .then(function(res) {
+        if (!res.success) return;
+        var data = res.data || [];
+        targetSelect.innerHTML = '<option value="">' + targetSelect.dataset.placeholder + '</option>';
+        data.forEach(function(w) {
+          var o = document.createElement('option');
+          o.value = w.kode;
+          o.textContent = w.nama;
+          if (keepValue && w.kode === keepValue) o.selected = true;
+          targetSelect.appendChild(o);
+        });
+        return data;
+      });
+  }
+
+  var selProv = document.getElementById('provinceCode');
+  var selReg = document.getElementById('regencyCode');
+  var selDist = document.getElementById('districtCode');
+  var selVill = document.getElementById('villageCode');
+  selProv.dataset.placeholder = 'Pilih provinsi';
+  selReg.dataset.placeholder = 'Pilih kabupaten';
+  selDist.dataset.placeholder = 'Pilih kecamatan';
+  selVill.dataset.placeholder = 'Pilih kelurahan';
+
+  function resetSelect(sel) {
+    sel.innerHTML = '<option value="">' + sel.dataset.placeholder + '</option>';
+  }
+
+  // Load provinces on page load
+  loadWilayah(null, selProv, null).then(function() {
+    // Add "Luar Negeri" option
+    var ln = document.createElement('option');
+    ln.value = 'LUARNEGERI'; ln.textContent = 'Luar Negeri';
+    selProv.appendChild(ln);
+
+    if (!editData) return;
+    // Auto-select province by code, or fallback to name match
+    var matchValue = editData.provinceCode || null;
+    var matchName = editData.province || '';
+    if (matchValue) {
+      var opt = selProv.querySelector('option[value="' + matchValue + '"]');
+      if (opt) { opt.selected = true; }
+    }
+    if (!matchValue || !selProv.value) {
+      // Try matching by name
+      for (var i = 0; i < selProv.options.length; i++) {
+        if (selProv.options[i].text === matchName) {
+          selProv.value = selProv.options[i].value;
+          break;
+        }
+      }
+    }
+    if (selProv.value) {
+      selProv.dispatchEvent(new Event('change'));
+    }
+  });
+
+  selProv.addEventListener('change', function() {
+    document.getElementById('provinceName').value = selProv.selectedOptions[0]?.text || '';
+    resetSelect(selReg);
+    resetSelect(selDist);
+    resetSelect(selVill);
+    if (!this.value) return;
+    if (this.value === 'LUARNEGERI') { selReg.disabled = true; selDist.disabled = true; selVill.disabled = true; return; }
+    selReg.disabled = false; selDist.disabled = false; selVill.disabled = false;
+    loadWilayah(this.value, selReg, editData && editData.regencyCode).then(function() {
+      if (!editData || !editData.regencyCode) return;
+      var opt = selReg.querySelector('option[value="' + editData.regencyCode + '"]');
+      if (opt) {
+        opt.selected = true;
+        selReg.dispatchEvent(new Event('change'));
+      }
+    });
+  });
+
+  selReg.addEventListener('change', function() {
+    document.getElementById('regencyName').value = selReg.selectedOptions[0]?.text || '';
+    resetSelect(selDist);
+    resetSelect(selVill);
+    if (!this.value) return;
+    loadWilayah(this.value, selDist, editData && editData.districtCode).then(function() {
+      if (!editData || !editData.districtCode) return;
+      var opt = selDist.querySelector('option[value="' + editData.districtCode + '"]');
+      if (opt) {
+        opt.selected = true;
+        selDist.dispatchEvent(new Event('change'));
+      }
+    });
+  });
+
+  selDist.addEventListener('change', function() {
+    document.getElementById('districtName').value = selDist.selectedOptions[0]?.text || '';
+    resetSelect(selVill);
+    if (!this.value) return;
+    loadWilayah(this.value, selVill, editData && editData.villageCode).then(function() {
+      if (!editData || !editData.villageCode) return;
+      var opt = selVill.querySelector('option[value="' + editData.villageCode + '"]');
+      if (opt) opt.selected = true;
+    });
+  });
+
+  // Also populate village name on change
+  selVill.addEventListener('change', function() {
+    document.getElementById('villageName').value = selVill.selectedOptions[0]?.text || '';
+  });
+
+  // --- Social Links Manager ---
+  var socialLinks = [];
+  if (editData && editData.socialLinks) {
+    socialLinks = editData.socialLinks.map(function(s) { return s.url; }).filter(Boolean);
+  }
+  const socialContainer = document.getElementById('socialLinksContainer');
+  const socialHidden = document.getElementById('socialLinks');
+  function renderSocial() {
+    socialContainer.innerHTML = socialLinks.map((v, i) =>
+      '<span class="inline-flex items-center gap-1 px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs">' +
+        escapeHtml(v) +
+        '<button type="button" class="text-gray-400 hover:text-gray-600" data-social-index="' + i + '">' +
+          '<span class="material-symbols-outlined" style="font-size:14px">close</span>' +
+        '</button>' +
+      '</span>'
+    ).join('');
+    socialHidden.value = JSON.stringify(socialLinks);
+    socialContainer.querySelectorAll('[data-social-index]').forEach(function(b) {
+      b.addEventListener('click', function() {
+        socialLinks.splice(parseInt(this.dataset.socialIndex), 1);
+        renderSocial();
+      });
+    });
+  }
+  document.getElementById('addSocialBtn').addEventListener('click', function() {
+    var inp = document.getElementById('socialLinkInput');
+    var val = inp.value.trim();
+    if (val && !socialLinks.includes(val)) { socialLinks.push(val); renderSocial(); }
+    inp.value = '';
+  });
+  document.getElementById('socialLinkInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); document.getElementById('addSocialBtn').click(); }
+  });
+
+  // --- Country data ---
+  var countries = [];
+  var countriesReady = fetch('/api/v1/countries').then(function(r) { return r.json(); }).then(function(res) {
+    if (res.success) countries = res.data;
+  });
+
+  function populateCountrySelect(select, selectedValue) {
+    countriesReady.then(function() {
+      select.innerHTML = '<option value="">Pilih negara</option>';
+      countries.forEach(function(c) {
+        var o = document.createElement('option');
+        o.value = c.code;
+        o.textContent = c.name;
+        if (c.code === selectedValue) o.selected = true;
+        select.appendChild(o);
+      });
+    });
+  }
+
+  // --- Education ---
+  var eduIdx = 0;
+  var eduContainer = document.getElementById('educationContainer');
+  function addEducation(data) {
+    var d = data || {};
+    var div = document.createElement('div');
+    div.className = 'p-4 rounded-xl bg-gray-50 border border-gray-200';
+    div.innerHTML =
+      '<div class="flex justify-between items-center mb-3">' +
+        '<span class="text-xs font-semibold text-blue-600 uppercase">Pendidikan #' + (eduIdx + 1) + '</span>' +
+        '<button type="button" class="edu-remove text-red-500 hover:bg-red-50 p-1 rounded-lg" data-edu-idx="' + eduIdx + '">' +
+          '<span class="material-symbols-outlined" style="font-size:18px">delete</span>' +
+        '</button>' +
+      '</div>' +
+      '<div class="grid grid-cols-1 md:grid-cols-3 gap-4">' +
+        '<div><label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Jenjang</label>' +
+          '<select class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm edu-level">' +
+            '<option value="S1"' + (d.level === 'S1' ? ' selected' : '') + '>S1</option>' +
+            '<option value="S2"' + (d.level === 'S2' ? ' selected' : '') + '>S2</option>' +
+            '<option value="S3"' + (d.level === 'S3' ? ' selected' : '') + '>S3</option>' +
+          '</select></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Asal Negara</label>' +
+          '<select class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm edu-country"><option value="">Pilih negara</option></select></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Nama Universitas</label>' +
+          '<input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm edu-uni" value="' + (d.university || '') + '" placeholder="Nama universitas" type="text" /></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Fakultas</label>' +
+          '<input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm edu-faculty" value="' + (d.faculty || '') + '" placeholder="Fakultas" type="text" /></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Jurusan</label>' +
+          '<input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm edu-major" value="' + (d.major || '') + '" placeholder="Jurusan" type="text" /></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Tahun Selesai</label>' +
+          '<select class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm edu-year"></select></div>' +
+      '</div>';
+    var yearSelect = div.querySelector('.edu-year');
+    var cur = new Date().getFullYear();
+    for (var y = cur; y >= 1980; y--) {
+      var o = document.createElement('option');
+      o.value = y.toString(); o.textContent = y;
+      if (y.toString() === (d.graduationYear ? d.graduationYear.toString() : '')) o.selected = true;
+      yearSelect.appendChild(o);
+    }
+    eduContainer.appendChild(div);
+    populateCountrySelect(div.querySelector('.edu-country'), d.countryCode || '');
+    eduIdx++;
+    attachEduRemove();
+  }
+  function attachEduRemove() {
+    document.querySelectorAll('.edu-remove').forEach(function(b) {
+      b.removeEventListener('click', handleEduRemove);
+      b.addEventListener('click', handleEduRemove);
+    });
+  }
+  function handleEduRemove() { this.closest('.p-4').remove(); }
+  document.getElementById('addEducationBtn').addEventListener('click', function() { addEducation(null); });
+
+  // --- Certificate ---
+  var certIdx = 0;
+  var certContainer = document.getElementById('certificateContainer');
+  function addCertificate(data) {
+    var d = data || {};
+    var div = document.createElement('div');
+    div.className = 'p-4 rounded-xl bg-gray-50 border border-gray-200';
+    div.innerHTML =
+      '<div class="flex justify-between items-center mb-3">' +
+        '<span class="text-xs font-semibold text-blue-600 uppercase">Sertifikat #' + (certIdx + 1) + '</span>' +
+        '<button type="button" class="cert-remove text-red-500 hover:bg-red-50 p-1 rounded-lg">' +
+          '<span class="material-symbols-outlined" style="font-size:18px">delete</span>' +
+        '</button>' +
+      '</div>' +
+      '<div class="grid grid-cols-1 md:grid-cols-4 gap-4">' +
+        '<div><label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Nama Sertifikat</label>' +
+          '<input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm cert-name" value="' + (d.name || '') + '" placeholder="Nama sertifikat" type="text" /></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Penerbit</label>' +
+          '<input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm cert-publisher" value="' + (d.publisher || '') + '" placeholder="Penerbit sertifikat" type="text" /></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Masa Berlaku (jika ada)</label>' +
+          '<input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm cert-valid" value="' + (d.validUntil || '') + '" type="date" /></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 uppercase mb-1">URL Sertifikat</label>' +
+          '<input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm cert-url" value="' + (d.url || '') + '" placeholder="https://" type="url" /></div>' +
+      '</div>';
+    certContainer.appendChild(div);
+    certIdx++;
+    attachCertRemove();
+  }
+  function attachCertRemove() {
+    document.querySelectorAll('.cert-remove').forEach(function(b) {
+      b.removeEventListener('click', handleCertRemove);
+      b.addEventListener('click', handleCertRemove);
+    });
+  }
+  function handleCertRemove() { this.closest('.p-4').remove(); }
+  document.getElementById('addCertificateBtn').addEventListener('click', function() { addCertificate(null); });
+
+  // --- Organization ---
+  var orgIdx = 0;
+  var orgContainer = document.getElementById('organizationContainer');
+  function addOrganization(data) {
+    var d = data || {};
+    var div = document.createElement('div');
+    div.className = 'p-4 rounded-xl bg-gray-50 border border-gray-200';
+    div.innerHTML =
+      '<div class="flex justify-between items-center mb-3">' +
+        '<span class="text-xs font-semibold text-blue-600 uppercase">Organisasi #' + (orgIdx + 1) + '</span>' +
+        '<button type="button" class="org-remove text-red-500 hover:bg-red-50 p-1 rounded-lg">' +
+          '<span class="material-symbols-outlined" style="font-size:18px">delete</span>' +
+        '</button>' +
+      '</div>' +
+      '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">' +
+        '<div><label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Nama Organisasi</label>' +
+          '<input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm org-name" value="' + (d.name || '') + '" placeholder="Nama organisasi" type="text" /></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Jenis Organisasi</label>' +
+          '<input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm org-type" value="' + (d.type || '') + '" placeholder="Kemahasiswaan, Profesi, Sosial, dll" type="text" /></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Tingkat Organisasi</label>' +
+          '<select class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm org-level">' +
+            '<option value="">Pilih tingkat</option>' +
+            '<option value="Internasional"' + (d.level === 'Internasional' ? ' selected' : '') + '>Internasional</option>' +
+            '<option value="Nasional"' + (d.level === 'Nasional' ? ' selected' : '') + '>Nasional</option>' +
+            '<option value="Provinsi"' + (d.level === 'Provinsi' ? ' selected' : '') + '>Provinsi</option>' +
+            '<option value="Kota/Kabupaten"' + (d.level === 'Kota/Kabupaten' ? ' selected' : '') + '>Kota/Kabupaten</option>' +
+            '<option value="Universitas"' + (d.level === 'Universitas' ? ' selected' : '') + '>Universitas</option>' +
+            '<option value="Fakultas"' + (d.level === 'Fakultas' ? ' selected' : '') + '>Fakultas</option>' +
+            '<option value="Jurusan"' + (d.level === 'Jurusan' ? ' selected' : '') + '>Jurusan</option>' +
+          '</select></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Jabatan</label>' +
+          '<input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm org-position" value="' + (d.position || '') + '" placeholder="Ketua, Sekretaris, Anggota, dll" type="text" /></div>' +
+        '<div class="md:col-span-2"><label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Bidang Organisasi</label>' +
+          '<input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm org-field" value="' + (d.field || '') + '" placeholder="Teknologi, Pendidikan, Sosial, dll" type="text" /></div>' +
+      '</div>';
+    orgContainer.appendChild(div);
+    orgIdx++;
+    attachOrgRemove();
+  }
+  function attachOrgRemove() {
+    document.querySelectorAll('.org-remove').forEach(function(b) {
+      b.removeEventListener('click', handleOrgRemove);
+      b.addEventListener('click', handleOrgRemove);
+    });
+  }
+  function handleOrgRemove() { this.closest('.p-4').remove(); }
+  document.getElementById('addOrgBtn').addEventListener('click', function() { addOrganization(null); });
+
+  // --- Portfolio ---
+  var portIdx = 0;
+  var portContainer = document.getElementById('portfolioContainer');
+  function addPortfolio(data) {
+    var d = data || {};
+    var div = document.createElement('div');
+    div.className = 'p-4 rounded-xl bg-gray-50 border border-gray-200';
+    var typeOptions = ['Buku', 'Aplikasi', 'Website', 'Lainnya'];
+    var typeOpts = typeOptions.map(function(t) {
+      return '<option value="' + t + '"' + (d.type === t ? ' selected' : '') + '>' + t + '</option>';
+    }).join('');
+    var showOther = d.type === 'Lainnya' ? '' : ' hidden';
+    div.innerHTML =
+      '<div class="flex justify-between items-center mb-3">' +
+        '<span class="text-xs font-semibold text-blue-600 uppercase">Portofolio #' + (portIdx + 1) + '</span>' +
+        '<button type="button" class="port-remove text-red-500 hover:bg-red-50 p-1 rounded-lg">' +
+          '<span class="material-symbols-outlined" style="font-size:18px">delete</span>' +
+        '</button>' +
+      '</div>' +
+      '<div class="grid grid-cols-1 md:grid-cols-4 gap-4">' +
+        '<div class="md:col-span-2"><label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Nama Portofolio</label>' +
+          '<input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm port-name" value="' + (d.name || '') + '" placeholder="Nama portofolio" type="text" /></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Jenis</label>' +
+          '<select class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm port-type">' + typeOpts + '</select></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Tahun</label>' +
+          '<input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm port-year" value="' + (d.year || '') + '" placeholder="2024" type="number" /></div>' +
+        '<div' + showOther + '><label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Sebutkan</label>' +
+          '<input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm port-typeOther" value="' + (d.typeOther || '') + '" placeholder="Jenis lainnya" type="text" /></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Link</label>' +
+          '<input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm port-link" value="' + (d.link || '') + '" placeholder="https://" type="url" /></div>' +
+      '</div>';
+    portContainer.appendChild(div);
+    portIdx++;
+    attachPortRemove();
+  }
+  function attachPortRemove() {
+    document.querySelectorAll('.port-remove').forEach(function(b) {
+      b.removeEventListener('click', handlePortRemove);
+      b.addEventListener('click', handlePortRemove);
+    });
+  }
+  function handlePortRemove() { this.closest('.p-4').remove(); }
+  document.getElementById('addPortfolioBtn').addEventListener('click', function() { addPortfolio(null); });
+
+  // --- Business ---
+  var busIdx = 0;
+  var busContainer = document.getElementById('businessContainer');
+  function addBusiness(data) {
+    var d = data || {};
+    var div = document.createElement('div');
+    div.className = 'p-4 rounded-xl bg-gray-50 border border-gray-200';
+    div.innerHTML =
+      '<div class="flex justify-between items-center mb-3">' +
+        '<span class="text-xs font-semibold text-blue-600 uppercase">Usaha #' + (busIdx + 1) + '</span>' +
+        '<button type="button" class="bus-remove text-red-500 hover:bg-red-50 p-1 rounded-lg">' +
+          '<span class="material-symbols-outlined" style="font-size:18px">delete</span>' +
+        '</button>' +
+      '</div>' +
+      '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">' +
+        '<div><label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Bentuk Usaha</label>' +
+          '<select class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm bus-legalForm">' +
+            '<option value="">Pilih bentuk</option>' +
+            '<option value="Perorangan"' + (d.legalForm === 'Perorangan' ? ' selected' : '') + '>Perorangan</option>' +
+            '<option value="PT. Perorangan"' + (d.legalForm === 'PT. Perorangan' ? ' selected' : '') + '>PT. Perorangan</option>' +
+            '<option value="CV"' + (d.legalForm === 'CV' ? ' selected' : '') + '>CV</option>' +
+            '<option value="PT"' + (d.legalForm === 'PT' ? ' selected' : '') + '>PT</option>' +
+            '<option value="Yayasan"' + (d.legalForm === 'Yayasan' ? ' selected' : '') + '>Yayasan</option>' +
+            '<option value="Firma"' + (d.legalForm === 'Firma' ? ' selected' : '') + '>Firma</option>' +
+            '<option value="Lainnya"' + (d.legalForm === 'Lainnya' ? ' selected' : '') + '>Lainnya</option>' +
+          '</select></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Nama Usaha/Perusahaan</label>' +
+          '<input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm bus-name" value="' + (d.name || '') + '" placeholder="Nama usaha" type="text" /></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Bidang Usaha</label>' +
+          '<input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm bus-field" value="' + (d.field || '') + '" placeholder="Teknologi, Kuliner, Fashion, dll" type="text" /></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Skala Usaha</label>' +
+          '<select class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm bus-scale">' +
+            '<option value="">Pilih skala</option>' +
+            '<option value="Ultra Mikro (<300jt/thn)"' + (d.scale === 'Ultra Mikro (<300jt/thn)' ? ' selected' : '') + '>Ultra Mikro (omset &lt;300jt/thn)</option>' +
+            '<option value="Mikro (300jt-2M/thn)"' + (d.scale === 'Mikro (300jt-2M/thn)' ? ' selected' : '') + '>Mikro (omset 300jt-2M/thn)</option>' +
+            '<option value="Kecil (2M-15M/thn)"' + (d.scale === 'Kecil (2M-15M/thn)' ? ' selected' : '') + '>Kecil (omset 2M-15M/thn)</option>' +
+            '<option value="Menengah (15M-50M/thn)"' + (d.scale === 'Menengah (15M-50M/thn)' ? ' selected' : '') + '>Menengah (omset 15M-50M/thn)</option>' +
+            '<option value="Besar (>50M/thn)"' + (d.scale === 'Besar (>50M/thn)' ? ' selected' : '') + '>Besar (omset &gt;50M/thn)</option>' +
+          '</select></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Model Bisnis</label>' +
+          '<select class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm bus-model">' +
+            '<option value="">Pilih model</option>' +
+            '<option value="B2B"' + (d.businessModel === 'B2B' ? ' selected' : '') + '>B2B</option>' +
+            '<option value="B2C"' + (d.businessModel === 'B2C' ? ' selected' : '') + '>B2C</option>' +
+            '<option value="Hybrid"' + (d.businessModel === 'Hybrid' ? ' selected' : '') + '>Hybrid</option>' +
+          '</select></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 uppercase mb-1">URL Profil Usaha</label>' +
+          '<input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm bus-website" value="' + (d.website || '') + '" placeholder="https://" type="url" /></div>' +
+        '<div class="md:col-span-2"><label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Produk/Jasa Utama</label>' +
+          '<div class="flex gap-2 mb-2">' +
+            '<input class="flex-1 px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm bus-prod-input" placeholder="Nama produk/jasa" type="text" />' +
+            '<button type="button" class="bus-add-prod px-3 py-2 bg-gray-200 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-300">Tambah</button>' +
+          '</div>' +
+          '<div class="flex flex-wrap gap-1.5 bus-prod-container"></div>' +
+          '<input class="bus-products" type="hidden" value=\'' + JSON.stringify(d.products || []) + '\' /></div>' +
+      '</div>';
+    busContainer.appendChild(div);
+    busIdx++;
+    attachBusRemove();
+    attachBusProd();
+    renderBusProds(div.querySelector('.bus-products'));
+  }
+  function attachBusRemove() {
+    document.querySelectorAll('.bus-remove').forEach(function(b) {
+      b.removeEventListener('click', handleBusRemove);
+      b.addEventListener('click', handleBusRemove);
+    });
+  }
+  function handleBusRemove() { this.closest('.p-4').remove(); }
+  function attachBusProd() {
+    document.querySelectorAll('.bus-add-prod').forEach(function(b) {
+      b.removeEventListener('click', handleBusAddProd);
+      b.addEventListener('click', handleBusAddProd);
+    });
+  }
+  function handleBusAddProd() {
+    var entry = this.closest('.p-4');
+    var inp = entry.querySelector('.bus-prod-input');
+    var val = inp.value.trim();
+    if (!val) return;
+    var hidden = entry.querySelector('.bus-products');
+    var prods = JSON.parse(hidden.value || '[]');
+    if (!prods.includes(val)) { prods.push(val); }
+    hidden.value = JSON.stringify(prods);
+    inp.value = '';
+    renderBusProds(hidden);
+  }
+  function renderBusProds(hidden) {
+    var entry = hidden.closest('.p-4');
+    var container = entry.querySelector('.bus-prod-container');
+    var prods = JSON.parse(hidden.value || '[]');
+    container.innerHTML = prods.map(function(p, i) {
+      return '<span class="inline-flex items-center gap-1 px-2 py-1 bg-gray-200 text-gray-700 rounded-full text-xs">' +
+        escapeHtml(p) +
+        '<button type="button" class="bus-prod-remove text-gray-500 hover:text-gray-700" data-bp="' + i + '">' +
+          '<span class="material-symbols-outlined" style="font-size:12px">close</span>' +
+        '</button></span>';
+    }).join('');
+    container.querySelectorAll('.bus-prod-remove').forEach(function(b) {
+      b.addEventListener('click', function() {
+        var prods2 = JSON.parse(hidden.value || '[]');
+        prods2.splice(parseInt(this.dataset.bp), 1);
+        hidden.value = JSON.stringify(prods2);
+        renderBusProds(hidden);
+      });
+    });
+  }
+  document.getElementById('addBusinessBtn').addEventListener('click', function() { addBusiness(null); });
+
+  // --- isActive toggle ---
+  var toggle = document.getElementById('isActiveToggle');
+  var label = document.getElementById('isActiveLabel');
+  var input = document.getElementById('isActiveInput');
+  if (toggle) {
+    toggle.addEventListener('change', function() {
+      var active = this.checked;
+      input.value = active ? 'true' : 'false';
+      label.textContent = active ? 'Aktif' : 'Nonaktif';
+    });
+  }
+
+  // --- Career Status toggle ---
+  document.getElementById('careerStatus').addEventListener('change', function() {
+    var wrapper = document.getElementById('careerOtherWrapper');
+    var otherInput = document.getElementById('careerOther');
+    if (this.value === 'Lainnya' || this.value === 'Profesional') {
+      wrapper.classList.remove('hidden');
+    } else {
+      wrapper.classList.add('hidden');
+      otherInput.value = '';
+    }
+  });
+
+  // --- Photo preview with size validation ---
+  var maxFileSize = <%= typeof maxFileSize !== 'undefined' && maxFileSize ? maxFileSize : 0 %>;
+  var maxFileSizeKb = <%= typeof maxFileSizeKb !== 'undefined' && maxFileSizeKb ? maxFileSizeKb : 500 %>;
+  document.getElementById('photo').addEventListener('change', function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    if (maxFileSize > 0 && file.size > maxFileSize) {
+      showMsg('Ukuran foto maksimal ' + maxFileSizeKb + 'KB', 'error');
+      this.value = '';
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      document.getElementById('photoPreviewImg').src = ev.target.result;
+      document.getElementById('photoPreview').classList.remove('hidden');
+      document.getElementById('formMessage').classList.add('hidden');
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // --- Escape HTML helper ---
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // --- Initialize edit data ---
+  if (editData) {
+    renderSocial();
+    if (editData.education) { editData.education.forEach(function(e) { addEducation(e); }); }
+    if (editData.certificates) { editData.certificates.forEach(function(c) { addCertificate(c); }); }
+    if (editData.organizations) { editData.organizations.forEach(function(o) { addOrganization(o); }); }
+    if (editData.portfolios) { editData.portfolios.forEach(function(p) { addPortfolio(p); }); }
+    if (editData.businesses) { editData.businesses.forEach(function(b) { addBusiness(b); }); }
+    var removePhoto = false;
+    var photoPreview = document.getElementById('photoPreview');
+    var photoPreviewImg = document.getElementById('photoPreviewImg');
+    var removePhotoBtn = document.getElementById('removePhotoBtn');
+
+    if (editData && editData.photoUrl) {
+      photoPreviewImg.src = editData.photoUrl;
+      photoPreview.classList.remove('hidden');
+      removePhotoBtn.classList.remove('hidden');
+    }
+
+    removePhotoBtn.addEventListener('click', function() {
+      removePhoto = true;
+      photoPreview.classList.add('hidden');
+      removePhotoBtn.classList.add('hidden');
+      document.getElementById('photo').value = '';
+    });
+
+    document.getElementById('photo').addEventListener('change', function() {
+      if (this.files && this.files[0]) {
+        removePhoto = false;
+        removePhotoBtn.classList.add('hidden');
+      }
+    });
+    if (editData.careerOther) {
+      document.getElementById('careerOtherWrapper').classList.remove('hidden');
+    }
+  }
+
+  // --- Submit ---
+  document.getElementById('alumniForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var msg = document.getElementById('formMessage');
+    msg.classList.add('hidden');
+    msg.className = 'hidden p-4 rounded-lg text-sm';
+
+    var nikEl = document.getElementById('nik');
+    var nikVal = nikEl ? nikEl.value.trim() : '';
+    if (!nikVal) { showMsg('NIK wajib diisi', 'error'); return; }
+    if (!/^\d{16}$/.test(nikVal)) { showMsg('NIK harus 16 digit angka', 'error'); return; }
+
+    var requiredFields = {
+      name: 'Nama Lengkap',
+      gender: 'Jenis Kelamin',
+      maritalStatus: 'Status Pernikahan',
+      phone: 'No. HP/WhatsApp',
+      email: 'Email Aktif',
+      provinceCode: 'Provinsi',
+      careerStatus: 'Status Pekerjaan',
+    };
+    for (var key in requiredFields) {
+      var el = document.getElementById(key) || document.querySelector('[name="' + key + '"]');
+      if (el && !el.value.trim()) { showMsg(requiredFields[key] + ' wajib diisi', 'error'); return; }
+    }
+
+    // Collect education
+    var education = [];
+    document.querySelectorAll('.edu-level').forEach(function(el, i) {
+      var entry = el.closest('.p-4');
+      education.push({
+        level: entry.querySelector('.edu-level').value,
+        countryCode: entry.querySelector('.edu-country').value,
+        university: entry.querySelector('.edu-uni').value,
+        faculty: entry.querySelector('.edu-faculty').value,
+        major: entry.querySelector('.edu-major').value,
+        graduationYear: entry.querySelector('.edu-year').value ? parseInt(entry.querySelector('.edu-year').value) : undefined,
+      });
+    });
+
+    // Collect certificates
+    var certificates = [];
+    document.querySelectorAll('.cert-name').forEach(function(el) {
+      var entry = el.closest('.p-4');
+      certificates.push({
+        name: entry.querySelector('.cert-name').value,
+        publisher: entry.querySelector('.cert-publisher').value,
+        validUntil: entry.querySelector('.cert-valid').value || undefined,
+        url: entry.querySelector('.cert-url').value || undefined,
+      });
+    });
+
+    // Collect organizations
+    var organizations = [];
+    document.querySelectorAll('.org-name').forEach(function(el) {
+      var entry = el.closest('.p-4');
+      organizations.push({
+        name: entry.querySelector('.org-name').value,
+        type: entry.querySelector('.org-type').value,
+        level: entry.querySelector('.org-level').value,
+        position: entry.querySelector('.org-position').value,
+        field: entry.querySelector('.org-field').value,
+      });
+    });
+
+    // Collect portfolios
+    var portfolios = [];
+    document.querySelectorAll('.port-name').forEach(function(el) {
+      var entry = el.closest('.p-4');
+      portfolios.push({
+        name: entry.querySelector('.port-name').value,
+        type: entry.querySelector('.port-type').value,
+        typeOther: entry.querySelector('.port-typeOther').value,
+        year: entry.querySelector('.port-year').value ? parseInt(entry.querySelector('.port-year').value) : undefined,
+        link: entry.querySelector('.port-link').value || undefined,
+      });
+    });
+
+    // Collect businesses
+    var businesses = [];
+    document.querySelectorAll('.bus-legalForm').forEach(function(el) {
+      var entry = el.closest('.p-4');
+      businesses.push({
+        legalForm: entry.querySelector('.bus-legalForm').value,
+        name: entry.querySelector('.bus-name').value,
+        field: entry.querySelector('.bus-field').value,
+        products: JSON.parse(entry.querySelector('.bus-products').value || '[]'),
+        scale: entry.querySelector('.bus-scale').value,
+        businessModel: entry.querySelector('.bus-model').value,
+        website: entry.querySelector('.bus-website').value,
+      });
+    });
+
+    // Social links as array of { url } objects
+    var socialRaw = JSON.parse(document.getElementById('socialLinks').value || '[]');
+    var socialLinksArr = socialRaw.map(function(s) { return { url: s }; });
+
+    // Handle photo
+    if (removePhoto) {
+      submitForm(null, education, certificates, organizations, portfolios, businesses, socialLinksArr);
+      return;
+    }
+    var photoFile = document.getElementById('photo').files[0];
+    if (photoFile) {
+      uploadPhoto(photoFile)
+        .then(function(photoUrl) {
+          submitForm(photoUrl, education, certificates, organizations, portfolios, businesses, socialLinksArr);
+        })
+        .catch(function(err) {
+          showMsg(err.message, 'error');
+        });
+      return;
+    }
+    // Keep existing photo in edit mode
+    var existingPhoto = editData && editData.photoUrl ? editData.photoUrl : '';
+    submitForm(existingPhoto, education, certificates, organizations, portfolios, businesses, socialLinksArr);
+  });
+
+  function uploadPhoto(file) {
+    return new Promise(function(resolve, reject) {
+      var fd = new FormData();
+      fd.append('file', file);
+      fetch('/api/v1/upload/alumni-photo', {
+        method: 'POST',
+        headers: token ? { Authorization: 'Bearer ' + token } : {},
+        body: fd,
+      })
+        .then(function(res) {
+          if (!res.ok) {
+            return res.json().then(function(d) { throw new Error(d.error || 'Gagal upload foto'); });
+          }
+          return res.json();
+        })
+        .then(function(data) {
+          resolve(data.data.url);
+        })
+        .catch(function(err) {
+          reject(err);
+        });
+    });
+  }
+
+  function submitForm(photoData, education, certificates, organizations, portfolios, businesses, socialLinksArr) {
+    var form = document.getElementById('alumniForm');
+    var fd = new FormData(form);
+
+    var body = {
+      name: fd.get('name'),
+      nik: fd.get('nik') || undefined,
+      gender: fd.get('gender') || undefined,
+      maritalStatus: fd.get('maritalStatus') || undefined,
+      phone: fd.get('phone') || undefined,
+      email: fd.get('email') || undefined,
+      photoUrl: photoData === null ? null : photoData || undefined,
+      province: document.getElementById('provinceCode').selectedOptions[0]?.text || undefined,
+      provinceCode: document.getElementById('provinceCode').value || undefined,
+      regencyCode: document.getElementById('regencyCode').value || undefined,
+      regencyName: document.getElementById('regencyName').value || undefined,
+      districtCode: document.getElementById('districtCode').value || undefined,
+      districtName: document.getElementById('districtName').value || undefined,
+      villageCode: document.getElementById('villageCode').value || undefined,
+      villageName: document.getElementById('villageName').value || undefined,
+      address: fd.get('address') || undefined,
+      careerStatus: fd.get('careerStatus') || undefined,
+      careerOther: fd.get('careerOther') || undefined,
+      isActive: document.getElementById('isActiveInput')?.value === 'true',
+      institutionName: fd.get('institutionName') || undefined,
+      institutionField: fd.get('institutionField') || undefined,
+      position: fd.get('position') || undefined,
+      education: education,
+      certificates: certificates,
+      organizations: organizations,
+      portfolios: portfolios,
+      businesses: businesses,
+      socialLinks: socialLinksArr,
+    };
+
+    var isEdit = window.location.pathname.includes('/edit');
+    var id = isEdit && editData ? editData.id : null;
+    var url = '/api/v1/alumni' + (id ? '/' + id : '');
+
+    fetch(url, {
+      method: id ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json', ...(token && { Authorization: 'Bearer ' + token }) },
+      body: JSON.stringify(body),
+    })
+      .then(async function(res) {
+        if (!res.ok) {
+          var errData = { error: 'Gagal menyimpan data alumni' };
+          try { errData = await res.json(); } catch (_) {}
+          throw new Error(errData.error || errData.message || 'Gagal menyimpan data alumni');
+        }
+        return res.json();
+      })
+      .then(function() {
+        showMsg('Data alumni berhasil disimpan!', 'success');
+        setTimeout(function() { window.location.href = '/dashboard/alumni'; }, 500);
+      })
+      .catch(function(err) {
+        showMsg(err.message, 'error');
+      });
+  }
+
+  function showMsg(text, type) {
+    var msg = document.getElementById('formMessage');
+    msg.textContent = text;
+    msg.className = 'p-4 rounded-lg text-sm ' + (type === 'error' ? 'bg-red-50 border border-red-200 text-red-700' : 'bg-green-50 border border-green-200 text-green-700');
+  }
+})();
+</script>
+<%- include('../../partials/footer') %>

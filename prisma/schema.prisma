@@ -1,0 +1,176 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Alumni {
+  id              String   @id @default(uuid()) @map("id")
+  nik             String   @unique @map("nik")
+  name            String   @map("name")
+  gender          String?  @map("gender")
+  maritalStatus   String?  @map("marital_status")
+  phone           String?  @map("phone")
+  email           String?  @map("email")
+  photoUrl        String?  @map("photo_url")
+  province        String?  @map("province")
+  provinceCode    String?  @map("province_code")
+  regencyCode     String?  @map("regency_code")
+  regencyName     String?  @map("regency_name")
+  districtCode    String?  @map("district_code")
+  districtName    String?  @map("district_name")
+  villageCode     String?  @map("village_code")
+  villageName     String?  @map("village_name")
+  address         String?  @map("address")
+  bio             String?  @map("bio")
+  careerStatus    String?  @map("career_status")
+  careerOther     String?  @map("career_other")
+  institutionName String?  @map("institution_name")
+  institutionField String? @map("institution_field")
+  position        String?  @map("position")
+  isActive        Boolean? @default(true) @map("is_active")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @default(now()) @updatedAt @map("updated_at")
+
+  education     Education[]
+  certificates  Certificate[]
+  organizations Organization[]
+  portfolios    Portfolio[]
+  businesses    Business[]
+  socialLinks   SocialLink[]
+
+  @@map("alumni")
+}
+
+model Education {
+  id             String   @id @default(uuid()) @map("id")
+  alumniId       String   @map("alumni_id")
+  level          String?  @map("level")
+  countryCode    String?  @map("country_code")
+  university     String?  @map("university")
+  faculty        String?  @map("faculty")
+  major          String?  @map("major")
+  graduationYear Int?     @map("graduation_year")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  alumni  Alumni  @relation(fields: [alumniId], references: [id], onDelete: Cascade)
+  country Country? @relation(fields: [countryCode], references: [code])
+
+  @@map("education")
+}
+
+model Certificate {
+  id         String   @id @default(uuid()) @map("id")
+  alumniId   String   @map("alumni_id")
+  name       String   @map("name")
+  publisher  String?  @map("publisher")
+  validUntil String?  @map("valid_until")
+  url        String?  @map("url")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  alumni Alumni @relation(fields: [alumniId], references: [id], onDelete: Cascade)
+
+  @@map("certificates")
+}
+
+model Organization {
+  id        String   @id @default(uuid()) @map("id")
+  alumniId  String   @map("alumni_id")
+  name      String   @map("name")
+  type      String?  @map("type")
+  level     String?  @map("level")
+  position  String?  @map("position")
+  field     String?  @map("field")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  alumni Alumni @relation(fields: [alumniId], references: [id], onDelete: Cascade)
+
+  @@map("organizations")
+}
+
+model Portfolio {
+  id        String   @id @default(uuid()) @map("id")
+  alumniId  String   @map("alumni_id")
+  name      String   @map("name")
+  type      String?  @map("type")
+  typeOther String?  @map("type_other")
+  year      Int?     @map("year")
+  link      String?  @map("link")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  alumni Alumni @relation(fields: [alumniId], references: [id], onDelete: Cascade)
+
+  @@map("portfolios")
+}
+
+model Business {
+  id             String   @id @default(uuid()) @map("id")
+  alumniId       String   @map("alumni_id")
+  legalForm      String?  @map("legal_form")
+  name           String   @map("name")
+  field          String?  @map("field")
+  products       String?  @map("products")
+  scale          String?  @map("scale")
+  businessModel  String?  @map("business_model")
+  companyProfile String?  @map("company_profile")
+  website        String?  @map("website")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  alumni Alumni @relation(fields: [alumniId], references: [id], onDelete: Cascade)
+
+  @@map("businesses")
+}
+
+model SocialLink {
+  id        String   @id @default(uuid()) @map("id")
+  alumniId  String   @map("alumni_id")
+  platform  String?  @map("platform")
+  url       String   @map("url")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  alumni Alumni @relation(fields: [alumniId], references: [id], onDelete: Cascade)
+
+  @@map("social_links")
+}
+
+model Wilayah {
+  id   Int    @id @default(autoincrement()) @map("id")
+  kode String @unique @map("kode")
+  nama String @map("nama")
+
+  @@map("wilayah")
+}
+
+model Country {
+  code      String @id @map("code")
+  name      String @map("name")
+  dialCode  String @map("dial_code")
+  dialCode4 String @map("dial_code_4")
+
+  educations Education[]
+
+  @@map("countries")
+}
+
+model Admin {
+  id        String   @id @default(uuid()) @map("id")
+  email     String   @unique @map("email")
+  name      String   @map("name")
+  role      String   @default("admin") @map("role")
+  password  String?  @map("password")
+  isBuiltin Boolean? @default(false) @map("is_builtin")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("admins")
+}
+
+model Setting {
+  key       String   @id @map("key")
+  value     String?  @map("value")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("settings")
+}

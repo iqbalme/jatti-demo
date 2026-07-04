@@ -1,0 +1,790 @@
+<%- include('../../partials/header') %>
+<style>
+  .soft-gradient { background: linear-gradient(135deg, var(--gradient-from), var(--gradient-to)); }
+  .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(8px); border: 1px solid rgba(226, 232, 240, 0.5); }
+  .toast-enter { animation: toastIn 0.3s ease-out; }
+  .toast-leave { animation: toastOut 0.3s ease-in forwards; }
+  @keyframes toastIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes toastOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+</style>
+<div id="toastContainer" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none" style="min-width:320px;max-width:420px"></div>
+<div class="min-h-screen flex flex-col">
+  <header class="w-full top-0 sticky z-50 bg-white shadow-sm border-b border-gray-200">
+    <div class="flex items-center justify-between h-16 px-4 max-w-4xl mx-auto">
+      <div class="flex items-center gap-2">
+        <a href="/" class="text-xl font-bold" style="color: var(--brand-color)"><%= typeof settings !== 'undefined' && settings.site_name ? settings.site_name : 'AlumniLink' %></a>
+        <a href="/statistik" class="md:hidden text-xs text-blue-600 hover:underline">Statistik</a>
+      </div>
+      <nav class="hidden md:flex items-center gap-6 text-sm">
+        <a href="/alumni" class="text-gray-500 hover:text-blue-600 transition-colors">Directory</a>
+        <a href="/statistik" class="text-gray-500 hover:text-blue-600 transition-colors">Statistik</a>
+        <a href="/alumni/baru" class="text-blue-600 font-semibold border-b-2 border-blue-600 pb-1">Tambah Data</a>
+      </nav>
+      <div class="flex items-center gap-3">
+        <% if (typeof user !== 'undefined' && user) { %>
+          <a href="/dashboard" class="text-sm font-medium px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">Dashboard</a>
+          <a href="/logout" class="text-sm font-medium px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Keluar</a>
+        <% } else { %>
+          <a href="/login" class="text-sm font-medium px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Masuk</a>
+        <% } %>
+      </div>
+    </div>
+  </header>
+
+  <section class="soft-gradient py-12 px-4 relative overflow-hidden">
+    <div class="absolute inset-0 opacity-10">
+      <div class="absolute top-0 left-0 w-64 h-64 bg-white rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+      <div class="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl translate-x-1/3 translate-y-1/3"></div>
+    </div>
+    <div class="max-w-4xl mx-auto relative z-10 text-center">
+      <h1 class="text-3xl font-bold text-white mb-2">Tambah Data Alumni</h1>
+      <p class="text-white/80">Isi data diri Anda. Data akan ditinjau admin sebelum ditampilkan di directory.</p>
+    </div>
+  </section>
+
+  <main class="flex-1 max-w-4xl mx-auto px-4 py-8 w-full">
+    <a href="/alumni" class="text-sm text-blue-600 hover:underline mb-4 inline-block">&larr; Kembali ke directory</a>
+
+    <form id="alumniForm" action="/alumni/baru" method="POST" class="space-y-6">
+      <div id="formMessage" class="<%= error ? 'p-4 rounded-lg text-sm bg-red-50 border border-red-200 text-red-700' : 'hidden' %>"><%= error || '' %></div>
+
+      <!-- SECTION 1: Data Pribadi -->
+      <div class="glass-card rounded-2xl p-6 shadow-sm border border-gray-200/50 bg-white/90">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+            <span class="material-symbols-outlined text-blue-600">badge</span>
+          </div>
+          <h2 class="text-lg font-semibold">Data Pribadi</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="nik">NIK <span class="text-red-500">*</span></label>
+            <input class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="nik" name="nik" placeholder="16 digit NIK" required type="text" maxlength="16" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="name">Nama Lengkap <span class="text-red-500">*</span></label>
+            <input class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="name" name="name" placeholder="Nama lengkap sesuai KTP" required type="text" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Jenis Kelamin <span class="text-red-500">*</span></label>
+            <div class="flex gap-4 pt-1.5">
+              <label class="flex items-center gap-2 cursor-pointer text-sm"><input class="w-4 h-4 text-blue-600" name="gender" required type="radio" value="Laki-laki" /><span>Laki-laki</span></label>
+              <label class="flex items-center gap-2 cursor-pointer text-sm"><input class="w-4 h-4 text-blue-600" name="gender" type="radio" value="Perempuan" /><span>Perempuan</span></label>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="maritalStatus">Status Pernikahan <span class="text-red-500">*</span></label>
+            <select class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="maritalStatus" name="maritalStatus" required>
+              <option value="">Pilih status</option>
+              <option value="Belum Menikah">Belum Menikah</option>
+              <option value="Menikah">Menikah</option>
+              <option value="Pernah Menikah (Duda/Janda)">Pernah Menikah (Duda/Janda)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="phone">No. HP/WhatsApp <span class="text-red-500">*</span></label>
+            <input class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="phone" name="phone" placeholder="+62 812-3456-7890" required type="tel" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="email">Email Aktif <span class="text-red-500">*</span></label>
+            <input class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="email" name="email" placeholder="nama@email.com" required type="email" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Link Media Sosial</label>
+            <div class="flex gap-2 mb-2">
+              <input class="flex-1 px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="socialLinkInput" placeholder="https://linkedin.com/in/username" type="url" />
+              <button class="px-4 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-200 transition-all" id="addSocialBtn" type="button">Tambah</button>
+            </div>
+            <div class="flex flex-wrap gap-1.5" id="socialLinksContainer"></div>
+            <input id="socialLinks" name="socialLinks" type="hidden" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="photo">Foto</label>
+            <input class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-blue-100 file:text-blue-700 file:text-xs file:font-semibold" id="photo" name="photo" accept="image/*" type="file" />
+            <p class="text-xs text-gray-400 mt-1">Format: JPEG, PNG, GIF, WebP. Maksimal <%= typeof maxFileSizeKb !== 'undefined' && maxFileSizeKb ? maxFileSizeKb : 500 %>KB.</p>
+            <div id="photoPreview" class="mt-2 hidden">
+              <img class="w-20 h-20 rounded-xl object-cover border border-gray-300" id="photoPreviewImg" alt="Preview" />
+              <button type="button" id="removePhotoBtn" class="mt-1.5 text-xs text-red-600 hover:text-red-700 font-medium hidden">Hapus Foto</button>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Provinsi <span class="text-red-500">*</span></label>
+            <select class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="provinceCode" required>
+              <option value="">Pilih provinsi</option>
+            </select>
+            <input id="provinceName" name="province" type="hidden" />
+            <input id="regencyName" name="regencyName" type="hidden" />
+            <input id="districtName" name="districtName" type="hidden" />
+            <input id="villageName" name="villageName" type="hidden" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Kabupaten</label>
+            <select class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="regencyCode">
+              <option value="">Pilih kabupaten</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Kecamatan</label>
+            <select class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="districtCode">
+              <option value="">Pilih kecamatan</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Kelurahan</label>
+            <select class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="villageCode">
+              <option value="">Pilih kelurahan</option>
+            </select>
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="address">Alamat Domisili Lengkap <span class="text-red-500">*</span></label>
+            <textarea class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none" id="address" name="address" placeholder="RT/RW, Kelurahan, Kecamatan, Kota/Kabupaten, Kode Pos" rows="3"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 2: Pendidikan -->
+      <div class="glass-card rounded-2xl p-6 shadow-sm border border-gray-200/50 bg-white/90">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+            <span class="material-symbols-outlined text-blue-600">school</span>
+          </div>
+          <h2 class="text-lg font-semibold">Latar Belakang Pendidikan</h2>
+        </div>
+        <p class="text-sm text-gray-500 mb-4">Tambahkan riwayat pendidikan dari jenjang S1 sampai S3</p>
+        <div id="educationContainer" class="space-y-4"></div>
+        <button class="mt-3 px-6 py-2.5 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 text-sm font-medium hover:bg-gray-50 hover:border-blue-400 transition-all w-full flex items-center justify-center gap-2" id="addEducationBtn" type="button">
+          <span class="material-symbols-outlined">add</span>Tambah Riwayat Pendidikan
+        </button>
+      </div>
+
+      <!-- SECTION 3: Sertifikat -->
+      <div class="glass-card rounded-2xl p-6 shadow-sm border border-gray-200/50 bg-white/90">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+            <span class="material-symbols-outlined text-blue-600">verified</span>
+          </div>
+          <h2 class="text-lg font-semibold">Sertifikat Kompetensi</h2>
+        </div>
+        <div id="certificateContainer" class="space-y-4"></div>
+        <button class="mt-3 px-6 py-2.5 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 text-sm font-medium hover:bg-gray-50 hover:border-blue-400 transition-all w-full flex items-center justify-center gap-2" id="addCertificateBtn" type="button">
+          <span class="material-symbols-outlined">add</span>Tambah Sertifikat
+        </button>
+      </div>
+
+      <!-- SECTION 4: Organisasi -->
+      <div class="glass-card rounded-2xl p-6 shadow-sm border border-gray-200/50 bg-white/90">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+            <span class="material-symbols-outlined text-blue-600">groups</span>
+          </div>
+          <h2 class="text-lg font-semibold">Pengalaman Organisasi</h2>
+        </div>
+        <div id="organizationContainer" class="space-y-4"></div>
+        <button class="mt-3 px-6 py-2.5 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 text-sm font-medium hover:bg-gray-50 hover:border-blue-400 transition-all w-full flex items-center justify-center gap-2" id="addOrgBtn" type="button">
+          <span class="material-symbols-outlined">add</span>Tambah Pengalaman Organisasi
+        </button>
+      </div>
+
+      <!-- SECTION 4.5: Portfolio -->
+      <div class="glass-card rounded-2xl p-6 shadow-sm border border-gray-200/50 bg-white/90">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+            <span class="material-symbols-outlined text-blue-600">folder</span>
+          </div>
+          <h2 class="text-lg font-semibold">Portofolio</h2>
+        </div>
+        <p class="text-sm text-gray-500 mb-4">Tambahkan portofolio karya (buku, aplikasi, website, dll)</p>
+        <div id="portfolioContainer" class="space-y-4"></div>
+        <button class="mt-3 px-6 py-2.5 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 text-sm font-medium hover:bg-gray-50 hover:border-blue-400 transition-all w-full flex items-center justify-center gap-2" id="addPortfolioBtn" type="button">
+          <span class="material-symbols-outlined">add</span>Tambah Portofolio
+        </button>
+      </div>
+
+      <!-- SECTION 5: Karir -->
+      <div class="glass-card rounded-2xl p-6 shadow-sm border border-gray-200/50 bg-white/90">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+            <span class="material-symbols-outlined text-blue-600">work</span>
+          </div>
+          <h2 class="text-lg font-semibold">Profil Pekerjaan / Karir</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="careerStatus">Status Pekerjaan Saat Ini <span class="text-red-500">*</span></label>
+            <select class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="careerStatus" name="careerStatus" required>
+              <option value="">Pilih status</option>
+              <option value="Pekerja">Pekerja</option>
+              <option value="Wirausaha">Wirausaha</option>
+              <option value="Profesional">Profesional (Pengacara, Dokter, Insinyur, Konsultan, dll)</option>
+              <option value="Tenaga Pendidik">Tenaga Pendidik</option>
+              <option value="Pencari Kerja">Pencari Kerja</option>
+              <option value="Lainnya">Lainnya</option>
+            </select>
+          </div>
+          <div id="careerOtherWrapper" class="hidden">
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="careerOther">Sebutkan <span class="text-red-500">*</span></label>
+            <input class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="careerOther" name="careerOther" placeholder="Jabatan/profesi lainnya" type="text" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="institutionName">Nama Instansi/Perusahaan</label>
+            <input class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="institutionName" name="institutionName" placeholder="Nama perusahaan/instansi" type="text" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="institutionField">Bidang Instansi/Perusahaan</label>
+            <input class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="institutionField" name="institutionField" placeholder="Contoh: Teknologi Informasi" type="text" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5" for="position">Jabatan</label>
+            <input class="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" id="position" name="position" placeholder="Contoh: Senior Software Engineer" type="text" />
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 6: Usaha -->
+      <div class="glass-card rounded-2xl p-6 shadow-sm border border-gray-200/50 bg-white/90">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+            <span class="material-symbols-outlined text-blue-600">store</span>
+          </div>
+          <h2 class="text-lg font-semibold">Data Usaha</h2>
+        </div>
+        <p class="text-sm text-gray-500 mb-4">Isi jika memiliki usaha (bisa lebih dari satu)</p>
+        <div id="businessContainer" class="space-y-4"></div>
+        <button class="mt-3 px-6 py-2.5 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 text-sm font-medium hover:bg-gray-50 hover:border-blue-400 transition-all w-full flex items-center justify-center gap-2" id="addBusinessBtn" type="button">
+          <span class="material-symbols-outlined">add</span>Tambah Data Usaha
+        </button>
+      </div>
+
+      <!-- Submit -->
+      <div class="flex flex-col md:flex-row gap-4">
+        <button class="flex-1 bg-blue-600 text-white py-3 px-6 rounded-xl font-semibold text-sm hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2" type="submit">
+          <span class="material-symbols-outlined">send</span>Kirim Data
+        </button>
+        <a class="flex-1 bg-gray-200 text-gray-700 py-3 px-6 rounded-xl font-semibold text-sm hover:bg-gray-300 transition-all flex items-center justify-center gap-2" href="/alumni">
+          <span class="material-symbols-outlined">cancel</span>Batal
+        </a>
+      </div>
+    </form>
+  </main>
+</div>
+
+<script id="authData" type="application/json"><%- JSON.stringify(typeof token !== 'undefined' ? token : '') %></script>
+<script>
+(function() {
+  var token = JSON.parse(document.getElementById('authData').textContent);
+
+  // --- Toast ---
+  function showToast(message, type) {
+    type = type || 'info';
+    var colors = {
+      success: { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-800', icon: 'check_circle', iconBg: 'bg-green-100', iconColor: 'text-green-600' },
+      error:   { bg: 'bg-red-50',    border: 'border-red-200',   text: 'text-red-800',   icon: 'error',         iconBg: 'bg-red-100',   iconColor: 'text-red-600' },
+      warning: { bg: 'bg-yellow-50', border: 'border-yellow-200', text: 'text-yellow-800', icon: 'warning',       iconBg: 'bg-yellow-100', iconColor: 'text-yellow-600' },
+      info:    { bg: 'bg-blue-50',   border: 'border-blue-200',  text: 'text-blue-800',  icon: 'info',          iconBg: 'bg-blue-100',  iconColor: 'text-blue-600' },
+    };
+    var c = colors[type] || colors.info;
+    var container = document.getElementById('toastContainer');
+    var el = document.createElement('div');
+    el.className = 'pointer-events-auto toast-enter ' + c.bg + ' ' + c.border + ' border rounded-xl shadow-lg px-4 py-3 flex items-start gap-3';
+    el.innerHTML =
+      '<div class="w-8 h-8 rounded-full ' + c.iconBg + ' flex items-center justify-center flex-shrink-0">' +
+        '<span class="material-symbols-outlined ' + c.iconColor + '" style="font-size:18px">' + c.icon + '</span>' +
+      '</div>' +
+      '<p class="text-sm ' + c.text + ' flex-1 pt-0.5">' + escapeHtml(message) + '</p>' +
+      '<button onclick="this.closest(\'div\').classList.add(\'toast-leave\');setTimeout(function(){this.closest(\'div\').remove()}.bind(this),300)" class="flex-shrink-0 ' + c.text + ' hover:opacity-70">' +
+        '<span class="material-symbols-outlined" style="font-size:16px">close</span>' +
+      '</button>';
+    container.appendChild(el);
+    setTimeout(function() {
+      if (el.parentNode) { el.classList.add('toast-leave'); setTimeout(function() { if (el.parentNode) el.remove(); }, 300); }
+    }, 4000);
+  }
+
+  function escapeHtml(str) {
+    var d = document.createElement('div'); d.textContent = str; return d.innerHTML;
+  }
+
+  // --- Form message ---
+  function showFormMessage(msg, type) {
+    var el = document.getElementById('formMessage');
+    el.className = 'p-4 rounded-lg text-sm ' + (type === 'error' ? 'bg-red-50 border border-red-200 text-red-700' : 'bg-green-50 border border-green-200 text-green-700');
+    el.textContent = msg;
+    el.classList.remove('hidden');
+  }
+
+  // --- Wilayah cascading dropdowns ---
+  function loadWilayah(parentCode, targetSelect, keepValue) {
+    var url = '/api/v1/wilayah' + (parentCode ? '?parent=' + parentCode : '');
+    return fetch(url)
+      .then(function(r) { return r.json(); })
+      .then(function(res) {
+        if (!res.success) return;
+        var data = res.data || [];
+        targetSelect.innerHTML = '<option value="">' + targetSelect.dataset.placeholder + '</option>';
+        data.forEach(function(w) {
+          var o = document.createElement('option');
+          o.value = w.kode;
+          o.textContent = w.nama;
+          if (keepValue && w.kode === keepValue) o.selected = true;
+          targetSelect.appendChild(o);
+        });
+        return data;
+      });
+  }
+
+  var selProv = document.getElementById('provinceCode');
+  var selReg = document.getElementById('regencyCode');
+  var selDist = document.getElementById('districtCode');
+  var selVill = document.getElementById('villageCode');
+  selProv.dataset.placeholder = 'Pilih provinsi';
+  selReg.dataset.placeholder = 'Pilih kabupaten';
+  selDist.dataset.placeholder = 'Pilih kecamatan';
+  selVill.dataset.placeholder = 'Pilih kelurahan';
+
+  function resetSelect(sel) {
+    sel.innerHTML = '<option value="">' + sel.dataset.placeholder + '</option>';
+  }
+
+  loadWilayah(null, selProv, null).then(function() {
+    var o = document.createElement('option');
+    o.value = 'LUARNEGERI'; o.textContent = 'Luar Negeri';
+    selProv.appendChild(o);
+  });
+
+  selProv.addEventListener('change', function() {
+    document.getElementById('provinceName').value = selProv.selectedOptions[0]?.text || '';
+    resetSelect(selReg); resetSelect(selDist); resetSelect(selVill);
+    if (!this.value) return;
+    if (this.value === 'LUARNEGERI') { selReg.disabled = true; selDist.disabled = true; selVill.disabled = true; return; }
+    selReg.disabled = false; selDist.disabled = false; selVill.disabled = false;
+    loadWilayah(this.value, selReg, null);
+  });
+  selReg.addEventListener('change', function() {
+    document.getElementById('regencyName').value = selReg.selectedOptions[0]?.text || '';
+    resetSelect(selDist); resetSelect(selVill);
+    if (!this.value) return;
+    loadWilayah(this.value, selDist, null);
+  });
+  selDist.addEventListener('change', function() {
+    document.getElementById('districtName').value = selDist.selectedOptions[0]?.text || '';
+    resetSelect(selVill);
+    if (!this.value) return;
+    loadWilayah(this.value, selVill, null);
+  });
+  selVill.addEventListener('change', function() {
+    document.getElementById('villageName').value = selVill.selectedOptions[0]?.text || '';
+  });
+
+  // --- Social Links ---
+  var socialLinks = [];
+  var socialInput = document.getElementById('socialLinkInput');
+  var socialContainer = document.getElementById('socialLinksContainer');
+  var socialHidden = document.getElementById('socialLinks');
+
+  function renderSocialLinks() {
+    socialContainer.innerHTML = '';
+    socialLinks.forEach(function(url, i) {
+      var el = document.createElement('span');
+      el.className = 'inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full text-xs';
+      el.innerHTML = '<span>' + escapeHtml(url) + '</span><button type="button" onclick="removeSocialLink(' + i + ')" class="text-blue-400 hover:text-blue-600"><span class="material-symbols-outlined" style="font-size:14px">close</span></button>';
+      socialContainer.appendChild(el);
+    });
+    socialHidden.value = JSON.stringify(socialLinks);
+  }
+  window.removeSocialLink = function(i) {
+    socialLinks.splice(i, 1);
+    renderSocialLinks();
+  };
+  document.getElementById('addSocialBtn').addEventListener('click', function() {
+    var url = socialInput.value.trim();
+    if (!url) return;
+    socialLinks.push(url);
+    socialInput.value = '';
+    renderSocialLinks();
+  });
+
+  // --- Country data ---
+  var countries = [];
+  var countriesReady = fetch('/api/v1/countries').then(function(r) { return r.json(); }).then(function(res) {
+    if (res.success) countries = res.data;
+  });
+
+  function populateCountrySelect(select, selectedValue) {
+    countriesReady.then(function() {
+      select.innerHTML = '<option value="">Pilih negara</option>';
+      countries.forEach(function(c) {
+        var o = document.createElement('option');
+        o.value = c.code;
+        o.textContent = c.name;
+        if (c.code === selectedValue) o.selected = true;
+        select.appendChild(o);
+      });
+    });
+  }
+
+  // --- Education ---
+  var eduIndex = 0;
+  function createEducationRow(data) {
+    data = data || {};
+    var div = document.createElement('div');
+    div.className = 'relative p-4 bg-gray-50 rounded-xl border border-gray-200';
+    div.innerHTML =
+      '<button type="button" onclick="this.closest(\'div\').remove()" class="absolute top-2 right-2 text-gray-400 hover:text-red-600"><span class="material-symbols-outlined" style="font-size:18px">close</span></button>' +
+      '<div class="grid grid-cols-1 md:grid-cols-3 gap-4">' +
+        '<div><label class="block text-xs font-semibold text-gray-500 mb-1">Jenjang</label><select name="eduLevel" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-500">' +
+          '<option value="">Pilih</option>' +
+          '<option value="D3"' + (data.level === 'D3' ? ' selected' : '') + '>D3</option>' +
+          '<option value="D4"' + (data.level === 'D4' ? ' selected' : '') + '>D4</option>' +
+          '<option value="S1"' + (data.level === 'S1' ? ' selected' : '') + '>S1</option>' +
+          '<option value="S2"' + (data.level === 'S2' ? ' selected' : '') + '>S2</option>' +
+          '<option value="S3"' + (data.level === 'S3' ? ' selected' : '') + '>S3</option>' +
+          '<option value="Profesi"' + (data.level === 'Profesi' ? ' selected' : '') + '>Profesi</option>' +
+        '</select></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 mb-1">Negara</label><select class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-500" name="eduCountry"><option value="">Pilih negara</option></select></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 mb-1">Universitas</label><input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-500" name="eduUniversity" placeholder="Nama universitas" value="' + (data.university || '') + '" /></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 mb-1">Fakultas</label><input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-500" name="eduFaculty" placeholder="Nama fakultas" value="' + (data.faculty || '') + '" /></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 mb-1">Jurusan</label><input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-500" name="eduMajor" placeholder="Nama jurusan" value="' + (data.major || '') + '" /></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 mb-1">Tahun Lulus</label><input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-500" name="eduGradYear" placeholder="2020" type="number" value="' + (data.graduationYear || '') + '" /></div>' +
+      '</div>';
+    populateCountrySelect(div.querySelector('[name="eduCountry"]'), data.countryCode || '');
+    return div;
+  }
+  document.getElementById('addEducationBtn').addEventListener('click', function() {
+    document.getElementById('educationContainer').appendChild(createEducationRow());
+  });
+
+  // --- Certificate ---
+  function createCertificateRow(data) {
+    data = data || {};
+    var div = document.createElement('div');
+    div.className = 'relative p-4 bg-gray-50 rounded-xl border border-gray-200';
+    div.innerHTML =
+      '<button type="button" onclick="this.closest(\'div\').remove()" class="absolute top-2 right-2 text-gray-400 hover:text-red-600"><span class="material-symbols-outlined" style="font-size:18px">close</span></button>' +
+      '<div class="grid grid-cols-1 md:grid-cols-3 gap-4">' +
+        '<div><label class="block text-xs font-semibold text-gray-500 mb-1">Nama Sertifikat</label><input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-500" name="certName" placeholder="Nama sertifikat" value="' + (data.name || '') + '" /></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 mb-1">Penerbit</label><input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-500" name="certPublisher" placeholder="Penerbit sertifikat" value="' + (data.publisher || '') + '" /></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 mb-1">Masa Berlaku</label><input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-500" name="certValidUntil" placeholder="YYYY-MM-DD" type="date" value="' + (data.validUntil || '') + '" /></div>' +
+      '</div>';
+    return div;
+  }
+  document.getElementById('addCertificateBtn').addEventListener('click', function() {
+    document.getElementById('certificateContainer').appendChild(createCertificateRow());
+  });
+
+  // --- Organization ---
+  function createOrgRow(data) {
+    data = data || {};
+    var div = document.createElement('div');
+    div.className = 'relative p-4 bg-gray-50 rounded-xl border border-gray-200';
+    div.innerHTML =
+      '<button type="button" onclick="this.closest(\'div\').remove()" class="absolute top-2 right-2 text-gray-400 hover:text-red-600"><span class="material-symbols-outlined" style="font-size:18px">close</span></button>' +
+      '<div class="grid grid-cols-1 md:grid-cols-3 gap-4">' +
+        '<div><label class="block text-xs font-semibold text-gray-500 mb-1">Nama Organisasi</label><input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-500" name="orgName" placeholder="Nama organisasi" value="' + (data.name || '') + '" /></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 mb-1">Tipe</label><select name="orgType" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-500">' +
+          '<option value="">Pilih</option>' +
+          '<option value="Kemahasiswaan"' + (data.type === 'Kemahasiswaan' ? ' selected' : '') + '>Kemahasiswaan</option>' +
+          '<option value="Profesional"' + (data.type === 'Profesional' ? ' selected' : '') + '>Profesional</option>' +
+          '<option value="Sosial"' + (data.type === 'Sosial' ? ' selected' : '') + '>Sosial</option>' +
+          '<option value="Lainnya"' + (data.type === 'Lainnya' ? ' selected' : '') + '>Lainnya</option>' +
+        '</select></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 mb-1">Level</label><select name="orgLevel" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-500">' +
+          '<option value="">Pilih</option>' +
+          '<option value="Universitas"' + (data.level === 'Universitas' ? ' selected' : '') + '>Universitas</option>' +
+          '<option value="Fakultas"' + (data.level === 'Fakultas' ? ' selected' : '') + '>Fakultas</option>' +
+          '<option value="Jurusan"' + (data.level === 'Jurusan' ? ' selected' : '') + '>Jurusan</option>' +
+          '<option value="Nasional"' + (data.level === 'Nasional' ? ' selected' : '') + '>Nasional</option>' +
+          '<option value="Internasional"' + (data.level === 'Internasional' ? ' selected' : '') + '>Internasional</option>' +
+        '</select></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 mb-1">Jabatan</label><input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-500" name="orgPosition" placeholder="Jabatan" value="' + (data.position || '') + '" /></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 mb-1">Bidang</label><input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-500" name="orgField" placeholder="Bidang organisasi" value="' + (data.field || '') + '" /></div>' +
+      '</div>';
+    return div;
+  }
+  document.getElementById('addOrgBtn').addEventListener('click', function() {
+    document.getElementById('organizationContainer').appendChild(createOrgRow());
+  });
+
+  // --- Portfolio ---
+  function createPortfolioRow(data) {
+    data = data || {};
+    var div = document.createElement('div');
+    div.className = 'relative p-4 bg-gray-50 rounded-xl border border-gray-200';
+    var typeOptions = ['Buku', 'Aplikasi', 'Website', 'Lainnya'];
+    var typeOpts = typeOptions.map(function(t) {
+      return '<option value="' + t + '"' + (data.type === t ? ' selected' : '') + '>' + t + '</option>';
+    }).join('');
+    var showOther = data.type === 'Lainnya' ? '' : ' hidden';
+    div.innerHTML =
+      '<button type="button" onclick="this.closest(\'div\').remove()" class="absolute top-2 right-2 text-gray-400 hover:text-red-600"><span class="material-symbols-outlined" style="font-size:18px">close</span></button>' +
+      '<div class="grid grid-cols-1 md:grid-cols-4 gap-4">' +
+        '<div class="md:col-span-2"><label class="block text-xs font-semibold text-gray-500 mb-1">Nama Portofolio</label><input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-500" name="portName" placeholder="Nama portofolio" value="' + (data.name || '') + '" /></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 mb-1">Jenis</label><select class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-500" name="portType">' + typeOpts + '</select></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 mb-1">Tahun</label><input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-500" name="portYear" placeholder="2024" type="number" value="' + (data.year || '') + '" /></div>' +
+        '<div' + showOther + '><label class="block text-xs font-semibold text-gray-500 mb-1">Sebutkan</label><input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-500" name="portTypeOther" placeholder="Jenis lainnya" value="' + (data.typeOther || '') + '" /></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 mb-1">Link</label><input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-500" name="portLink" placeholder="https://" type="url" value="' + (data.link || '') + '" /></div>' +
+      '</div>';
+    return div;
+  }
+  document.getElementById('addPortfolioBtn').addEventListener('click', function() {
+    document.getElementById('portfolioContainer').appendChild(createPortfolioRow());
+  });
+
+  // --- Business ---
+  function createBusinessRow(data) {
+    data = data || {};
+    var products = data.products || [];
+    var productsStr = typeof products === 'string' ? products : JSON.stringify(products);
+    var div = document.createElement('div');
+    div.className = 'relative p-4 bg-gray-50 rounded-xl border border-gray-200';
+    div.innerHTML =
+      '<button type="button" onclick="this.closest(\'div\').remove()" class="absolute top-2 right-2 text-gray-400 hover:text-red-600"><span class="material-symbols-outlined" style="font-size:18px">close</span></button>' +
+      '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">' +
+        '<div><label class="block text-xs font-semibold text-gray-500 mb-1">Bentuk Usaha</label><select name="bizLegalForm" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-500">' +
+          '<option value="">Pilih</option>' +
+          '<option value="PT"' + (data.legalForm === 'PT' ? ' selected' : '') + '>PT</option>' +
+          '<option value="CV"' + (data.legalForm === 'CV' ? ' selected' : '') + '>CV</option>' +
+          '<option value="Firma"' + (data.legalForm === 'Firma' ? ' selected' : '') + '>Firma</option>' +
+          '<option value="Koperasi"' + (data.legalForm === 'Koperasi' ? ' selected' : '') + '>Koperasi</option>' +
+          '<option value="BUMDES"' + (data.legalForm === 'BUMDES' ? ' selected' : '') + '>BUMDes</option>' +
+          '<option value="Non-Formal"' + (data.legalForm === 'Non-Formal' ? ' selected' : '') + '>Non-Formal</option>' +
+          '<option value="Lainnya"' + (data.legalForm === 'Lainnya' ? ' selected' : '') + '>Lainnya</option>' +
+        '</select></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 mb-1">Nama Usaha</label><input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-500" name="bizName" placeholder="Nama usaha" value="' + (data.name || '') + '" /></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 mb-1">Bidang Usaha</label><input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-500" name="bizField" placeholder="Bidang usaha" value="' + (data.field || '') + '" /></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 mb-1">Skala Usaha</label><select name="bizScale" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-500">' +
+          '<option value="">Pilih</option>' +
+          '<option value="Mikro"' + (data.scale === 'Mikro' ? ' selected' : '') + '>Mikro</option>' +
+          '<option value="Kecil"' + (data.scale === 'Kecil' ? ' selected' : '') + '>Kecil</option>' +
+          '<option value="Menengah"' + (data.scale === 'Menengah' ? ' selected' : '') + '>Menengah</option>' +
+          '<option value="Besar"' + (data.scale === 'Besar' ? ' selected' : '') + '>Besar</option>' +
+        '</select></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 mb-1">Model Bisnis</label><select name="bizModel" class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-500">' +
+          '<option value="">Pilih</option>' +
+          '<option value="B2B"' + (data.businessModel === 'B2B' ? ' selected' : '') + '>B2B</option>' +
+          '<option value="B2C"' + (data.businessModel === 'B2C' ? ' selected' : '') + '>B2C</option>' +
+          '<option value="Marketplace"' + (data.businessModel === 'Marketplace' ? ' selected' : '') + '>Marketplace</option>' +
+          '<option value="Layanan"' + (data.businessModel === 'Layanan' ? ' selected' : '') + '>Layanan</option>' +
+          '<option value="Produksi"' + (data.businessModel === 'Produksi' ? ' selected' : '') + '>Produksi</option>' +
+          '<option value="Lainnya"' + (data.businessModel === 'Lainnya' ? ' selected' : '') + '>Lainnya</option>' +
+        '</select></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 mb-1">Produk/Jasa</label><input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-500" name="bizProducts" placeholder="Pisahkan dengan koma, misal: Produk A, Produk B" value="' + (typeof data.products === 'string' ? data.products : Array.isArray(data.products) ? data.products.join(', ') : '') + '" /></div>' +
+        '<div><label class="block text-xs font-semibold text-gray-500 mb-1">Website</label><input class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-500" name="bizWebsite" placeholder="https://" type="url" value="' + (data.website || '') + '" /></div>' +
+        '<div class="md:col-span-2"><label class="block text-xs font-semibold text-gray-500 mb-1">Profil Perusahaan</label><textarea class="w-full px-3 py-2 rounded-lg border border-gray-300 bg-white text-sm outline-none focus:ring-2 focus:ring-blue-500 resize-none" name="bizProfile" rows="2" placeholder="Deskripsi singkat">' + (data.companyProfile || '') + '</textarea></div>' +
+      '</div>';
+    return div;
+  }
+  document.getElementById('addBusinessBtn').addEventListener('click', function() {
+    document.getElementById('businessContainer').appendChild(createBusinessRow());
+  });
+
+  // --- Career Other toggle ---
+  document.getElementById('careerStatus').addEventListener('change', function() {
+    var w = document.getElementById('careerOtherWrapper');
+    w.classList.toggle('hidden', this.value !== 'Lainnya');
+  });
+
+  // --- Photo preview ---
+  document.getElementById('photo').addEventListener('change', function() {
+    var file = this.files[0];
+    if (!file) return;
+    var preview = document.getElementById('photoPreview');
+    var img = document.getElementById('photoPreviewImg');
+    var reader = new FileReader();
+    reader.onload = function(e) { img.src = e.target.result; preview.classList.remove('hidden'); };
+    reader.readAsDataURL(file);
+    document.getElementById('removePhotoBtn').classList.remove('hidden');
+  });
+  document.getElementById('removePhotoBtn').addEventListener('click', function() {
+    document.getElementById('photo').value = '';
+    document.getElementById('photoPreview').classList.add('hidden');
+    this.classList.add('hidden');
+  });
+
+  // --- Photo upload helper ---
+  function uploadPhoto(file) {
+    return new Promise(function(resolve, reject) {
+      var fd = new FormData();
+      fd.append('file', file);
+      fetch('/api/v1/upload/alumni-photo', {
+        method: 'POST',
+        headers: token ? { Authorization: 'Bearer ' + token } : {},
+        body: fd,
+      })
+        .then(function(res) {
+          if (!res.ok) return res.json().then(function(d) { throw new Error(d.error || 'Gagal upload foto'); });
+          return res.json();
+        })
+        .then(function(data) { resolve(data.data.url); })
+        .catch(reject);
+    });
+  }
+
+  // --- Submit ---
+  document.getElementById('alumniForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    var nikEl = document.getElementById('nik');
+    var nikVal = nikEl ? nikEl.value.trim() : '';
+    if (!nikVal) { showFormMessage('NIK wajib diisi', 'error'); return; }
+    if (!/^\d{16}$/.test(nikVal)) { showFormMessage('NIK harus 16 digit angka', 'error'); return; }
+
+    var requiredFields = {
+      name: 'Nama Lengkap',
+      gender: 'Jenis Kelamin',
+      maritalStatus: 'Status Pernikahan',
+      phone: 'No. HP/WhatsApp',
+      email: 'Email Aktif',
+      provinceCode: 'Provinsi',
+      careerStatus: 'Status Pekerjaan',
+    };
+    var missingFields = [];
+    for (var key in requiredFields) {
+      var el = document.getElementById(key) || document.querySelector('[name="' + key + '"]');
+      if (!el || !el.value.trim()) missingFields.push(requiredFields[key]);
+    }
+    if (missingFields.length) {
+      showFormMessage('Field wajib diisi: ' + missingFields.join(', '), 'error');
+      return;
+    }
+
+    var btn = this.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="material-symbols-outlined animate-spin">refresh</span> Mengirim...';
+
+    // Education
+    var eduData = [];
+    document.querySelectorAll('#educationContainer > div').forEach(function(row) {
+      eduData.push({
+        level: row.querySelector('[name="eduLevel"]')?.value || '',
+        countryCode: row.querySelector('[name="eduCountry"]')?.value || '',
+        university: row.querySelector('[name="eduUniversity"]')?.value || '',
+        faculty: row.querySelector('[name="eduFaculty"]')?.value || '',
+        major: row.querySelector('[name="eduMajor"]')?.value || '',
+        graduationYear: parseInt(row.querySelector('[name="eduGradYear"]')?.value) || null,
+      });
+    });
+
+    // Certificates
+    var certData = [];
+    document.querySelectorAll('#certificateContainer > div').forEach(function(row) {
+      certData.push({
+        name: row.querySelector('[name="certName"]')?.value || '',
+        publisher: row.querySelector('[name="certPublisher"]')?.value || '',
+        validUntil: row.querySelector('[name="certValidUntil"]')?.value || '',
+      });
+    });
+
+    // Organizations
+    var orgData = [];
+    document.querySelectorAll('#organizationContainer > div').forEach(function(row) {
+      orgData.push({
+        name: row.querySelector('[name="orgName"]')?.value || '',
+        type: row.querySelector('[name="orgType"]')?.value || '',
+        level: row.querySelector('[name="orgLevel"]')?.value || '',
+        position: row.querySelector('[name="orgPosition"]')?.value || '',
+        field: row.querySelector('[name="orgField"]')?.value || '',
+      });
+    });
+
+    // Portfolios
+    var portData = [];
+    document.querySelectorAll('#portfolioContainer > div').forEach(function(row) {
+      portData.push({
+        name: row.querySelector('[name="portName"]')?.value || '',
+        type: row.querySelector('[name="portType"]')?.value || '',
+        typeOther: row.querySelector('[name="portTypeOther"]')?.value || '',
+        year: parseInt(row.querySelector('[name="portYear"]')?.value) || null,
+        link: row.querySelector('[name="portLink"]')?.value || '',
+      });
+    });
+
+    // Businesses
+    var bizData = [];
+    document.querySelectorAll('#businessContainer > div').forEach(function(row) {
+      var productsStr = row.querySelector('[name="bizProducts"]')?.value || '';
+      bizData.push({
+        legalForm: row.querySelector('[name="bizLegalForm"]')?.value || '',
+        name: row.querySelector('[name="bizName"]')?.value || '',
+        field: row.querySelector('[name="bizField"]')?.value || '',
+        scale: row.querySelector('[name="bizScale"]')?.value || '',
+        businessModel: row.querySelector('[name="bizModel"]')?.value || '',
+        products: productsStr,
+        website: row.querySelector('[name="bizWebsite"]')?.value || '',
+        companyProfile: row.querySelector('[name="bizProfile"]')?.value || '',
+      });
+    });
+
+    // Social links
+    var socialRaw = JSON.parse(document.getElementById('socialLinks').value || '[]');
+    var socialLinksArr = socialRaw.map(function(s) { return { url: s }; });
+
+    function doSubmit(photoUrl) {
+      var body = {
+        name: document.getElementById('name').value.trim(),
+        nik: document.getElementById('nik').value.trim() || undefined,
+        gender: document.querySelector('input[name="gender"]:checked')?.value || undefined,
+        maritalStatus: document.getElementById('maritalStatus').value || undefined,
+        phone: document.getElementById('phone').value.trim() || undefined,
+        email: document.getElementById('email').value.trim() || undefined,
+        address: document.getElementById('address').value.trim() || undefined,
+        province: document.getElementById('provinceName').value || undefined,
+        provinceCode: document.getElementById('provinceCode').value || undefined,
+        regencyCode: document.getElementById('regencyCode').value || undefined,
+        regencyName: document.getElementById('regencyName').value || undefined,
+        districtCode: document.getElementById('districtCode').value || undefined,
+        districtName: document.getElementById('districtName').value || undefined,
+        villageCode: document.getElementById('villageCode').value || undefined,
+        villageName: document.getElementById('villageName').value || undefined,
+        careerStatus: document.getElementById('careerStatus').value || undefined,
+        careerOther: document.getElementById('careerOther').value.trim() || undefined,
+        institutionName: document.getElementById('institutionName').value.trim() || undefined,
+        institutionField: document.getElementById('institutionField').value.trim() || undefined,
+        position: document.getElementById('position').value.trim() || undefined,
+        photoUrl: photoUrl || undefined,
+        education: eduData.length ? eduData : undefined,
+        certificates: certData.length ? certData : undefined,
+        organizations: orgData.length ? orgData : undefined,
+        portfolios: portData.length ? portData : undefined,
+        businesses: bizData.length ? bizData : undefined,
+        socialLinks: socialLinksArr.length ? socialLinksArr : undefined,
+      };
+
+      var headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = 'Bearer ' + token;
+
+      fetch('/api/v1/alumni', { method: 'POST', headers: headers, body: JSON.stringify(body) })
+        .then(function(r) { return r.json(); })
+        .then(function(res) {
+          btn.disabled = false;
+          btn.innerHTML = '<span class="material-symbols-outlined">send</span>Kirim Data';
+          if (res.success) {
+            if (token) {
+              window.location.href = '/dashboard/alumni';
+            } else {
+              window.location.href = '/alumni';
+            }
+          } else {
+            showFormMessage(res.error || 'Gagal mengirim data', 'error');
+          }
+        })
+        .catch(function(err) {
+          btn.disabled = false;
+          btn.innerHTML = '<span class="material-symbols-outlined">send</span>Kirim Data';
+          showFormMessage('Terjadi kesalahan: ' + err.message, 'error');
+        });
+    }
+
+    var photoFile = document.getElementById('photo').files[0];
+    if (photoFile) {
+      uploadPhoto(photoFile).then(doSubmit).catch(function(err) {
+        btn.disabled = false;
+        btn.innerHTML = '<span class="material-symbols-outlined">send</span>Kirim Data';
+        showFormMessage(err.message, 'error');
+      });
+    } else {
+      doSubmit(null);
+    }
+  });
+})();
+</script>
+<%- include('../../partials/footer') %>

@@ -1,0 +1,224 @@
+country_code,country_name,dial_code,dial_code_4
+AF,Afghanistan,93,0093
+AL,Albania,355,0355
+DZ,Algeria,213,0213
+AD,Andorra,376,0376
+AO,Angola,244,0244
+AQ,Antarctica,672,0672
+AR,Argentina,54,0054
+AM,Armenia,374,0374
+AW,Aruba,297,0297
+AU,Australia,61,0061
+AT,Austria,43,0043
+AZ,Azerbaijan,994,0994
+BH,Bahrain,973,0973
+BD,Bangladesh,880,0880
+BY,Belarus,375,0375
+BE,Belgium,32,0032
+BZ,Belize,501,0501
+BJ,Benin,229,0229
+BT,Bhutan,975,0975
+BO,Bolivia,591,0591
+BA,Bosnia and Herzegovina,387,0387
+BW,Botswana,267,0267
+BR,Brazil,55,0055
+IO,British Indian Ocean Territory,246,0246
+BN,Brunei,673,0673
+BG,Bulgaria,359,0359
+BF,Burkina Faso,226,0226
+BI,Burundi,257,0257
+KH,Cambodia,855,0855
+CM,Cameroon,237,0237
+CA,Canada,1,0001
+CV,Cape Verde,238,0238
+BQ,Caribbean Netherlands,599,0599
+CF,Central African Republic,236,0236
+TD,Chad,235,0235
+CL,Chile,56,0056
+CN,China,86,0086
+CX,Christmas Island,61,0061
+CC,Cocos (Keeling) Islands,61,0061
+CO,Colombia,57,0057
+KM,Comoros,269,0269
+CG,Congo,242,0242
+CD,"Congo, Democratic Republic of the",243,0243
+CK,Cook Islands,682,0682
+CR,Costa Rica,506,0506
+HR,Croatia,385,0385
+CU,Cuba,53,0053
+CW,Curaçao,599,0599
+CY,Cyprus,357,0357
+CZ,Czech Republic,420,0420
+CI,Côte d'Ivoire,225,0225
+DK,Denmark,45,0045
+DJ,Djibouti,253,0253
+EC,Ecuador,593,0593
+EG,Egypt,20,0020
+SV,El Salvador,503,0503
+GQ,Equatorial Guinea,240,0240
+ER,Eritrea,291,0291
+EE,Estonia,372,0372
+SZ,Eswatini,268,0268
+ET,Ethiopia,251,0251
+FK,Falkland Islands,500,0500
+FO,Faroe Islands,298,0298
+FJ,Fiji,679,0679
+FI,Finland,358,0358
+FR,France,33,0033
+GF,French Guiana,594,0594
+PF,French Polynesia,689,0689
+TF,French Southern Territories,262,0262
+GA,Gabon,241,0241
+GM,Gambia,220,0220
+GE,Georgia,995,0995
+DE,Germany,49,0049
+GH,Ghana,233,0233
+GI,Gibraltar,350,0350
+GR,Greece,30,0030
+GL,Greenland,299,0299
+GP,Guadeloupe,590,0590
+GT,Guatemala,502,0502
+GG,Guernsey,44,0044
+GN,Guinea,224,0224
+GW,Guinea-Bissau,245,0245
+GY,Guyana,592,0592
+HT,Haiti,509,0509
+HN,Honduras,504,0504
+HK,Hong Kong,852,0852
+HU,Hungary,36,0036
+IS,Iceland,354,0354
+IN,India,91,0091
+ID,Indonesia,62,0062
+IR,Iran,98,0098
+IQ,Iraq,964,0964
+IE,Ireland,353,0353
+IM,Isle of Man,44,0044
+IL,Israel,972,0972
+IT,Italy,39,0039
+JP,Japan,81,0081
+JE,Jersey,44,0044
+JO,Jordan,962,0962
+KZ,Kazakhstan,7,0007
+KE,Kenya,254,0254
+KI,Kiribati,686,0686
+KW,Kuwait,965,0965
+KG,Kyrgyzstan,996,0996
+LA,Laos,856,0856
+LV,Latvia,371,0371
+LB,Lebanon,961,0961
+LS,Lesotho,266,0266
+LR,Liberia,231,0231
+LY,Libya,218,0218
+LI,Liechtenstein,423,0423
+LT,Lithuania,370,0370
+LU,Luxembourg,352,0352
+MO,Macau,853,0853
+MG,Madagascar,261,0261
+MW,Malawi,265,0265
+MY,Malaysia,60,0060
+MV,Maldives,960,0960
+ML,Mali,223,0223
+MT,Malta,356,0356
+MH,Marshall Islands,692,0692
+MQ,Martinique,596,0596
+MR,Mauritania,222,0222
+MU,Mauritius,230,0230
+YT,Mayotte,262,0262
+MX,Mexico,52,0052
+FM,Micronesia,691,0691
+MD,Moldova,373,0373
+MC,Monaco,377,0377
+MN,Mongolia,976,0976
+ME,Montenegro,382,0382
+MA,Morocco,212,0212
+MZ,Mozambique,258,0258
+MM,Myanmar,95,0095
+NA,Namibia,264,0264
+NR,Nauru,674,0674
+NP,Nepal,977,0977
+NL,Netherlands,31,0031
+NC,New Caledonia,687,0687
+NZ,New Zealand,64,0064
+NI,Nicaragua,505,0505
+NE,Niger,227,0227
+NG,Nigeria,234,0234
+NU,Niue,683,0683
+NF,Norfolk Island,672,0672
+KP,North Korea,850,0850
+MK,North Macedonia,389,0389
+NO,Norway,47,0047
+OM,Oman,968,0968
+PK,Pakistan,92,0092
+PW,Palau,680,0680
+PS,Palestine,970,0970
+PA,Panama,507,0507
+PG,Papua New Guinea,675,0675
+PY,Paraguay,595,0595
+PE,Peru,51,0051
+PH,Philippines,63,0063
+PN,Pitcairn,64,0064
+PL,Poland,48,0048
+PT,Portugal,351,0351
+QA,Qatar,974,0974
+RO,Romania,40,0040
+RU,Russia,7,0007
+RW,Rwanda,250,0250
+RE,Réunion,262,0262
+BL,Saint Barthélemy,590,0590
+SH,"Saint Helena, Ascension and Tristan da Cunha",290,0290
+MF,Saint Martin,590,0590
+PM,Saint Pierre and Miquelon,508,0508
+WS,Samoa,685,0685
+SM,San Marino,378,0378
+ST,Sao Tome and Principe,239,0239
+SA,Saudi Arabia,966,0966
+SN,Senegal,221,0221
+RS,Serbia,381,0381
+SC,Seychelles,248,0248
+SL,Sierra Leone,232,0232
+SG,Singapore,65,0065
+SK,Slovakia,421,0421
+SI,Slovenia,386,0386
+SB,Solomon Islands,677,0677
+SO,Somalia,252,0252
+ZA,South Africa,27,0027
+GS,South Georgia and the South Sandwich Islands,500,0500
+KR,South Korea,82,0082
+SS,South Sudan,211,0211
+ES,Spain,34,0034
+LK,Sri Lanka,94,0094
+SD,Sudan,249,0249
+SR,Suriname,597,0597
+SJ,Svalbard and Jan Mayen,47,0047
+SE,Sweden,46,0046
+CH,Switzerland,41,0041
+SY,Syria,963,0963
+TW,Taiwan,886,0886
+TJ,Tajikistan,992,0992
+TZ,Tanzania,255,0255
+TH,Thailand,66,0066
+TL,Timor-Leste,670,0670
+TG,Togo,228,0228
+TK,Tokelau,690,0690
+TO,Tonga,676,0676
+TN,Tunisia,216,0216
+TR,Turkey,90,0090
+TM,Turkmenistan,993,0993
+TV,Tuvalu,688,0688
+UG,Uganda,256,0256
+UA,Ukraine,380,0380
+AE,United Arab Emirates,971,0971
+GB,United Kingdom,44,0044
+US,United States,1,0001
+UY,Uruguay,598,0598
+UZ,Uzbekistan,998,0998
+VU,Vanuatu,678,0678
+VA,Vatican City,39,0039
+VE,Venezuela,58,0058
+VN,Vietnam,84,0084
+WF,Wallis and Futuna,681,0681
+EH,Western Sahara,212,0212
+YE,Yemen,967,0967
+ZM,Zambia,260,0260
+ZW,Zimbabwe,263,0263
+AX,Åland Islands,358,0358

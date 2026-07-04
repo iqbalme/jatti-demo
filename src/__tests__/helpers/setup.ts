@@ -1,0 +1,12 @@
+process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/test';
+process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co';
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
+process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-service-role-key';
+process.env.SUPER_ADMIN_EMAIL = 'super@admin.com';
+process.env.SUPER_ADMIN_PASSWORD = 'super-password';
+process.env.AUTH_PROVIDER = 'local';
+process.env.JWT_SECRET = 'test-jwt-secret';
+process.env.STORAGE_PROVIDER = 'local';
+process.env.UPLOAD_DIR = 'public/uploads';
+process.env.UPLOAD_MAX_FILE_SIZE_KB = '500';
+process.env.PORT = '0';

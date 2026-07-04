@@ -1,0 +1,144 @@
+<%- include('../partials/header') %>
+<div class="min-h-screen flex flex-col">
+  <header class="bg-white border-b border-gray-200">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="/" class="text-xl font-bold" style="color: var(--brand-color)"><%= typeof settings !== 'undefined' && settings.site_name ? settings.site_name : 'AlumniLink' %></a>
+      <div class="flex items-center gap-4 text-sm">
+        <a href="/alumni" class="text-gray-600 hover:text-gray-900">Directory</a>
+        <a href="/statistik" class="font-semibold" style="color: var(--brand-color)">Statistik</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-6xl mx-auto px-4 py-8 w-full">
+    <h2 class="text-2xl font-bold text-gray-900 mb-2">Statistik Alumni</h2>
+    <p class="text-gray-500 mb-6">Sebaran alumni per provinsi &mdash; total <%= total %> alumni aktif</p>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm mb-4"><%= error %></div>
+    <% } %>
+
+    <% if (labels.length === 0) { %>
+      <div class="bg-gray-50 border border-gray-200 text-gray-500 px-4 py-8 rounded-lg text-center text-sm">
+        Belum ada data alumni aktif.
+      </div>
+    <% } else { %>
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+        <div class="hidden lg:block">
+          <canvas id="barChart" height="<%= Math.max(200, labels.length * 32) %>"></canvas>
+        </div>
+        <div class="block lg:hidden max-w-md mx-auto">
+          <canvas id="pieChart"></canvas>
+        </div>
+      </div>
+
+      <div class="mt-8 overflow-x-auto">
+        <table class="w-full text-sm text-left">
+          <thead>
+            <tr class="border-b border-gray-200">
+              <th class="py-2 px-3 font-medium text-gray-500">Provinsi</th>
+              <th class="py-2 px-3 font-medium text-gray-500 text-right">Jumlah</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% labels.forEach(function(label, i) { %>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 text-gray-900"><%= label %></td>
+              <td class="py-2 px-3 text-gray-900 text-right font-semibold"><%= values[i] %></td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+
+    <div class="mt-6 text-center">
+      <a href="/alumni" class="inline-block text-sm" style="color: var(--brand-color);">Lihat Directory Alumni &rarr;</a>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script>
+(function() {
+  var labels = <%- JSON.stringify(labels) %>;
+  var values = <%- JSON.stringify(values) %>;
+
+  if (labels.length === 0) return;
+
+  var root = document.documentElement;
+  var fromColor = getComputedStyle(root).getPropertyValue('--gradient-from').trim() || '#2563eb';
+  var toColor = getComputedStyle(root).getPropertyValue('--gradient-to').trim() || '#2dd4bf';
+
+  function hexToRgb(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : { r: 37, g: 99, b: 235 };
+  }
+
+  var from = hexToRgb(fromColor);
+  var to = hexToRgb(toColor);
+
+  var bgColors = labels.map(function(_, i) {
+    var t = labels.length > 1 ? i / (labels.length - 1) : 0.5;
+    var r = Math.round(from.r + (to.r - from.r) * t);
+    var g = Math.round(from.g + (to.g - from.g) * t);
+    var b = Math.round(from.b + (to.b - from.b) * t);
+    return 'rgba(' + r + ',' + g + ',' + b + ',0.8)';
+  });
+
+  var barCtx = document.getElementById('barChart');
+  if (barCtx) {
+    new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Jumlah Alumni',
+          data: values,
+          backgroundColor: bgColors,
+          borderColor: bgColors.map(function(c) { return c.replace('0.8', '1'); }),
+          borderWidth: 1
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { stepSize: 1 }, title: { display: true, text: 'Jumlah Alumni' } },
+          y: { ticks: { font: { size: 11 } } }
+        }
+      }
+    });
+  }
+
+  var pieCtx = document.getElementById('pieChart');
+  if (pieCtx) {
+    new Chart(pieCtx, {
+      type: 'doughnut',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: values,
+          backgroundColor: bgColors,
+          borderColor: '#ffffff',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { font: { size: 11 }, padding: 12 }
+          }
+        }
+      }
+    });
+  }
+})();
+</script>
+
+<%- include('../partials/footer') %>
