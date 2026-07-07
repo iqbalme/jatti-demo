@@ -1,7 +1,33 @@
 <%- include('../../partials/header') %>
 <style>
   .glass-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(226, 232, 240, 0.5); }
+  .toast-enter { animation: toastIn 0.3s ease-out; }
+  .toast-leave { animation: toastOut 0.3s ease-in forwards; }
+  @keyframes toastIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes toastOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+  .modal-overlay { animation: fadeIn 0.2s ease-out; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 </style>
+<div id="toastContainer" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none" style="min-width:320px;max-width:420px"></div>
+
+<div id="confirmModal" class="fixed inset-0 z-[99] hidden items-center justify-center modal-overlay">
+  <div class="absolute inset-0 bg-black/40" onclick="closeConfirm()"></div>
+  <div class="relative bg-white rounded-2xl shadow-xl p-6 mx-4 max-w-sm w-full">
+    <div class="flex items-start gap-4">
+      <div id="confirmIcon" class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 bg-blue-100">
+        <span class="material-symbols-outlined text-blue-600" style="font-size:22px">info</span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p id="confirmMessage" class="text-sm text-gray-800 font-medium"></p>
+        <p id="confirmHint" class="text-xs text-gray-500 mt-1"></p>
+      </div>
+    </div>
+    <div class="flex justify-end gap-2 mt-4">
+      <button onclick="closeConfirm()" class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">Batal</button>
+      <button id="confirmOkBtn" class="px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors">Ya</button>
+    </div>
+  </div>
+</div>
 <div class="min-h-screen flex flex-col">
   <header class="w-full top-0 sticky z-50 bg-white shadow-sm border-b border-gray-200">
     <div class="flex items-center justify-between h-16 px-4 max-w-7xl mx-auto">
@@ -98,9 +124,7 @@ function maskPhone(p) {
             <div class="flex flex-wrap gap-2 pb-2">
               <% if (typeof user !== 'undefined' && user && (user.role === 'admin' || user.role === 'super_admin')) { %>
                 <a href="/dashboard/alumni/<%= a.id %>/edit" class="flex items-center gap-2 px-4 py-2.5 bg-amber-500 text-white rounded-xl text-sm font-medium hover:bg-amber-600 shadow-lg shadow-amber-500/20"><span class="material-symbols-outlined" style="font-size:18px">edit</span>Edit</a>
-                <% if (!isAlreadyAdmin) { %>
-                <button type="button" onclick="resetPassword('<%= a.id %>')" class="flex items-center gap-2 px-4 py-2.5 bg-red-500 text-white rounded-xl text-sm font-medium hover:bg-red-600 shadow-lg shadow-red-500/20"><span class="material-symbols-outlined" style="font-size:18px">lock_reset</span><span class="hidden sm:inline">Reset </span>Password</button>
-                <% } %>
+                <button type="button" onclick="resetPassword('<%= a.id %>', <%= isAlreadyAdmin %>)" class="flex items-center gap-2 px-4 py-2.5 bg-red-500 text-white rounded-xl text-sm font-medium hover:bg-red-600 shadow-lg shadow-red-500/20"><span class="material-symbols-outlined" style="font-size:18px">lock_reset</span><span class="hidden sm:inline">Reset </span>Password</button>
                 <% if (user.role === 'super_admin' && !isAlreadyAdmin) { %>
                 <button type="button" onclick="makeAdmin('<%= a.id %>')" class="flex items-center gap-2 px-4 py-2.5 bg-purple-600 text-white rounded-xl text-sm font-medium hover:bg-purple-700 shadow-lg shadow-purple-600/20"><span class="material-symbols-outlined" style="font-size:18px">admin_panel_settings</span><span class="hidden sm:inline">Jadikan </span>Admin</button>
                 <% } %>
@@ -302,21 +326,82 @@ function toggleMenu() {
   menu.classList.toggle('hidden');
   document.body.classList.toggle('overflow-hidden');
 }
-async function resetPassword(id) {
-  if (!confirm('Reset password alumni ini ke default (user123)?')) return;
-  try {
-    var res = await fetch('/api/v1/alumni/' + id + '/reset-password', { method: 'PUT', headers: { 'Authorization': 'Bearer <%= typeof token !== 'undefined' ? token : '' %>' } });
-    var data = await res.json();
-    if (data.success) { alert('Password berhasil direset ke user123'); } else { alert(data.error || 'Gagal'); }
-  } catch (e) { alert('Terjadi kesalahan: ' + e.message); }
+
+var token = '<%= typeof token !== 'undefined' ? token : '' %>';
+
+function escapeHtml(str) {
+  var d = document.createElement('div'); d.textContent = str; return d.innerHTML;
 }
-async function makeAdmin(id) {
-  if (!confirm('Jadikan alumni ini sebagai admin (password default: admin123)?')) return;
+
+function showToast(message, type) {
+  type = type || 'info';
+  var colors = {
+    success: { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-800', icon: 'check_circle', iconBg: 'bg-green-100', iconColor: 'text-green-600' },
+    error:   { bg: 'bg-red-50',    border: 'border-red-200',   text: 'text-red-800',   icon: 'error',         iconBg: 'bg-red-100',   iconColor: 'text-red-600' },
+    warning: { bg: 'bg-yellow-50', border: 'border-yellow-200', text: 'text-yellow-800', icon: 'warning',       iconBg: 'bg-yellow-100', iconColor: 'text-yellow-600' },
+    info:    { bg: 'bg-blue-50',   border: 'border-blue-200',  text: 'text-blue-800',  icon: 'info',          iconBg: 'bg-blue-100',  iconColor: 'text-blue-600' },
+  };
+  var c = colors[type] || colors.info;
+  var container = document.getElementById('toastContainer');
+  var el = document.createElement('div');
+  el.className = 'pointer-events-auto toast-enter ' + c.bg + ' ' + c.border + ' border rounded-xl shadow-lg px-4 py-3 flex items-start gap-3';
+  el.innerHTML =
+    '<div class="w-8 h-8 rounded-full ' + c.iconBg + ' flex items-center justify-center flex-shrink-0">' +
+      '<span class="material-symbols-outlined ' + c.iconColor + '" style="font-size:18px">' + c.icon + '</span>' +
+    '</div>' +
+    '<p class="text-sm ' + c.text + ' flex-1 pt-0.5">' + escapeHtml(message) + '</p>' +
+    '<button onclick="this.closest(\'div\').classList.add(\'toast-leave\');setTimeout(function(){this.closest(\'div\').remove()}.bind(this),300)" class="flex-shrink-0 ' + c.text + ' hover:opacity-70">' +
+      '<span class="material-symbols-outlined" style="font-size:16px">close</span>' +
+    '</button>';
+  container.appendChild(el);
+  setTimeout(function() {
+    if (el.parentNode) { el.classList.add('toast-leave'); setTimeout(function() { if (el.parentNode) el.remove(); }, 300); }
+  }, 4000);
+}
+
+var confirmResolve = null;
+
+function showConfirm(message, hint, iconType) {
+  iconType = iconType || 'info';
+  var iconMap = {
+    danger: { icon: 'warning', bg: 'bg-red-100', color: 'text-red-600', btn: 'bg-red-600 hover:bg-red-700' },
+    warning: { icon: 'warning', bg: 'bg-yellow-100', color: 'text-yellow-600', btn: 'bg-yellow-500 hover:bg-yellow-600' },
+    info: { icon: 'info', bg: 'bg-blue-100', color: 'text-blue-600', btn: 'bg-blue-600 hover:bg-blue-700' },
+  };
+  var m = iconMap[iconType] || iconMap.info;
+  document.getElementById('confirmIcon').className = 'w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ' + m.bg;
+  document.getElementById('confirmIcon').innerHTML = '<span class="material-symbols-outlined ' + m.color + '" style="font-size:22px">' + m.icon + '</span>';
+  document.getElementById('confirmMessage').textContent = message;
+  document.getElementById('confirmHint').textContent = hint || '';
+  document.getElementById('confirmOkBtn').className = 'px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors ' + m.btn;
+  document.getElementById('confirmModal').classList.remove('hidden');
+  document.getElementById('confirmModal').classList.add('flex');
+  return new Promise(function(resolve) { confirmResolve = resolve; });
+}
+
+function closeConfirm() { document.getElementById('confirmModal').classList.add('hidden'); document.getElementById('confirmModal').classList.remove('flex'); if (confirmResolve) { confirmResolve(false); confirmResolve = null; } }
+
+document.getElementById('confirmOkBtn').addEventListener('click', function() { document.getElementById('confirmModal').classList.add('hidden'); document.getElementById('confirmModal').classList.remove('flex'); if (confirmResolve) { confirmResolve(true); confirmResolve = null; } });
+
+async function resetPassword(id, isAdmin) {
+  var msg = isAdmin ? 'Reset password alumni ini? Password akan dikembalikan ke default: admin123 (berlaku untuk akun admin dan alumni)' : 'Reset password alumni ini ke default (user123)?';
+  var ok = await showConfirm(msg, null, 'warning');
+  if (!ok) return;
   try {
-    var res = await fetch('/api/v1/alumni/' + id + '/make-admin', { method: 'POST', headers: { 'Authorization': 'Bearer <%= typeof token !== 'undefined' ? token : '' %>', 'Content-Type': 'application/json' } });
+    var res = await fetch('/api/v1/alumni/' + id + '/reset-password', { method: 'PUT', headers: { 'Authorization': 'Bearer ' + token } });
     var data = await res.json();
-    if (data.success) { alert('Berhasil dijadikan admin! Email: ' + data.data.email + ', Password: admin123'); } else { alert(data.error || 'Gagal'); }
-  } catch (e) { alert('Terjadi kesalahan: ' + e.message); }
+    if (data.success) { showToast(data.message, 'success'); } else { showToast(data.error || 'Gagal', 'error'); }
+  } catch (e) { showToast('Terjadi kesalahan: ' + e.message, 'error'); }
+}
+
+async function makeAdmin(id) {
+  var ok = await showConfirm('Jadikan alumni ini sebagai admin?', 'Password default: admin123. Email akan digunakan sebagai akun admin.', 'info');
+  if (!ok) return;
+  try {
+    var res = await fetch('/api/v1/alumni/' + id + '/make-admin', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' } });
+    var data = await res.json();
+    if (data.success) { showToast('Berhasil dijadikan admin! Email: ' + data.data.email + ', Password: admin123', 'success'); } else { showToast(data.error || 'Gagal', 'error'); }
+  } catch (e) { showToast('Terjadi kesalahan: ' + e.message, 'error'); }
 }
 </script>
 <%- include('../../partials/footer') %>

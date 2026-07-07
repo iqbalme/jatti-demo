@@ -116,6 +116,34 @@ router.put('/:id/role', async (req, res) => {
   }
 });
 
+router.put('/:id/reset-password', async (req, res) => {
+  try {
+    const existing = await prisma.admin.findUnique({ where: { id: req.params.id } });
+    if (!existing) return sendError(res, 404, 'Admin not found');
+    if (existing.isBuiltin) return sendError(res, 403, 'Cannot reset password of built-in admin');
+
+    if (authProvider !== 'local') {
+      const supabase = getSupabaseAdmin();
+      const { data: authUsers } = await supabase.auth.admin.listUsers();
+      const authUser = authUsers.users.find(u => u.email === existing.email);
+      if (authUser) {
+        await supabase.auth.admin.updateUserById(authUser.id, {
+          password: 'admin123',
+        });
+      }
+    }
+
+    const hashed = await bcrypt.hash('admin123', 10);
+    await prisma.admin.update({
+      where: { id: req.params.id },
+      data: { password: hashed },
+    });
+    sendSuccess(res, { message: 'Password berhasil direset ke admin123' });
+  } catch (err) {
+    sendError(res, 500, (err as Error).message);
+  }
+});
+
 router.delete('/:id', async (req, res) => {
   try {
     const existing = await prisma.admin.findUnique({ where: { id: req.params.id } });

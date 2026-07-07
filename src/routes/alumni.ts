@@ -380,9 +380,27 @@ router.put('/:id/reset-password', requireAuth, requireRole('admin', 'super_admin
   try {
     const alumni = await prisma.alumni.findUnique({ where: { id: req.params.id as string } });
     if (!alumni) return sendError(res, 404, 'Alumni not found');
-    const hashed = bcrypt.hashSync('user123', 10);
-    await prisma.alumni.update({ where: { id: req.params.id as string }, data: { password: hashed } });
-    sendSuccess(res, { message: 'Password berhasil direset ke default' });
+
+    const existingAdmin = alumni.email ? await prisma.admin.findUnique({ where: { email: alumni.email } }) : null;
+
+    if (existingAdmin) {
+      const hashed = bcrypt.hashSync('admin123', 10);
+      await prisma.admin.update({ where: { id: existingAdmin.id }, data: { password: hashed } });
+      await prisma.alumni.update({ where: { id: req.params.id as string }, data: { password: hashed } });
+      if (authProvider !== 'local') {
+        const supabase = getSupabaseAdmin();
+        const { data: authUsers } = await supabase.auth.admin.listUsers();
+        const authUser = authUsers.users.find(u => u.email === alumni.email);
+        if (authUser) {
+          await supabase.auth.admin.updateUserById(authUser.id, { password: 'admin123' });
+        }
+      }
+      sendSuccess(res, { message: 'Password berhasil direset ke admin123 (admin + alumni)' });
+    } else {
+      const hashed = bcrypt.hashSync('user123', 10);
+      await prisma.alumni.update({ where: { id: req.params.id as string }, data: { password: hashed } });
+      sendSuccess(res, { message: 'Password berhasil direset ke user123' });
+    }
   } catch (err) {
     sendError(res, 500, (err as Error).message);
   }

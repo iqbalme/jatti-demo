@@ -119,12 +119,15 @@
               </td>
               <td class="px-4 py-3.5 text-right">
                 <div class="flex items-center justify-end gap-1 sm:gap-2">
-                  <% if (!a.isBuiltin) { %>
+                    <% if (!a.isBuiltin) { %>
                     <% if (user.isBuiltin || (a.id !== user.id && a.role !== user.role)) { %>
                     <button onclick="changeRole('<%= a.id %>', '<%= a.role === 'super_admin' ? 'admin' : 'super_admin' %>')" class="inline-flex items-center gap-1 px-2 sm:px-3 py-1.5 bg-amber-50 text-amber-600 rounded-lg text-xs font-medium hover:bg-amber-100 transition-colors" title="<%= a.role === 'super_admin' ? 'Turunkan' : 'Naikkan' %>">
                       <%= a.role === 'super_admin' ? '\u2B07 ' : '\u2B06 ' %><span class="hidden sm:inline"><%= a.role === 'super_admin' ? 'Turunkan' : 'Naikkan' %></span>
                     </button>
                     <% } %>
+                    <button onclick="resetPassword('<%= a.id %>')" class="inline-flex items-center gap-1 px-2 sm:px-3 py-1.5 bg-gray-50 text-gray-600 rounded-lg text-xs font-medium hover:bg-gray-100 transition-colors" title="Reset password">
+                      <span class="material-symbols-outlined" style="font-size:14px">key</span><span class="hidden sm:inline">Reset</span>
+                    </button>
                     <% var _alumniId = a.email ? (JSON.parse(typeof alumniByEmailJson !== 'undefined' ? alumniByEmailJson : '{}')[a.email.toLowerCase()] || '') : ''; %>
                     <button onclick="deleteAdmin('<%= a.id %>', '<%= _alumniId %>')" class="inline-flex items-center gap-1 px-2 sm:px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-xs font-medium hover:bg-red-100 transition-colors">
                       <span class="material-symbols-outlined" style="font-size:14px">delete</span><span class="hidden sm:inline">Hapus</span>
@@ -228,6 +231,22 @@ async function changeRole(id, newRole) {
     var data = await res.json();
     if (data.success) { showToast('Role berhasil diubah', 'success'); setTimeout(function(){location.reload()},800); }
     else showToast(data.error || 'Gagal mengubah role', 'error');
+  } catch (e) {
+    showToast('Terjadi kesalahan: ' + e.message, 'error');
+  }
+}
+
+async function resetPassword(id) {
+  var ok = await showConfirm('Reset password admin ini?', 'Password akan dikembalikan ke default: admin123', 'warning');
+  if (!ok) return;
+  try {
+    var res = await fetch('/api/v1/admins/' + id + '/reset-password', {
+      method: 'PUT',
+      headers: { 'Authorization': 'Bearer ' + token },
+    });
+    var data = await res.json();
+    if (data.success) { showToast('Password berhasil direset ke admin123', 'success'); }
+    else showToast(data.error || 'Gagal reset password', 'error');
   } catch (e) {
     showToast('Terjadi kesalahan: ' + e.message, 'error');
   }
