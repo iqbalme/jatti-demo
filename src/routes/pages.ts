@@ -467,6 +467,8 @@ router.get('/dashboard/admins', requirePageAuth, async (req, res) => {
   const userRole = res.locals.user?.role;
   if (userRole !== 'super_admin') return res.redirect('/dashboard');
 
+  const currentUser = res.locals.user!;
+
   try {
     const [list, allAlumni] = await Promise.all([
       prisma.admin.findMany({
@@ -475,11 +477,19 @@ router.get('/dashboard/admins', requirePageAuth, async (req, res) => {
       }),
       prisma.alumni.findMany({ select: { id: true, email: true } }),
     ]);
+
+    let filteredList = list;
+    if (currentUser.isBuiltin) {
+      filteredList = list.filter(a => a.id !== currentUser.id);
+    } else {
+      filteredList = list.filter(a => a.id !== currentUser.id && a.role === 'admin' && !a.isBuiltin);
+    }
+
     const alumniByEmail: Record<string, string> = {};
     for (const al of allAlumni) {
       if (al.email) alumniByEmail[al.email.toLowerCase()] = al.id;
     }
-    res.render('pages/dashboard/admins', { admins: list, error: null, token: (req.cookies['sb-access-token'] as string) || '', alumniByEmailJson: JSON.stringify(alumniByEmail) });
+    res.render('pages/dashboard/admins', { admins: filteredList, error: null, token: (req.cookies['sb-access-token'] as string) || '', alumniByEmailJson: JSON.stringify(alumniByEmail) });
   } catch (err) {
     res.render('pages/dashboard/admins', { admins: [], error: (err as Error).message, token: (req.cookies['sb-access-token'] as string) || '', alumniByEmailJson: '{}' });
   }

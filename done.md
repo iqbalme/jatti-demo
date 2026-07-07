@@ -3,6 +3,7 @@
 ## 2026-07-07
 - [x] Fix responsive: file input di Import Database melebihi lebar container di mobile — stack vertikal + full-width (`src/views/pages/dashboard/settings.ejs`)
 - [x] Fix responsive: action buttons (Edit, Lihat, Hapus) di tabel alumni overflow horizontal — stack vertikal di mobile (`src/views/pages/dashboard/alumni-list.ejs`)
+- [x] Filter daftar admin di `/dashboard/admins`: built-in super_admin lihat semua kecuali diri sendiri; non-built-in hanya lihat role `admin`, bukan `super_admin`, bukan diri sendiri, bukan built-in (`src/routes/pages.ts`)
 
 ## 2026-07-05
 - [x] Proteksi role admin: tidak bisa mengubah role sendiri atau admin selevel — backend (`src/routes/admins.ts`) + frontend sembunyikan tombol (`src/views/pages/dashboard/admins.ejs`)
