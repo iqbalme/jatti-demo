@@ -14,6 +14,7 @@ declare global {
         avatarUrl?: string;
         source?: 'admin' | 'alumni';
         isBuiltin?: boolean;
+        photoUrl?: string | null;
       };
     }
   }

@@ -14,7 +14,17 @@
         <a href="/dashboard" class="text-sm text-gray-600 hover:underline">Dashboard</a>
         <a href="/dashboard/alumni" class="text-sm text-blue-600 hover:underline">Kelola Alumni</a>
         <a href="/dashboard/admins" class="text-sm text-blue-600 hover:underline">Kelola Admin</a>
-        <a href="/logout" class="text-sm text-red-600 hover:underline">Keluar</a>
+        <div class="flex items-center gap-2 border-r border-gray-200 pr-3">
+  <% if (typeof user !== 'undefined' && user) { %>
+    <% if (user.photoUrl) { %>
+      <img src="<%= user.photoUrl %>" class="w-7 h-7 rounded-full object-cover border border-gray-200" />
+    <% } else { %>
+      <div class="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-teal-400 flex items-center justify-center text-white font-bold text-xs"><%= (user.fullName || '?').charAt(0).toUpperCase() %></div>
+    <% } %>
+    <span class="text-sm text-gray-700 font-medium max-w-[120px] truncate"><%= user.fullName %></span>
+  <% } %>
+</div>
+<a href="/logout" class="text-sm text-red-600 hover:underline">Keluar</a>
       </div>
       <button id="menuBtn" class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors" onclick="toggleMenu()" aria-label="Menu">
         <span class="material-symbols-outlined">menu</span>
@@ -34,6 +44,19 @@
         </button>
       </div>
       <nav class="p-4 flex flex-col gap-1">
+        <% if (typeof user !== 'undefined' && user) { %>
+        <div class="flex items-center gap-3 px-4 py-3 border-b border-gray-100 mb-1 pb-3">
+          <% if (user.photoUrl) { %>
+            <img src="<%= user.photoUrl %>" class="w-10 h-10 rounded-full object-cover border border-gray-200" />
+          <% } else { %>
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-teal-400 flex items-center justify-center text-white font-bold text-sm"><%= (user.fullName || '?').charAt(0).toUpperCase() %></div>
+          <% } %>
+          <div class="min-w-0">
+            <p class="text-sm font-medium text-gray-900 truncate"><%= user.fullName %></p>
+            <p class="text-xs text-gray-500 truncate"><%= user.email || '' %></p>
+          </div>
+        </div>
+        <% } %>
         <a href="/dashboard" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">Dashboard</a>
         <a href="/dashboard/alumni" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">Kelola Alumni</a>
         <a href="/dashboard/password" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">Ubah Password</a>

@@ -6,6 +6,7 @@
 - [x] Filter daftar admin di `/dashboard/admins`: built-in super_admin lihat semua kecuali diri sendiri; non-built-in hanya lihat role `admin`, bukan `super_admin`, bukan diri sendiri, bukan built-in (`src/routes/pages.ts`)
 - [x] Tambah tombol Reset Password + endpoint di `/dashboard/admins` untuk non-built-in — default password "admin123" (`src/routes/admins.ts`, `src/views/pages/dashboard/admins.ejs`)
 - [x] Reset password di detail alumni: jika alumni juga admin → reset ke admin123 (Admin + Alumni table + Supabase); jika alumni biasa → reset ke user123 (Alumni table). Ganti confirm/alert → modal+toast (`src/routes/alumni.ts`, `src/views/pages/alumni/detail.ejs`)
+- [x] Profile menu di dashboard — tampilkan nama + foto (jika alumni punya foto) di navbar desktop dan mobile menu, untuk semua halaman dashboard (`src/routes/pages.ts`, `src/middleware/auth.ts`, 6 file EJS dashboard)
 
 ## 2026-07-05
 - [x] Proteksi role admin: tidak bisa mengubah role sendiri atau admin selevel — backend (`src/routes/admins.ts`) + frontend sembunyikan tombol (`src/views/pages/dashboard/admins.ejs`)

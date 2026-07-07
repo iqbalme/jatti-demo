@@ -27,7 +27,7 @@ async function loadUser(req: Request, res: Response, next: NextFunction) {
     if (decoded.source === 'alumni') {
       const alumni = await prisma.alumni.findUnique({ where: { id: decoded.id } });
       if (alumni) {
-        res.locals.user = { id: alumni.id, email: alumni.email || '', role: 'user', fullName: alumni.name, source: 'alumni' };
+        res.locals.user = { id: alumni.id, email: alumni.email || '', role: 'user', fullName: alumni.name, source: 'alumni', photoUrl: alumni.photoUrl || null };
       }
     } else {
       const admin = await prisma.admin.findUnique({ where: { id: decoded.id } });
