@@ -188,17 +188,17 @@
                 <% } %>
               </td>
               <td class="px-4 py-3.5 text-right">
-                <div class="flex items-center justify-end gap-2">
+                <div class="flex flex-col sm:flex-row items-end sm:items-center justify-end gap-1 sm:gap-2">
                   <% if (!_sameLevel) { %>
-                  <a href="/dashboard/alumni/<%= a.id %>/edit" class="inline-flex items-center gap-1 px-3 py-1.5 bg-amber-50 text-amber-600 rounded-lg text-xs font-medium hover:bg-amber-100 transition-colors">
+                  <a href="/dashboard/alumni/<%= a.id %>/edit" class="inline-flex items-center gap-1 px-3 py-1.5 bg-amber-50 text-amber-600 rounded-lg text-xs font-medium hover:bg-amber-100 transition-colors whitespace-nowrap">
                     <span class="material-symbols-outlined" style="font-size:14px">edit</span>Edit
                   </a>
                   <% } %>
-                  <a href="/alumni/<%= a.id %>" class="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-xs font-medium hover:bg-blue-100 transition-colors">
+                  <a href="/alumni/<%= a.id %>" class="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-xs font-medium hover:bg-blue-100 transition-colors whitespace-nowrap">
                     Lihat<span class="material-symbols-outlined" style="font-size:14px">open_in_new</span>
                   </a>
                   <% if (!_sameLevel) { %>
-                  <button onclick="deleteAlumni('<%= a.id %>', <%= _admInfo ? 'true' : 'false' %>)" class="inline-flex items-center gap-1 px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-xs font-medium hover:bg-red-100 transition-colors">
+                  <button onclick="deleteAlumni('<%= a.id %>', <%= _admInfo ? 'true' : 'false' %>)" class="inline-flex items-center gap-1 px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-xs font-medium hover:bg-red-100 transition-colors whitespace-nowrap">
                     <span class="material-symbols-outlined" style="font-size:14px">delete</span>Hapus
                   </button>
                   <% } %>
