@@ -501,7 +501,7 @@ async function makeAdmin(id) {
   loadWilayah(null, selProv, null).then(function() {
     // Add "Luar Negeri" option
     var ln = document.createElement('option');
-    ln.value = 'LUARNEGERI'; ln.textContent = 'Luar Negeri';
+    ln.value = 'LUARNEGERI'; ln.textContent = 'LUAR NEGERI';
     selProv.appendChild(ln);
 
     if (!editData) return;

@@ -221,7 +221,7 @@ router.get('/alumni', async (req, res) => {
         'Kalimantan Tengah', 'Kalimantan Selatan', 'Kalimantan Timur', 'Kalimantan Utara',
         'Sulawesi Utara', 'Sulawesi Tengah', 'Sulawesi Selatan', 'Sulawesi Tenggara',
         'Gorontalo', 'Sulawesi Barat', 'Maluku', 'Maluku Utara', 'Papua',
-        'Papua Barat', 'Papua Selatan', 'Papua Tengah', 'Papua Pegunungan', 'Luar Negeri',
+        'Papua Barat', 'Papua Selatan', 'Papua Tengah', 'Papua Pegunungan', 'LUAR NEGERI',
       ],
       careerStatuses: ['Pekerja', 'Wirausaha', 'Profesional', 'Tenaga Pendidik', 'Pencari Kerja', 'Lainnya'],
     });
