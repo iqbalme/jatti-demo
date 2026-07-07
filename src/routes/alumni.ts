@@ -36,7 +36,7 @@ async function getAdminRoleMap(): Promise<Map<string, { role: string; isBuiltin:
   const map = new Map<string, { role: string; isBuiltin: boolean }>();
   if (admins) {
     for (const a of admins) {
-      map.set(a.email.toLowerCase(), { role: a.role, isBuiltin: a.isBuiltin });
+      map.set(a.email.toLowerCase(), { role: a.role, isBuiltin: a.isBuiltin ?? false });
     }
   }
   return map;

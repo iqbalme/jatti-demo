@@ -420,7 +420,7 @@ router.get('/dashboard/alumni', requirePageAuth, async (req, res) => {
 
     const adminRoleMap: Record<string, { role: string; isBuiltin: boolean }> = {};
     for (const ad of allAdmins) {
-      adminRoleMap[ad.email.toLowerCase()] = { role: ad.role, isBuiltin: ad.isBuiltin };
+      adminRoleMap[ad.email.toLowerCase()] = { role: ad.role, isBuiltin: ad.isBuiltin ?? false };
     }
 
     res.render('pages/dashboard/alumni-list', {
