@@ -2,7 +2,8 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import { Prisma } from '@prisma/client';
 import { prisma } from '../utils/db';
-import { requireAuth, requireRole, optionalAuth } from '../middleware/auth';
+import { requireAuth, requireRole, optionalAuth, authProvider } from '../middleware/auth';
+import { getSupabaseAdmin } from '../utils/supabase';
 import { sendSuccess, sendPaginated, sendError } from '../utils/response';
 
 const router = Router();
